@@ -7,6 +7,5 @@ node default {
   include python::pil
 
   python::pip { "tornado": ensure => installed }
-
-  package { "nginx": ensure => installed }
+  python::pip { "python-magic": ensure => installed }
 }
