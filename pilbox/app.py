@@ -17,9 +17,8 @@
 import cStringIO
 import Image, ImageOps
 import logging
-import magic
 import os.path
-import re
+from signature import verify_signature
 import tornado.gen
 import tornado.httpclient
 import tornado.httpserver
@@ -53,7 +52,7 @@ class PilboxApplication(tornado.web.Application):
 
 class ImageHandler(tornado.web.RequestHandler):
     MODES = ["crop", "scale", "clip"]
-    FORMATS = {"image/png": "PNG", "image/jpeg": "JPEG"}
+    FORMATS = ["PNG", "JPEG"]
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
@@ -61,23 +60,16 @@ class ImageHandler(tornado.web.RequestHandler):
         self._validate_request()
         client = tornado.httpclient.AsyncHTTPClient()
         resp = yield client.fetch(self.get_argument("url"))
-        img = cStringIO.StringIO(resp.body)
-        mime = self._determine_image_type(img)
-        self.set_header('Content-Type', mime)
-        self.write(self._resize_image(img, self.FORMATS[mime]).read())
+        resp.rethrow()
+        self._import_headers(resp.headers)
+        self.write(self._resize_image(resp.buffer))
         self.finish()
 
-    def _determine_image_type(self, infile):
-        mime = magic.from_buffer(infile.read(1024), mime=True)
-        if mime not in self.FORMATS.keys():
-            raise tornado.web.HTTPError(415, "Unsupported image type")
-        infile.reset()
-        return mime
-
-    def _resize_image(self, infile, format):
+    def _resize_image(self, infile):
         img = Image.open(infile)
+        if img.format not in self.FORMATS:
+            raise tornado.web.HTTPError(415, "Unsupported image type")
         size = (int(self.get_argument("w")), int(self.get_argument("h")))
-        logger.info(self.get_argument("mode"))
         if self.get_argument("mode") == "clip":
             resized = img
             resized.thumbnail(size)
@@ -86,9 +78,15 @@ class ImageHandler(tornado.web.RequestHandler):
         else:
             resized = ImageOps.fit(img, size, Image.NEAREST, 0, (0.5, 0.5))
         outfile = cStringIO.StringIO()
-        resized.save(outfile, format)
+        resized.save(outfile, img.format)
         outfile.reset()
         return outfile
+
+    def _import_headers(self, headers):
+        self.set_header('Content-Type', headers['Content-Type'])
+        for k in ['Cache-Control', 'Expires', 'Last-Modified']:
+            if k in headers and headers[k]:
+                self.set_header(k, headers[k])
 
     def _validate_request(self):
         if not self.get_argument("url", None):
@@ -116,10 +114,7 @@ class ImageHandler(tornado.web.RequestHandler):
         if not self.get_argument("sig", None):
             return False
         parsed = urlparse.urlparse(self.request.uri)
-        unsigned_qs = re.sub(r'&?sig=[^&]*', '', parsed.query)
-        if self.get_argument("sig") != self._get_signature(unsigned_qs):
-            return False
-        return True
+        return verify_signature(options.client_key, parsed.query)
 
     def _validate_host(self):
         if options.allowed_hosts:
@@ -128,24 +123,14 @@ class ImageHandler(tornado.web.RequestHandler):
                 return False
         return True
 
-    def _get_signature(self, qs):
-        logger.info(qs)
-        m = hashlib.md5()
-        m.update(qs)
-        m.update(options.client_key)
-        return m.hexdigest()
-
 
 def main():
     tornado.options.parse_command_line()
     server = tornado.httpserver.HTTPServer(PilboxApplication())
     logger.info("Starting server...")
     try:
-        if options.debug:
-            server.listen(options.port)
-        else:
-            server.bind(options.port)
-            server.start(0)
+        server.bind(options.port)
+        server.start(1 if options.debug else 0)
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
         tornado.ioloop.IOLoop.instance().stop()

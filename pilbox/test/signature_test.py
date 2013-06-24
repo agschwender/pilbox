@@ -1,12 +1,12 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import hashlib
-from pilbox.signature import derive_signature, sign
+from pilbox.signature import derive_signature, sign, verify_signature
 from tornado.test.util import unittest
 import urlparse
 
 class SignatureTest(unittest.TestCase):
-    def test_derive_signature(self):
+    def test_derive(self):
         key = "abc123"
         qs_list = ["x=1&y=2&z=3", "x=%20%2B%2F!%40%23%24%25%5E%26"]
         for qs in qs_list:
@@ -21,3 +21,16 @@ class SignatureTest(unittest.TestCase):
             o = urlparse.parse_qs(sign(key, qs))
             self.assertTrue("sig" in o)
             self.assertTrue(o["sig"])
+
+    def test_verify(self):
+        key = "abc123"
+        qs_list = ["x=1&y=2&z=3", "x=%20%2B%2F!%40%23%24%25%5E%26"]
+        for qs in qs_list:
+            self.assertTrue(verify_signature(key, sign(key, qs)))
+
+    def test_bad_signature(self):
+        key1 = "abc123"
+        key2 = "def456"
+        qs_list = ["x=1&y=2&z=3", "x=%20%2B%2F!%40%23%24%25%5E%26"]
+        for qs in qs_list:
+            self.assertFalse(verify_signature(key1, sign(key2, qs)))

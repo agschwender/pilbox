@@ -9,13 +9,17 @@ class python {
   define pip($ensure = installed) {
     case $ensure {
       installed: {
-        exec { "pip install $name": }
+        exec { "pip install $name": require => Package[ "python-pip" ] }
       }
       latest: {
-        exec { "pip install --upgrade $name": }
+        exec { "pip install --upgrade $name":
+          require => Package[ "python-pip" ]
+        }
       }
       default: {
-        exec { "pip install $name==$ensure": }
+        exec { "pip install $name==$ensure":
+          require => Package[ "python-pip" ]
+        }
       }
     }
   }
