@@ -1,0 +1,15 @@
+# General settings
+
+port = 8888
+
+# Set client name and key if the application requires signed requests. The
+# client must sign the request using the client_key, see README for
+# instructions.
+
+client_name = "sample"
+client_key = "3NdajqH8mBLokepU4I2Bh6KK84GUf1lzjnuTdskY"
+
+# Set the allowed hosts as an alternative to signed requests. Only those images
+# which are served from the following hosts will be requested.
+
+allowed_hosts = ["localhost"]

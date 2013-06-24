@@ -45,3 +45,24 @@ If running via Vagrant, you will need to determine virtual machine's IP address.
 To see a list of all available options, run
 
     $ python pilbox/app.py --help
+
+Testing
+=======
+
+To run all tests, issue the following command
+
+    $ python -m pilbox.test.runtests
+
+To run individual tests, simply indicate the test to be run, e.g.
+
+    $ python -m pilbox.test.runtests pilbox.test.signature_test
+
+Tools
+=====
+
+To verify that your application is generating correct signatures, use the signature command
+
+    $ python -m pilbox.signature --key=abcdef "x=1&y=2&z=3"
+    Query String: x=1&y=2&z=3
+    Signature: 971cdc08caac8b9196862914d25fd3e4
+    Signed Query String: x=1&y=2&z=3&sig=971cdc08caac8b9196862914d25fd3e4
