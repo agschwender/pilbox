@@ -33,9 +33,8 @@ class python::pil {
 
   python::pip { "PIL":
     ensure => installed,
-    require => Package[ "libjpeg-dev",
-                        "libfreetype6",
-                        "libfreetype6-dev",
-                        "zlib1g-dev" ]
+    require => File[ "/usr/lib/libjpeg.so",
+                     "/usr/lib/libfreetype.so",
+                     "/usr/lib/libz.so" ]
   }
 }

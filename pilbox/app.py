@@ -62,7 +62,7 @@ class ImageHandler(tornado.web.RequestHandler):
         resp = yield client.fetch(self.get_argument("url"))
         resp.rethrow()
         self._import_headers(resp.headers)
-        self.write(self._resize_image(resp.buffer))
+        self.write(self._resize_image(resp.buffer).read())
         self.finish()
 
     def _resize_image(self, infile):
