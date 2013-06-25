@@ -9,10 +9,16 @@ node default {
   include python
   include python::pil
 
-  python::pip { "tornado": ensure => installed }
+  python::pip { "tornado":
+    ensure => installed,
+    require => Class[ "python" ],
+  }
 
   include supervisor
-  supervisor::service { "pilbox": command => "/var/www/pilbox/app.py" }
+  supervisor::service { "pilbox":
+    command => "/var/www/pilbox/app.py",
+    require => [ Python::Pip[ "tornado" ], Class[ "python::pil" ] ],
+  }
 
   package { "varnish": ensure => installed }
   package { "nginx": ensure => installed }
