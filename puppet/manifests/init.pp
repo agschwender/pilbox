@@ -11,6 +11,9 @@ node default {
 
   python::pip { "tornado": ensure => installed }
 
+  include supervisor
+  supervisor::service { "pilbox": command => "/var/www/pilbox/app.py" }
+
   package { "varnish": ensure => installed }
   package { "nginx": ensure => installed }
 }
