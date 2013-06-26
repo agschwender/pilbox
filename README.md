@@ -11,7 +11,6 @@ Dependencies
 
   * [Python 2.7](http://www.python.org/download/)
   * [PIL 1.1.7](http://www.pythonware.com/products/pil/)
-  * [python-magic 0.4.3](https://pypi.python.org/pypi/python-magic/)
   * [tornado 3.1](https://pypi.python.org/pypi/tornado/3.1)
   * Image Libraries: libjpeg-dev, libfreetype6, libfreetype6-dev, zlib1g-dev
 
