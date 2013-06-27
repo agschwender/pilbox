@@ -25,17 +25,14 @@ Versions:
   * 0.2: Configuration integration
   * 0.3: Signature generation
   * 0.3.1: Signature command-line tool
-  * 0.4: Backend support
-  * 0.4.1: File backend
-  * 0.4.2: S3 backend
-  * 0.4.3: Memcache backend
+  * 0.4: Image resize command-line tool
 """
 
 # human-readable version number
-version = "0.3.0"
+version = "0.4.0"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (0, 3, 0, 1)
+version_info = (0, 4, 0, 0)

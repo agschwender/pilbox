@@ -14,10 +14,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import cStringIO
-import Image, ImageOps
 import logging
 import os.path
+from image import Image, ImageFormatError
 from signature import verify_signature
 import tornado.gen
 import tornado.httpclient
@@ -51,8 +50,6 @@ class PilboxApplication(tornado.web.Application):
 
 
 class ImageHandler(tornado.web.RequestHandler):
-    MODES = ["crop", "scale", "clip"]
-    FORMATS = ["PNG", "JPEG"]
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
@@ -60,27 +57,16 @@ class ImageHandler(tornado.web.RequestHandler):
         self._validate_request()
         client = tornado.httpclient.AsyncHTTPClient()
         resp = yield client.fetch(self.get_argument("url"))
-        resp.rethrow()
+        image = Image(resp.buffer)
         self._import_headers(resp.headers)
-        self.write(self._resize_image(resp.buffer).read())
-        self.finish()
-
-    def _resize_image(self, infile):
-        img = Image.open(infile)
-        if img.format not in self.FORMATS:
+        try:
+            resized = image.resize(self.get_argument("w"),
+                                   self.get_argument("h"),
+                                   mode=self.get_argument("mode"))
+        except ImageFormatError:
             raise tornado.web.HTTPError(415, "Unsupported image type")
-        size = (int(self.get_argument("w")), int(self.get_argument("h")))
-        if self.get_argument("mode") == "clip":
-            resized = img
-            resized.thumbnail(size)
-        elif self.get_argument("mode") == "scale":
-            resized = img.resize(size)
-        else:
-            resized = ImageOps.fit(img, size, Image.NEAREST, 0, (0.5, 0.5))
-        outfile = cStringIO.StringIO()
-        resized.save(outfile, img.format)
-        outfile.reset()
-        return outfile
+        self.write(resized.read())
+        self.finish()
 
     def _import_headers(self, headers):
         self.set_header('Content-Type', headers['Content-Type'])
@@ -100,7 +86,7 @@ class ImageHandler(tornado.web.RequestHandler):
         elif self.get_argument("h", None) \
                 and not self.get_argument("h").isdigit():
             raise tornado.web.HTTPError(400, "Invalid image height")
-        elif self.get_argument("mode", "crop") not in self.MODES:
+        elif self.get_argument("mode", "crop") not in Image.MODES:
             raise tornado.web.HTTPError(400, "Invalid mode")
         elif options.client_name \
                 and self.get_argument("client", None) != options.client_name:

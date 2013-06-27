@@ -1,7 +1,7 @@
 Pilbox
 ======
 
-Pilbox is an image resizing application built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (PIL)](http://www.pythonware.com/products/pil/). It is not intended to be the primary source of images, but instead acts as a proxy which requests images, resizes them to the desired size and optionally stores the resized version.
+Pilbox is an image resizing application built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (PIL)](http://www.pythonware.com/products/pil/). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them to the desired size.
 
 Setup
 =====
@@ -68,6 +68,21 @@ To run individual tests, simply indicate the test to be run, e.g.
 
     $ python -m pilbox.test.runtests pilbox.test.signature_test
 
+Signing
+=======
+
+In order to secure requests so that third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the `client_key` option. The signature is a hexadecimal digest of the concatenation of the query string and the client key using the md5 algorithm. The below python code provides an example implementation.
+
+    import hashlib
+
+    def derive_signature(key, qs):
+        m = hashlib.md5()
+        m.update(qs)
+        m.update(key)
+        return m.hexdigest()
+
+The signature is passed to the application by appending the `sig` paramater to the query string; e.g. `x=1&y=2&z=3&sig=971cdc08caac8b9196862914d25fd3e4`. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the `pilbox.signature` command described in the [tools section](#tools).
+
 Tools
 =====
 
@@ -77,3 +92,14 @@ To verify that your client application is generating correct signatures, use the
     Query String: x=1&y=2&z=3
     Signature: 971cdc08caac8b9196862914d25fd3e4
     Signed Query String: x=1&y=2&z=3&sig=971cdc08caac8b9196862914d25fd3e4
+
+The application allows the use of the resize functionality via the command line.
+
+    $ python -m pilbox.image --width=300 --height=300 http://i.imgur.com/zZ8XmBA.jpg > /tmp/foo.jpg
+
+TODO
+====
+
+  * Fill resize with background
+  * Crop resize positioning
+  * Add backends (S3, file system, etc...) if necessary
