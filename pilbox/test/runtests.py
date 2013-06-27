@@ -7,6 +7,7 @@ import sys
 from tornado.test.util import unittest
 
 TEST_MODULES = [
+    'pilbox.test.image_test',
     'pilbox.test.signature_test',
 ]
 
