@@ -28,6 +28,9 @@ To access the virtual machine itself, simply...
 Running
 =======
 
+Manual
+------
+
 To run the application, issue the following command
 
     $ python pilbox/app.py
@@ -36,14 +39,23 @@ By default, this will run the application on port 8888 and can be accessed by vi
 
     http://localhost:8888/
 
-If running via Vagrant, you will need to determine virtual machine's IP address.
+To see a list of all available options, run
+
+    $ python pilbox/app.py --help
+
+Vagrant
+-------
+
+When running via Vagrant, the application is automatically started via [Supervisor](http://supervisord.org/). The Vagrant setup runs the application behind [Nginx](http://nginx.org/) which caches the output via [Varnish](https://www.varnish-cache.org/).
+
+If access the application via Vagrant, you will need to determine virtual machine's IP address.
 
     $ vagrant ssh
     $ /sbin/ifconfig -a
 
-To see a list of all available options, run
+Once determined, the application can be accessed via port 80, e.g.
 
-    $ python pilbox/app.py --help
+    http://192.168.1.1/
 
 Testing
 =======
@@ -59,7 +71,7 @@ To run individual tests, simply indicate the test to be run, e.g.
 Tools
 =====
 
-To verify that your application is generating correct signatures, use the signature command
+To verify that your client application is generating correct signatures, use the signature command. Note, as in the example below, when verifying signatures the web application will not include the leading question mark from the query string when determinging the signature.
 
     $ python -m pilbox.signature --key=abcdef "x=1&y=2&z=3"
     Query String: x=1&y=2&z=3
