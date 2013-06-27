@@ -1,0 +1,23 @@
+################################################################################
+################## DO NOT EDIT: FILE MANTAINED BY PUPPET #######################
+################################################################################
+
+# This is a basic VCL configuration file for varnish.  See the vcl(7)
+# man page for details on VCL syntax and semantics.
+#
+# Default backend definition.  Set this to point to your content
+# server.
+#
+backend pilbox {
+    .host = "127.0.0.1";
+    .port = "<%= @app_port %>";
+}
+
+backend nginx {
+    .host = "127.0.0.1";
+    .port = "<%= @webserver_port %>";
+}
+
+sub vcl_recv {
+    set req.backend = nginx;
+}

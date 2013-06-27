@@ -20,6 +20,6 @@ node default {
     require => [ Python::Pip[ "tornado" ], Class[ "python::pil" ] ],
   }
 
-  package { "varnish": ensure => installed }
-  package { "nginx": ensure => installed }
+  class { "varnish" : }
+  class { "nginx": }
 }

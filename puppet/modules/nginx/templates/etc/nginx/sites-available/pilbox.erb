@@ -1,0 +1,25 @@
+################################################################################
+################## DO NOT EDIT: FILE MANTAINED BY PUPPET #######################
+################################################################################
+
+upstream pilbox {
+    server 127.0.0.1:<%= @app_port %>;
+}
+
+proxy_next_upstream error;
+
+server {
+
+    listen <%= @port %>;
+
+    client_max_body_size 10M;
+
+    location / {
+        proxy_pass_header Server;
+        proxy_set_header Host $http_host;
+        proxy_redirect false;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_pass http://pilbox;
+    }
+}
