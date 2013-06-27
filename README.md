@@ -71,7 +71,7 @@ To run individual tests, simply indicate the test to be run, e.g.
 Tools
 =====
 
-To verify that your client application is generating correct signatures, use the signature command. Note, as in the example below, when verifying signatures the web application will not include the leading question mark from the query string when determinging the signature.
+To verify that your client application is generating correct signatures, use the signature command. Note, as in the example below, when verifying signatures the web application will not include the leading question mark from the query string when determining the signature.
 
     $ python -m pilbox.signature --key=abcdef "x=1&y=2&z=3"
     Query String: x=1&y=2&z=3
