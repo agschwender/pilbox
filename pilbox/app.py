@@ -15,7 +15,6 @@
 # under the License.
 
 import logging
-import os.path
 from image import Image, ImageFormatError
 from signature import verify_signature
 import tornado.gen
