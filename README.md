@@ -1,7 +1,7 @@
 Pilbox
 ======
 
-Pilbox is an image resizing application built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (PIL)](http://www.pythonware.com/products/pil/). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them to the desired size.
+Pilbox is an image resizing application built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (PIL)](http://www.pythonware.com/products/pil/). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.
 
 Setup
 =====
@@ -57,6 +57,27 @@ Once determined, the application can be accessed via port 80, e.g.
 
     http://192.168.1.1/
 
+Calling
+=======
+
+To use the image resizing service, include the application url as you would any other image, e.g.
+
+    <img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&w=300&h=300&mode=crop" width="300" height="300" />
+
+This will request the image served at the supplied url and resize it to 300x300 using the crop mode. The following is the list of parameters that can be supplied to the service
+
+  * _url_: The url of the image to be resized
+  * _w_: The desired width of the image
+  * _h_: The desired height of the image
+  * _mode_: The resizing method: clip, crop (default) and scale
+    * _clip_: Resize to fit within the desired region, keeping aspect ratio
+    * _crop_: Resize so one dimension fits within region, center, cut remaining
+    * _scale_: Resize to fit within the desired region, ignoring aspect ratio
+  * _client_: The client name
+  * _sig_: The signature
+
+The `url`, `w` and `h` parameters are required. `mode` is optional and defaults to `crop`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+
 Testing
 =======
 
@@ -103,7 +124,6 @@ TODO
   * Assert that supplied query string does not have leading question mark
   * Add controller tests
   * Build-in automatic deploy to ec2 instance
-  * Document calls to service with options and explanations
   * Fill resize with background
   * Crop resize positioning
   * Add backends (S3, file system, etc...) if necessary
