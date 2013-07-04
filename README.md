@@ -35,7 +35,7 @@ To run the application, issue the following command
 
     $ python pilbox/app.py
 
-By default, this will run the application on port 8888 and can be accessed by viisting:
+By default, this will run the application on port 8888 and can be accessed by visiting:
 
     http://localhost:8888/
 
@@ -48,7 +48,7 @@ Vagrant
 
 When running via Vagrant, the application is automatically started via [Supervisor](http://supervisord.org/). The Vagrant setup runs the application behind [Nginx](http://nginx.org/) which caches the output via [Varnish](https://www.varnish-cache.org/).
 
-If access the application via Vagrant, you will need to determine virtual machine's IP address.
+If accessing the application via Vagrant, you will need to determine the virtual machine's IP address.
 
     $ vagrant ssh
     $ /sbin/ifconfig -a
@@ -71,7 +71,7 @@ To run individual tests, simply indicate the test to be run, e.g.
 Signing
 =======
 
-In order to secure requests so that third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the `client_key` option. The signature is a hexadecimal digest of the concatenation of the query string and the client key using the md5 algorithm. The below python code provides an example implementation.
+In order to secure requests so that unknown third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the `client_key` option. The signature is a hexadecimal digest of the concatenation of the query string and the client key using the md5 algorithm. The below python code provides an example implementation.
 
     import hashlib
 
@@ -100,6 +100,10 @@ The application allows the use of the resize functionality via the command line.
 TODO
 ====
 
+  * Assert that supplied query string does not have leading question mark
+  * Add controller tests
+  * Build-in automatic deploy to ec2 instance
+  * Document calls to service with options and explanations
   * Fill resize with background
   * Crop resize positioning
   * Add backends (S3, file system, etc...) if necessary
