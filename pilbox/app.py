@@ -17,6 +17,7 @@
 import logging
 from image import Image, ImageFormatError
 from signature import verify_signature
+import tornado.escape
 import tornado.gen
 import tornado.httpclient
 import tornado.httpserver
@@ -40,15 +41,28 @@ define("allowed_hosts", default=[], help="list of allowed image hosts",
 logger = logging.getLogger("tornado.application")
 
 class PilboxApplication(tornado.web.Application):
-    def __init__(self):
+    def __init__(self, **kwargs):
         handlers = [
             (r"/", ImageHandler),
             ]
-        settings = dict(debug=options.debug)
+        settings = dict(debug=options.debug,
+                        client_name=options.client_name,
+                        client_key=options.client_key,
+                        allowed_hosts=options.allowed_hosts)
+        settings.update(kwargs)
         tornado.web.Application.__init__(self, handlers, **settings)
 
 
 class ImageHandler(tornado.web.RequestHandler):
+    MISSING_URL = "Missing image url"
+    MISSING_DIMENSIONS = "Missing image width and height"
+    INVALID_WIDTH = "Invalid image width"
+    INVALID_HEIGHT = "Invalid image height"
+    INVALID_MODE = "Invalid mode"
+    INVALID_CLIENT = "Invalid client"
+    INVALID_SIGNATURE = "Invalid signature"
+    INVALID_HOST = "Invalid image host"
+    UNSUPPORTED_IMAGE_TYPE = "Unsupported image type"
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
@@ -62,7 +76,7 @@ class ImageHandler(tornado.web.RequestHandler):
                                    self.get_argument("h"),
                                    mode=self.get_argument("mode"))
         except ImageFormatError:
-            raise tornado.web.HTTPError(415, "Unsupported image type")
+            raise tornado.web.HTTPError(415, self.UNSUPPORTED_IMAGE_TYPE)
         self._import_headers(resp.headers)
         self.write(resized.read())
         self.finish()
@@ -73,38 +87,50 @@ class ImageHandler(tornado.web.RequestHandler):
             if k in headers and headers[k]:
                 self.set_header(k, headers[k])
 
+    def write_error(self, status_code, **kwargs):
+        err = None
+        if "exc_info" in kwargs:
+            _type, err, _traceback = kwargs["exc_info"]
+        if isinstance(err, tornado.web.HTTPError):
+            self.set_header('Content-Type', 'application/json')
+            resp = dict(code=status_code, error=err.log_message)
+            self.finish(tornado.escape.json_encode(resp))
+        else:
+            super(ImageHandler, self).write_error(status_code, **kwargs)
+
     def _validate_request(self):
+        s = self.application.settings
         if not self.get_argument("url", None):
-            raise tornado.web.HTTPError(400, "Missing image url")
+            raise tornado.web.HTTPError(400, self.MISSING_URL)
         elif not self.get_argument("w", None) \
                 and not self.get_argument("h", None):
-            raise tornado.web.HTTPError(400, "Missing image width and height")
+            raise tornado.web.HTTPError(400, self.MISSING_DIMENSIONS)
         elif self.get_argument("w", None) \
                 and not self.get_argument("w").isdigit():
-            raise tornado.web.HTTPError(400, "Invalid image width")
+            raise tornado.web.HTTPError(400, self.INVALID_WIDTH)
         elif self.get_argument("h", None) \
                 and not self.get_argument("h").isdigit():
-            raise tornado.web.HTTPError(400, "Invalid image height")
+            raise tornado.web.HTTPError(400, self.INVALID_HEIGHT)
         elif self.get_argument("mode", "crop") not in Image.MODES:
-            raise tornado.web.HTTPError(400, "Invalid mode")
-        elif options.client_name \
-                and self.get_argument("client", None) != options.client_name:
-            raise tornado.web.HTTPError(403, "Invalid client")
-        elif options.client_key and not self._validate_signature():
-            raise tornado.web.HTTPError(403, "Invalid signature")
-        elif not options.client_key and not self._validate_host():
-            raise tornado.web.HTTPError(403, "Invalid image host")
+            raise tornado.web.HTTPError(400, self.INVALID_MODE)
+        elif s.get("client_name") \
+                and self.get_argument("client", None) != s.get("client_name"):
+            raise tornado.web.HTTPError(403, self.INVALID_CLIENT)
+        elif s.get("client_key") and not self._validate_signature():
+            raise tornado.web.HTTPError(403, self.INVALID_SIGNATURE)
+        elif s.get("allowed_hosts") and not self._validate_host():
+            raise tornado.web.HTTPError(403, self.INVALID_HOST)
 
     def _validate_signature(self):
         if not self.get_argument("sig", None):
             return False
         parsed = urlparse.urlparse(self.request.uri)
-        return verify_signature(options.client_key, parsed.query)
+        return verify_signature(self.settings.get("client_key"), parsed.query)
 
     def _validate_host(self):
-        if options.allowed_hosts:
+        if self.settings.get("allowed_hosts"):
             parsed = urlparse.urlparse(self.get_argument("url"))
-            if parsed.hostname not in options.allowed_hosts:
+            if parsed.hostname not in self.settings.get("allowed_hosts"):
                 return False
         return True
 
