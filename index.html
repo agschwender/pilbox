@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Pilbox by agschwender</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Pilbox</h1>
+          <h2>Pilbox is an image resizing application server built on Python's Tornado web framework using the Python Imaging Library (PIL). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them to the desired size.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/agschwender/pilbox/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/agschwender/pilbox/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/agschwender/pilbox" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a name="pilbox" class="anchor" href="#pilbox"><span class="octicon octicon-link"></span></a>Pilbox</h1>
+
+<p>Pilbox is an image resizing application server built on Python's <a href="http://www.tornadoweb.org/en/stable/">Tornado web framework</a> using the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library (PIL)</a>. It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.</p>
+
+<h1>
+<a name="setup" class="anchor" href="#setup"><span class="octicon octicon-link"></span></a>Setup</h1>
+
+<h2>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+
+<ul>
+<li><a href="http://www.python.org/download/">Python 2.7</a></li>
+<li><a href="http://www.pythonware.com/products/pil/">PIL 1.1.7</a></li>
+<li><a href="https://pypi.python.org/pypi/tornado/3.1">tornado 3.1</a></li>
+<li>Image Libraries: libjpeg-dev, libfreetype6, libfreetype6-dev, zlib1g-dev</li>
+</ul><h2>
+<a name="vagrant" class="anchor" href="#vagrant"><span class="octicon octicon-link"></span></a>Vagrant</h2>
+
+<p>Packaged with Pilbox is a <a href="http://www.vagrantup.com/">Vagrant</a> configuration file which installs all necessary dependencies on a virtual box. See the <a href="http://docs.vagrantup.com/v2/installation/">Vagrant documentation for installation instructions</a>. Once installed, the following will start a virtual machine.</p>
+
+<pre><code>$ vagrant up
+</code></pre>
+
+<p>To access the virtual machine itself, simply...</p>
+
+<pre><code>$ vagrant ssh
+</code></pre>
+
+<h1>
+<a name="running" class="anchor" href="#running"><span class="octicon octicon-link"></span></a>Running</h1>
+
+<h2>
+<a name="manual" class="anchor" href="#manual"><span class="octicon octicon-link"></span></a>Manual</h2>
+
+<p>To run the application, issue the following command</p>
+
+<pre><code>$ python pilbox/app.py
+</code></pre>
+
+<p>By default, this will run the application on port 8888 and can be accessed by visiting:</p>
+
+<pre><code>http://localhost:8888/
+</code></pre>
+
+<p>To see a list of all available options, run</p>
+
+<pre><code>$ python pilbox/app.py --help
+</code></pre>
+
+<h2>
+<a name="vagrant-1" class="anchor" href="#vagrant-1"><span class="octicon octicon-link"></span></a>Vagrant</h2>
+
+<p>When running via Vagrant, the application is automatically started via <a href="http://supervisord.org/">Supervisor</a>. The Vagrant setup runs the application behind <a href="http://nginx.org/">Nginx</a> which caches the output via <a href="https://www.varnish-cache.org/">Varnish</a>.</p>
+
+<p>If accessing the application via Vagrant, you will need to determine the virtual machine's IP address.</p>
+
+<pre><code>$ vagrant ssh
+$ /sbin/ifconfig -a
+</code></pre>
+
+<p>Once determined, the application can be accessed via port 80, e.g.</p>
+
+<pre><code>http://192.168.1.1/
+</code></pre>
+
+<h1>
+<a name="calling" class="anchor" href="#calling"><span class="octicon octicon-link"></span></a>Calling</h1>
+
+<p>To use the image resizing service, include the application url as you would any other image, e.g.</p>
+
+<pre><code>&lt;img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop" width="300" height="300" /&gt;
+</code></pre>
+
+<p>This will request the image served at the supplied url and resize it to 300x300 using the crop mode. The following is the list of parameters that can be supplied to the service</p>
+
+<ul>
+<li>
+<em>url</em>: The url of the image to be resized</li>
+<li>
+<em>w</em>: The desired width of the image</li>
+<li>
+<em>h</em>: The desired height of the image</li>
+<li>
+<em>mode</em>: The resizing method: clip, crop (default) and scale
+
+<ul>
+<li>
+<em>clip</em>: Resize to fit within the desired region, keeping aspect ratio</li>
+<li>
+<em>crop</em>: Resize so one dimension fits within region, center, cut remaining</li>
+<li>
+<em>scale</em>: Resize to fit within the desired region, ignoring aspect ratio</li>
+</ul>
+</li>
+<li>
+<em>client</em>: The client name</li>
+<li>
+<em>sig</em>: The signature</li>
+</ul><p>The <code>url</code>, <code>w</code> and <code>h</code> parameters are required. <code>mode</code> is optional and defaults to <code>crop</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+
+<h1>
+<a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h1>
+
+<p>To run all tests, issue the following command</p>
+
+<pre><code>$ python -m pilbox.test.runtests
+</code></pre>
+
+<p>To run individual tests, simply indicate the test to be run, e.g.</p>
+
+<pre><code>$ python -m pilbox.test.runtests pilbox.test.signature_test
+</code></pre>
+
+<h1>
+<a name="signing" class="anchor" href="#signing"><span class="octicon octicon-link"></span></a>Signing</h1>
+
+<p>In order to secure requests so that unknown third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the <code>client_key</code> option. The signature is a hexadecimal digest generated from the client key and the query string using the HMAC-SHA1 message authentication code (MAC) algorithm. The below python code provides an example implementation.</p>
+
+<pre><code>import hashlib
+import hmac
+
+def derive_signature(key, qs):
+    m = hmac.new(key, None, hashlib.sha1)
+    m.update(qs)
+    return m.hexdigest()
+</code></pre>
+
+<p>The signature is passed to the application by appending the <code>sig</code> paramater to the query string; e.g. <code>x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a0c797ef26</code>. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the <code>pilbox.signature</code> command described in the <a href="#tools">tools section</a>.</p>
+
+<h1>
+<a name="tools" class="anchor" href="#tools"><span class="octicon octicon-link"></span></a>Tools</h1>
+
+<p>To verify that your client application is generating correct signatures, use the signature command.</p>
+
+<pre><code>$ python -m pilbox.signature --key=abcdef "x=1&amp;y=2&amp;z=3"
+Query String: x=1&amp;y=2&amp;z=3
+Signature: c9516346abf62876b6345817dba2f9a0c797ef26
+Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a0c797ef26
+</code></pre>
+
+<p>The application allows the use of the resize functionality via the command line.</p>
+
+<pre><code>$ python -m pilbox.image --width=300 --height=300 http://i.imgur.com/zZ8XmBA.jpg &gt; /tmp/foo.jpg
+</code></pre>
+
+<h1>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
+
+<ul>
+<li>Add controller tests</li>
+<li>Build-in automatic deploy to ec2 instance</li>
+<li>Fill resize with background</li>
+<li>Crop resize positioning</li>
+<li>Add backends (S3, file system, etc...) if necessary</li>
+</ul>
+        </section>
+
+        <footer>
+          Pilbox is maintained by <a href="https://github.com/agschwender">agschwender</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
