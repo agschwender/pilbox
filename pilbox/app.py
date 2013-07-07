@@ -57,13 +57,13 @@ class ImageHandler(tornado.web.RequestHandler):
         client = tornado.httpclient.AsyncHTTPClient()
         resp = yield client.fetch(self.get_argument("url"))
         image = Image(resp.buffer)
-        self._import_headers(resp.headers)
         try:
             resized = image.resize(self.get_argument("w"),
                                    self.get_argument("h"),
                                    mode=self.get_argument("mode"))
         except ImageFormatError:
             raise tornado.web.HTTPError(415, "Unsupported image type")
+        self._import_headers(resp.headers)
         self.write(resized.read())
         self.finish()
 
@@ -89,11 +89,11 @@ class ImageHandler(tornado.web.RequestHandler):
             raise tornado.web.HTTPError(400, "Invalid mode")
         elif options.client_name \
                 and self.get_argument("client", None) != options.client_name:
-            raise tornado.web.HTTPError(400, "Invalid client")
+            raise tornado.web.HTTPError(403, "Invalid client")
         elif options.client_key and not self._validate_signature():
-            raise tornado.web.HTTPError(400, "Invalid signature")
+            raise tornado.web.HTTPError(403, "Invalid signature")
         elif not options.client_key and not self._validate_host():
-            raise tornado.web.HTTPError(400, "Invalid image host")
+            raise tornado.web.HTTPError(403, "Invalid image host")
 
     def _validate_signature(self):
         if not self.get_argument("sig", None):
