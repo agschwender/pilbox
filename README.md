@@ -107,7 +107,7 @@ The signature is passed to the application by appending the `sig` paramater to t
 Tools
 =====
 
-To verify that your client application is generating correct signatures, use the signature command. Note, as in the example below, when verifying signatures the web application will not include the leading question mark from the query string when determining the signature.
+To verify that your client application is generating correct signatures, use the signature command.
 
     $ python -m pilbox.signature --key=abcdef "x=1&y=2&z=3"
     Query String: x=1&y=2&z=3
@@ -121,7 +121,6 @@ The application allows the use of the resize functionality via the command line.
 TODO
 ====
 
-  * Assert that supplied query string does not have leading question mark
   * Add controller tests
   * Build-in automatic deploy to ec2 instance
   * Fill resize with background
