@@ -92,17 +92,17 @@ To run individual tests, simply indicate the test to be run, e.g.
 Signing
 =======
 
-In order to secure requests so that unknown third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the `client_key` option. The signature is a hexadecimal digest of the concatenation of the query string and the client key using the md5 algorithm. The below python code provides an example implementation.
+In order to secure requests so that unknown third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the `client_key` option. The signature is a hexadecimal digest generated from the client key and the query string using the HMAC-SHA1 message authentication code (MAC) algorithm. The below python code provides an example implementation.
 
     import hashlib
+    import hmac
 
     def derive_signature(key, qs):
-        m = hashlib.md5()
+        m = hmac.new(key, None, hashlib.sha1)
         m.update(qs)
-        m.update(key)
         return m.hexdigest()
 
-The signature is passed to the application by appending the `sig` paramater to the query string; e.g. `x=1&y=2&z=3&sig=971cdc08caac8b9196862914d25fd3e4`. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the `pilbox.signature` command described in the [tools section](#tools).
+The signature is passed to the application by appending the `sig` paramater to the query string; e.g. `x=1&y=2&z=3&sig=c9516346abf62876b6345817dba2f9a0c797ef26`. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the `pilbox.signature` command described in the [tools section](#tools).
 
 Tools
 =====
@@ -111,8 +111,8 @@ To verify that your client application is generating correct signatures, use the
 
     $ python -m pilbox.signature --key=abcdef "x=1&y=2&z=3"
     Query String: x=1&y=2&z=3
-    Signature: 971cdc08caac8b9196862914d25fd3e4
-    Signed Query String: x=1&y=2&z=3&sig=971cdc08caac8b9196862914d25fd3e4
+    Signature: c9516346abf62876b6345817dba2f9a0c797ef26
+    Signed Query String: x=1&y=2&z=3&sig=c9516346abf62876b6345817dba2f9a0c797ef26
 
 The application allows the use of the resize functionality via the command line.
 

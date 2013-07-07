@@ -15,16 +15,14 @@
 # under the License.
 
 import hashlib
+import hmac
 import re
 import urllib
 import urlparse
 
 def derive_signature(key, qs):
     """Derives the signature from the supplied query string using the key."""
-    m = hashlib.md5()
-    m.update(qs)
-    m.update(key)
-    return m.hexdigest()
+    return hmac.new(key, qs, hashlib.sha1).hexdigest()
 
 def sign(key, qs):
     """Signs the query string using the key."""
