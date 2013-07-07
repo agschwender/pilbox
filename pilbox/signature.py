@@ -48,6 +48,9 @@ def main():
     for i, arg in enumerate(args):
         if i > 0:
             print "=" * 78
+        if arg and arg[0] == "?":
+            print "Invalid query string, should not include leading '?'"
+            continue
         print "Query String: %s" % arg
         print "Signature: %s" % derive_signature(options.key, arg)
         print "Signed Query String: %s" % sign(options.key, arg)
