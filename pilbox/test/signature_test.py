@@ -2,9 +2,9 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import hashlib
 import hmac
-from pilbox.signature import derive_signature, sign, verify_signature
 from tornado.test.util import unittest
 import urlparse
+from ..signature import derive_signature, sign, verify_signature
 
 class SignatureTest(unittest.TestCase):
     def test_derive(self):

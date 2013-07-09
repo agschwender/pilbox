@@ -15,8 +15,7 @@
 # under the License.
 
 import logging
-from image import Image, ImageFormatError
-from signature import verify_signature
+import os.path
 import tornado.escape
 import tornado.gen
 import tornado.httpclient
@@ -25,6 +24,9 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import urlparse
+
+from .image import Image, ImageFormatError
+from .signature import verify_signature
 
 from tornado.options import define, options, parse_config_file
 
@@ -41,8 +43,13 @@ define("allowed_hosts", default=[], help="list of allowed image hosts",
 logger = logging.getLogger("tornado.application")
 
 class PilboxApplication(tornado.web.Application):
+    TESTDATADIR = os.path.join(os.path.dirname(__file__), "test", "data")
+
     def __init__(self, **kwargs):
         handlers = [
+            (r"/test-data/(.*)",
+             tornado.web.StaticFileHandler,
+             {"path": self.TESTDATADIR}),
             (r"/", ImageHandler),
             ]
         settings = dict(debug=options.debug,

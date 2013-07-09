@@ -62,9 +62,13 @@ Once determined, the application can be accessed via port 80, e.g.
 Calling
 =======
 
-To use the image resizing service, include the application url as you would any other image, e.g.
+To use the image resizing service, include the application url as you would any other image. E.g. this image url
 
-    <img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&w=300&h=300&mode=crop" width="300" height="300" />
+    <img src="http://i.imgur.com/zZ8XmBA.jpg" />
+
+Would be replaced with this image url
+
+    <img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&w=300&h=300&mode=crop" />
 
 This will request the image served at the supplied url and resize it to 300x300 using the crop mode. The following is the list of parameters that can be supplied to the service
 
@@ -123,8 +127,7 @@ The application allows the use of the resize functionality via the command line.
 TODO
 ====
 
-  * Add controller tests
-  * Build-in automatic deploy to ec2 instance
+  * Production/development configuration management
   * Fill resize with background
   * Crop resize positioning
   * Add backends (S3, file system, etc...) if necessary
