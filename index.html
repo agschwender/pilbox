@@ -1,43 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
     <title>Pilbox by agschwender</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
   </head>
+
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/agschwender/pilbox">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/agschwender/pilbox/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/agschwender/pilbox/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
 
-    <div class="wrapper">
+    <header>
+      <div class="container">
+        <h1>Pilbox</h1>
+        <h2>An image resizing application server</h2>
 
-      <section>
-        <div id="title">
-          <h1>Pilbox</h1>
-          <p>An image resizing application server</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/agschwender">agschwender</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
+        <section id="downloads">
+          <a href="https://github.com/agschwender/pilbox/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/agschwender/pilbox/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/agschwender/pilbox" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
 
+    <div class="container">
+      <section id="main_content">
         <h1>
 <a name="pilbox" class="anchor" href="#pilbox"><span class="octicon octicon-link"></span></a>Pilbox</h1>
 
@@ -109,9 +99,14 @@ $ /sbin/ifconfig -a
 <h1>
 <a name="calling" class="anchor" href="#calling"><span class="octicon octicon-link"></span></a>Calling</h1>
 
-<p>To use the image resizing service, include the application url as you would any other image, e.g.</p>
+<p>To use the image resizing service, include the application url as you would any other image. E.g. this image url</p>
 
-<pre><code>&lt;img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop" width="300" height="300" /&gt;
+<pre><code>&lt;img src="http://i.imgur.com/zZ8XmBA.jpg" /&gt;
+</code></pre>
+
+<p>Would be replaced with this image url</p>
+
+<pre><code>&lt;img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop" /&gt;
 </code></pre>
 
 <p>This will request the image served at the supplied url and resize it to 300x300 using the crop mode. The following is the list of parameters that can be supplied to the service</p>
@@ -190,16 +185,14 @@ Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
-<li>Add controller tests</li>
-<li>Build-in automatic deploy to ec2 instance</li>
+<li>Production/development configuration management</li>
 <li>Fill resize with background</li>
 <li>Crop resize positioning</li>
 <li>Add backends (S3, file system, etc...) if necessary</li>
 </ul>
       </section>
-
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
