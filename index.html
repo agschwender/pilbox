@@ -67,7 +67,7 @@
 
 <p>To run the application, issue the following command</p>
 
-<pre><code>$ python pilbox/app.py
+<pre><code>$ python -m pilbox.app
 </code></pre>
 
 <p>By default, this will run the application on port 8888 and can be accessed by visiting:</p>
@@ -77,7 +77,7 @@
 
 <p>To see a list of all available options, run</p>
 
-<pre><code>$ python pilbox/app.py --help
+<pre><code>$ python -m pilbox.app --help
 </code></pre>
 
 <h2>
@@ -85,13 +85,7 @@
 
 <p>When running via Vagrant, the application is automatically started via <a href="http://supervisord.org/">Supervisor</a>. The Vagrant setup runs the application behind <a href="http://nginx.org/">Nginx</a> which caches the output via <a href="https://www.varnish-cache.org/">Varnish</a>.</p>
 
-<p>If accessing the application via Vagrant, you will need to determine the virtual machine's IP address.</p>
-
-<pre><code>$ vagrant ssh
-$ /sbin/ifconfig -a
-</code></pre>
-
-<p>Once determined, the application can be accessed via port 80, e.g.</p>
+<p>If accessing the application via Vagrant, the application can be accessed via port 80, on 192.168.100.100, i.e.</p>
 
 <pre><code>http://192.168.1.1/
 </code></pre>
