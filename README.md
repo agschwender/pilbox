@@ -35,7 +35,7 @@ Manual
 
 To run the application, issue the following command
 
-    $ python pilbox/app.py
+    $ python -m pilbox.app
 
 By default, this will run the application on port 8888 and can be accessed by visiting:
 
@@ -43,19 +43,14 @@ By default, this will run the application on port 8888 and can be accessed by vi
 
 To see a list of all available options, run
 
-    $ python pilbox/app.py --help
+    $ python -m pilbox.app --help
 
 Vagrant
 -------
 
 When running via Vagrant, the application is automatically started via [Supervisor](http://supervisord.org/). The Vagrant setup runs the application behind [Nginx](http://nginx.org/) which caches the output via [Varnish](https://www.varnish-cache.org/).
 
-If accessing the application via Vagrant, you will need to determine the virtual machine's IP address.
-
-    $ vagrant ssh
-    $ /sbin/ifconfig -a
-
-Once determined, the application can be accessed via port 80, e.g.
+If accessing the application via Vagrant, the application can be accessed via port 80, on 192.168.100.100, i.e.
 
     http://192.168.1.1/
 

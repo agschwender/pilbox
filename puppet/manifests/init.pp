@@ -3,6 +3,7 @@ Exec {
 }
 
 node default {
+
   exec { "apt-update": command => "apt-get update" }
   Exec["apt-update"] -> Package <| |>
 
@@ -16,7 +17,8 @@ node default {
 
   include supervisor
   supervisor::service { "pilbox":
-    command => "/var/www/pilbox/app.py",
+    directory => "/var/www",
+    command => "python -m pilbox.app",
     require => [ Python::Pip[ "tornado" ], Class[ "python::pil" ] ],
   }
 
