@@ -1,9 +1,7 @@
-Pilbox
+Pilbox [![Build Status](https://travis-ci.org/agschwender/pilbox.png)](https://travis-ci.org/agschwender/pilbox)
 ======
 
 Pilbox is an image resizing application server built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (PIL)](http://www.pythonware.com/products/pil/). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.
-
-[![Build Status](https://travis-ci.org/agschwender/pilbox.png)](https://travis-ci.org/agschwender/pilbox)
 
 Setup
 =====
@@ -48,11 +46,9 @@ To see a list of all available options, run
 Vagrant
 -------
 
-When running via Vagrant, the application is automatically started via [Supervisor](http://supervisord.org/). The Vagrant setup runs the application behind [Nginx](http://nginx.org/) which caches the output via [Varnish](https://www.varnish-cache.org/).
+When running via Vagrant, the application is automatically started on port 8888 on 192.168.100.100, i.e.
 
-If accessing the application via Vagrant, the application can be accessed via port 80, on 192.168.100.100, i.e.
-
-    http://192.168.1.1/
+    http://192.168.100.100:8888/
 
 Calling
 =======
@@ -119,10 +115,14 @@ The application allows the use of the resize functionality via the command line.
 
     $ python -m pilbox.image --width=300 --height=300 http://i.imgur.com/zZ8XmBA.jpg > /tmp/foo.jpg
 
+Deploying
+=========
+
+The application itself does not include any caching. It is recommended that the application run behind a CDN for larger applications or behind varnish for smaller ones.
+
 TODO
 ====
 
-  * Production/development configuration management
   * Fill resize with background
   * Crop resize positioning
   * Add backends (S3, file system, etc...) if necessary

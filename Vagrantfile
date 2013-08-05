@@ -1,8 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-app_env = ENV['PILBOXENV'] || 'local'
-
 Vagrant.configure("2") do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "precise64"
@@ -21,7 +19,6 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   config.vm.synced_folder "./pilbox", "/var/www/pilbox", :owner => "vagrant"
-  config.vm.synced_folder "./puppet/config", "/etc/puppet"
 
   # Enable provisioning with Puppet stand alone.  Puppet manifests
   # are contained in a directory path relative to this Vagrantfile.
@@ -29,7 +26,7 @@ Vagrant.configure("2") do |config|
     puppet.manifests_path = "puppet/manifests"
     puppet.module_path = "puppet/modules"
     puppet.manifest_file  = "init.pp"
-    puppet.options = "--verbose --debug --environment #{app_env}"
+    puppet.options = "--verbose --debug"
   end
 
 end

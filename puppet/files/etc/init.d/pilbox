@@ -1,0 +1,53 @@
+#!/bin/sh
+
+set -e
+
+# Must be a valid filename
+DIR=/vagrant
+NAME=pilbox
+PIDFILE=/var/run/$NAME.pid
+DAEMON=/usr/bin/env
+DAEMON_OPTS="python -m pilbox.app --debug --config=config/sample"
+
+export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
+
+case "$1" in
+  start)
+        echo -n "Starting daemon: "$NAME
+	start-stop-daemon --start --quiet --background --chdir $DIR --pidfile $PIDFILE --make-pidfile --exec $DAEMON -- $DAEMON_OPTS
+        echo "."
+	;;
+  stop)
+        echo -n "Stopping daemon: "$NAME
+	start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+        rm --preserve-root -f $PIDFILE
+        echo "."
+	;;
+  restart)
+        echo -n "Restarting daemon: "$NAME
+	start-stop-daemon --stop --quiet --oknodo --retry 30 --pidfile $PIDFILE
+        rm --preserve-root -f $PIDFILE
+	start-stop-daemon --start --quiet --background --chdir $DIR --pidfile $PIDFILE --make-pidfile --exec $DAEMON -- $DAEMON_OPTS
+	echo "."
+	;;
+  status)
+        echo -n "Checking $NAME... "
+        if [ -f $PIDFILE ]; then
+            PID=`cat $PIDFILE`
+            if [ -z "`ps axf | grep ${PID} | grep -v grep`" ]; then
+                echo "Process dead but pidfile exists"
+            else
+                echo "Running"
+                exit 0
+            fi
+        else
+            echo "Service not running"
+        fi
+        exit 1
+        ;;
+  *)
+	echo "Usage: "$1" {start|stop|restart}"
+	exit 1
+esac
+
+exit 0

@@ -15,13 +15,22 @@ node default {
     require => Class[ "python" ],
   }
 
-  include supervisor
-  supervisor::service { "pilbox":
-    directory => "/var/www",
-    command => "python -m pilbox.app",
-    require => [ Python::Pip[ "tornado" ], Class[ "python::pil" ] ],
+  file { "/etc/init.d/pilbox":
+    ensure => present,
+    owner => "root",
+    group => "root",
+    mode => 0755,
+    source => "/vagrant/puppet/files/etc/init.d/pilbox"
   }
 
-  class { "varnish" : }
-  class { "nginx": }
+  service { "pilbox":
+    ensure => running,
+    enable => true,
+    hasrestart => true,
+    hasstatus => true,
+    require => [ File[ "/etc/init.d/pilbox" ],
+                 Python::Pip[ "tornado" ],
+                 Class[ "python::pil" ] ]
+  }
+
 }
