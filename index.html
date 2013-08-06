@@ -29,11 +29,10 @@
     <div class="container">
       <section id="main_content">
         <h1>
-<a name="pilbox" class="anchor" href="#pilbox"><span class="octicon octicon-link"></span></a>Pilbox</h1>
+<a name="pilbox-" class="anchor" href="#pilbox-"><span class="octicon octicon-link"></span></a>Pilbox <a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a>
+</h1>
 
 <p>Pilbox is an image resizing application server built on Python's <a href="http://www.tornadoweb.org/en/stable/">Tornado web framework</a> using the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library (PIL)</a>. It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.</p>
-
-<p><a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a></p>
 
 <h1>
 <a name="setup" class="anchor" href="#setup"><span class="octicon octicon-link"></span></a>Setup</h1>
@@ -83,11 +82,9 @@
 <h2>
 <a name="vagrant-1" class="anchor" href="#vagrant-1"><span class="octicon octicon-link"></span></a>Vagrant</h2>
 
-<p>When running via Vagrant, the application is automatically started via <a href="http://supervisord.org/">Supervisor</a>. The Vagrant setup runs the application behind <a href="http://nginx.org/">Nginx</a> which caches the output via <a href="https://www.varnish-cache.org/">Varnish</a>.</p>
+<p>When running via Vagrant, the application is automatically started on port 8888 on 192.168.100.100, i.e.</p>
 
-<p>If accessing the application via Vagrant, the application can be accessed via port 80, on 192.168.100.100, i.e.</p>
-
-<pre><code>http://192.168.1.1/
+<pre><code>http://192.168.100.100:8888/
 </code></pre>
 
 <h1>
@@ -176,10 +173,14 @@ Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a
 </code></pre>
 
 <h1>
+<a name="deploying" class="anchor" href="#deploying"><span class="octicon octicon-link"></span></a>Deploying</h1>
+
+<p>The application itself does not include any caching. It is recommended that the application run behind a CDN for larger applications or behind varnish for smaller ones.</p>
+
+<h1>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
-<li>Production/development configuration management</li>
 <li>Fill resize with background</li>
 <li>Crop resize positioning</li>
 <li>Add backends (S3, file system, etc...) if necessary</li>
