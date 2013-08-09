@@ -20,14 +20,17 @@ import re
 import urllib
 import urlparse
 
+
 def derive_signature(key, qs):
     """Derives the signature from the supplied query string using the key."""
     return hmac.new(key, qs, hashlib.sha1).hexdigest()
+
 
 def sign(key, qs):
     """Signs the query string using the key."""
     sig = derive_signature(key, qs)
     return "%s&%s" % (qs, urllib.urlencode([("sig", sig)]))
+
 
 def verify_signature(key, qs):
     """Verifies that the signature in the query string is correct."""

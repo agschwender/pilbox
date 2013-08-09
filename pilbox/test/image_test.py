@@ -1,6 +1,6 @@
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function, \
+    with_statement
 
-import cStringIO
 import os
 import os.path
 import re
@@ -10,6 +10,7 @@ from ..image import Image, ImageFormatError, ImageModeError
 
 DATADIR = os.path.join(os.path.dirname(__file__), "data")
 EXPECTED_DATADIR = os.path.join(DATADIR, "expected")
+
 
 class ImageTest(unittest.TestCase):
 
@@ -29,8 +30,7 @@ class ImageTest(unittest.TestCase):
                      expected_path=os.path.join(EXPECTED_DATADIR, filename),
                      width=m.group(2),
                      height=m.group(3),
-                     mode=m.group(4))
-                )
+                     mode=m.group(4)))
         return cases
 
     def test_resize(self):

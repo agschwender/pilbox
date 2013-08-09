@@ -1,4 +1,4 @@
-Pilbox [![Build Status](https://travis-ci.org/agschwender/pilbox.png)](https://travis-ci.org/agschwender/pilbox)
+Pilbox [![Build Status](https://travis-ci.org/agschwender/pilbox.png)](https://travis-ci.org/agschwender/pilbox) [![codeq](https://codeq.io/github/agschwender/pilbox/badges/master.png)](https://codeq.io/github/agschwender/pilbox/branches/master)
 ======
 
 Pilbox is an image resizing application server built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (Pillow)](https://pypi.python.org/pypi/Pillow/2.1.0). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.

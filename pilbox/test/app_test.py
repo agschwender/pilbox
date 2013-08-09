@@ -1,4 +1,5 @@
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function, \
+    with_statement
 
 import os.path
 import tornado.escape
@@ -100,8 +101,8 @@ class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
         self.assertEqual(resp.get("error"), ImageHandler.INVALID_SIGNATURE)
 
     def test_bad_signature(self):
-        params = dict(url="http://foo.co/x.jpg", w=1, h=1, \
-                          client=self.NAME, sig="abc123")
+        params = dict(url="http://foo.co/x.jpg", w=1, h=1,
+                      client=self.NAME, sig="abc123")
         qs = urllib.urlencode(params)
         resp = self.fetch_error(403, "/?%s" % qs)
         self.assertEqual(resp.get("error"), ImageHandler.INVALID_SIGNATURE)

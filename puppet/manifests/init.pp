@@ -10,6 +10,11 @@ node default {
   include python
   include python::pillow
 
+  package { "python-opencv":
+    ensure => installed,
+    require => Class[ "python" ],
+  }
+
   python::pip { "tornado":
     ensure => installed,
     require => Class[ "python" ],

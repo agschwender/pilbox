@@ -42,6 +42,7 @@ define("allowed_hosts", default=[], help="list of allowed image hosts",
 
 logger = logging.getLogger("tornado.application")
 
+
 class PilboxApplication(tornado.web.Application):
     TESTDATADIR = os.path.join(os.path.dirname(__file__), "test", "data")
 
@@ -50,8 +51,7 @@ class PilboxApplication(tornado.web.Application):
             (r"/test-data/(.*)",
              tornado.web.StaticFileHandler,
              {"path": self.TESTDATADIR}),
-            (r"/", ImageHandler),
-            ]
+            (r"/", ImageHandler)]
         settings = dict(debug=options.debug,
                         client_name=options.client_name,
                         client_key=options.client_key,
@@ -97,7 +97,7 @@ class ImageHandler(tornado.web.RequestHandler):
     def write_error(self, status_code, **kwargs):
         err = None
         if "exc_info" in kwargs:
-            _type, err, _traceback = kwargs["exc_info"]
+            err = kwargs["exc_info"][1]
         if isinstance(err, tornado.web.HTTPError):
             self.set_header('Content-Type', 'application/json')
             resp = dict(code=status_code, error=err.log_message)

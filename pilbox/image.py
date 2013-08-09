@@ -19,6 +19,7 @@ from PIL import Image as PilImage
 from PIL import ImageOps as PilImageOps
 import tornado.httpclient
 
+
 class Image(object):
     MODES = ["crop", "scale", "clip"]
     FORMATS = ["PNG", "JPEG", "JPG"]
@@ -47,8 +48,13 @@ class Image(object):
         outfile.reset()
         return outfile
 
-class ImageModeError(Exception): pass
-class ImageFormatError(Exception): pass
+
+class ImageModeError(Exception):
+    pass
+
+
+class ImageFormatError(Exception):
+    pass
 
 
 def main():
