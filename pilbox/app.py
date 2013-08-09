@@ -81,7 +81,7 @@ class ImageHandler(tornado.web.RequestHandler):
         try:
             resized = image.resize(self.get_argument("w"),
                                    self.get_argument("h"),
-                                   mode=self.get_argument("mode"))
+                                   mode=self.get_argument("mode", "crop"))
         except ImageFormatError:
             raise tornado.web.HTTPError(415, self.UNSUPPORTED_IMAGE_TYPE)
         self._import_headers(resp.headers)
