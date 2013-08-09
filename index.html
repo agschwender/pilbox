@@ -29,7 +29,7 @@
     <div class="container">
       <section id="main_content">
         <h1>
-<a name="pilbox-" class="anchor" href="#pilbox-"><span class="octicon octicon-link"></span></a>Pilbox <a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a>
+<a name="pilbox--" class="anchor" href="#pilbox--"><span class="octicon octicon-link"></span></a>Pilbox <a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a> <a href="https://codeq.io/github/agschwender/pilbox/branches/master"><img src="https://codeq.io/github/agschwender/pilbox/badges/master.png" alt="codeq"></a>
 </h1>
 
 <p>Pilbox is an image resizing application server built on Python's <a href="http://www.tornadoweb.org/en/stable/">Tornado web framework</a> using the <a href="https://pypi.python.org/pypi/Pillow/2.1.0">Python Imaging Library (Pillow)</a>. It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.</p>
@@ -92,13 +92,13 @@
 
 <p>To use the image resizing service, include the application url as you would any other image. E.g. this image url</p>
 
-<pre><code>&lt;img src="http://i.imgur.com/zZ8XmBA.jpg" /&gt;
-</code></pre>
+<div class="highlight"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://i.imgur.com/zZ8XmBA.jpg"</span> <span class="nt">/&gt;</span>
+</pre></div>
 
 <p>Would be replaced with this image url</p>
 
-<pre><code>&lt;img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop" /&gt;
-</code></pre>
+<div class="highlight"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop"</span> <span class="nt">/&gt;</span>
+</pre></div>
 
 <p>This will request the image served at the supplied url and resize it to 300x300 using the crop mode. The following is the list of parameters that can be supplied to the service</p>
 
@@ -145,14 +145,14 @@
 
 <p>In order to secure requests so that unknown third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the <code>client_key</code> option. The signature is a hexadecimal digest generated from the client key and the query string using the HMAC-SHA1 message authentication code (MAC) algorithm. The below python code provides an example implementation.</p>
 
-<pre><code>import hashlib
-import hmac
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
 
-def derive_signature(key, qs):
-    m = hmac.new(key, None, hashlib.sha1)
-    m.update(qs)
-    return m.hexdigest()
-</code></pre>
+<span class="k">def</span> <span class="nf">derive_signature</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">qs</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">qs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</pre></div>
 
 <p>The signature is passed to the application by appending the <code>sig</code> paramater to the query string; e.g. <code>x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a0c797ef26</code>. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the <code>pilbox.signature</code> command described in the <a href="#tools">tools section</a>.</p>
 
