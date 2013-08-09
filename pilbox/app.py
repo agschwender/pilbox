@@ -25,8 +25,8 @@ import tornado.options
 import tornado.web
 import urlparse
 
-from .image import Image, ImageFormatError
-from .signature import verify_signature
+from image import Image, ImageFormatError
+from signature import verify_signature
 
 from tornado.options import define, options, parse_config_file
 

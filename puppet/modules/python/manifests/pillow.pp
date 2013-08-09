@@ -1,4 +1,4 @@
-class python::pil {
+class python::pillow {
   include python
 
   package { "libjpeg-dev":
@@ -31,7 +31,7 @@ class python::pil {
     require => Package[ "zlib1g-dev" ]
   }
 
-  python::pip { "PIL":
+  python::pip { "Pillow":
     ensure => installed,
     require => File[ "/usr/lib/libjpeg.so",
                      "/usr/lib/libfreetype.so",

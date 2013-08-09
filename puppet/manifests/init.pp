@@ -8,7 +8,7 @@ node default {
   Exec["apt-update"] -> Package <| |>
 
   include python
-  include python::pil
+  include python::pillow
 
   python::pip { "tornado":
     ensure => installed,
@@ -30,7 +30,7 @@ node default {
     hasstatus => true,
     require => [ File[ "/etc/init.d/pilbox" ],
                  Python::Pip[ "tornado" ],
-                 Class[ "python::pil" ] ]
+                 Class[ "python::pillow" ] ]
   }
 
 }

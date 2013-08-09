@@ -36,14 +36,14 @@ class Image(object):
         size = (int(width), int(height))
         if mode == "clip":
             resized = img
-            resized.thumbnail(size)
+            resized.thumbnail(size, PilImage.ANTIALIAS)
         elif mode == "scale":
-            resized = img.resize(size)
+            resized = img.resize(size, PilImage.ANTIALIAS)
         else:
             pos = (0.5, 0.5)
-            resized = PilImageOps.fit(img, size, PilImage.NEAREST, 0, pos)
+            resized = PilImageOps.fit(img, size, PilImage.ANTIALIAS, 0, pos)
         outfile = cStringIO.StringIO()
-        resized.save(outfile, img.format)
+        resized.save(outfile, img.format, quality=90)
         outfile.reset()
         return outfile
 
@@ -69,9 +69,12 @@ def main():
         print "Missing image source url"
         sys.exit()
 
-    client = tornado.httpclient.HTTPClient()
-    resp = client.fetch(args[0])
-    image = Image(resp.buffer)
+    if args[0].startswith("http://") or args[0].startswith("https://"):
+        client = tornado.httpclient.HTTPClient()
+        resp = client.fetch(args[0])
+        image = Image(resp.buffer)
+    else:
+        image = Image(open(args[0], "r"))
     stream = image.resize(options.width, options.height, mode=options.mode)
     sys.stdout.write(stream.read())
 

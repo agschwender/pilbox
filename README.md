@@ -1,7 +1,7 @@
 Pilbox [![Build Status](https://travis-ci.org/agschwender/pilbox.png)](https://travis-ci.org/agschwender/pilbox)
 ======
 
-Pilbox is an image resizing application server built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (PIL)](http://www.pythonware.com/products/pil/). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.
+Pilbox is an image resizing application server built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (Pillow)](https://pypi.python.org/pypi/Pillow/2.1.0). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.
 
 Setup
 =====
@@ -10,7 +10,7 @@ Dependencies
 ------------
 
   * [Python 2.7](http://www.python.org/download/)
-  * [PIL 1.1.7](http://www.pythonware.com/products/pil/)
+  * [Pillow 2.1.0](https://pypi.python.org/pypi/Pillow/2.1.0)
   * [tornado 3.1](https://pypi.python.org/pypi/tornado/3.1)
   * Image Libraries: libjpeg-dev, libfreetype6, libfreetype6-dev, zlib1g-dev
 
