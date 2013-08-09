@@ -8,6 +8,6 @@ before_install:
   - sudo ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib/
   - sudo ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib/
 install:
-    - pip install --use-mirrors tornado pil
+    - pip install --use-mirrors tornado Pillow
 script:
     - python -m pilbox.test.runtests
