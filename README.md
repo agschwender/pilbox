@@ -55,11 +55,15 @@ Calling
 
 To use the image resizing service, include the application url as you would any other image. E.g. this image url
 
-    <img src="http://i.imgur.com/zZ8XmBA.jpg" />
+```html
+<img src="http://i.imgur.com/zZ8XmBA.jpg" />
+```
 
 Would be replaced with this image url
 
-    <img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&w=300&h=300&mode=crop" />
+```html
+<img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&w=300&h=300&mode=crop" />
+```
 
 This will request the image served at the supplied url and resize it to 300x300 using the crop mode. The following is the list of parameters that can be supplied to the service
 
@@ -91,13 +95,15 @@ Signing
 
 In order to secure requests so that unknown third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the `client_key` option. The signature is a hexadecimal digest generated from the client key and the query string using the HMAC-SHA1 message authentication code (MAC) algorithm. The below python code provides an example implementation.
 
-    import hashlib
-    import hmac
+```python
+import hashlib
+import hmac
 
-    def derive_signature(key, qs):
-        m = hmac.new(key, None, hashlib.sha1)
-        m.update(qs)
-        return m.hexdigest()
+def derive_signature(key, qs):
+    m = hmac.new(key, None, hashlib.sha1)
+    m.update(qs)
+    return m.hexdigest()
+```
 
 The signature is passed to the application by appending the `sig` paramater to the query string; e.g. `x=1&y=2&z=3&sig=c9516346abf62876b6345817dba2f9a0c797ef26`. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the `pilbox.signature` command described in the [tools section](#tools).
 
