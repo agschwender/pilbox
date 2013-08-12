@@ -3,6 +3,7 @@ language: python
 python:
     - 2.7
 before_install:
+  - sudo apt-get install python-dev
   - sudo apt-get install libjpeg8-dev libfreetype6 libfreetype6-dev zlib1g-dev
   - sudo apt-get install python-numpy python-opencv
   - sudo ln -s /usr/lib/`uname -i`-linux-gnu/libjpeg.so /usr/lib/
