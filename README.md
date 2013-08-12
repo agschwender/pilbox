@@ -73,6 +73,7 @@ This will request the image served at the supplied url and resize it to 300x300 
   * _mode_: The resizing method: clip, crop (default) and scale
     * _clip_: Resize to fit within the desired region, keeping aspect ratio
     * _crop_: Resize so one dimension fits within region, center, cut remaining
+    * _face_: Detect faces and crop using the face(s) as the center point
     * _scale_: Resize to fit within the desired region, ignoring aspect ratio
   * _client_: The client name
   * _sig_: The signature

@@ -1,6 +1,7 @@
 class python {
   package {
     "python": ensure => installed;
+    "python-software-properties": ensure => installed;
     "python-dev": ensure => installed;
     "python-setuptools": ensure => installed;
     "python-pip": ensure => installed;
