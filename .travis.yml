@@ -13,6 +13,4 @@ before_install:
 install:
     - pip install --use-mirrors tornado Pillow
 script:
-    - sudo updatedb
-    - locate cv2
     - python -m pilbox.test.runtests
