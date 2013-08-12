@@ -29,8 +29,8 @@ logger = logging.getLogger("tornado.application")
 class Image(object):
     MODES = ["crop", "scale", "clip", "face"]
     FORMATS = ["PNG", "JPEG", "JPG"]
-    CLASSIFIER_PATH = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), "..", "config", "frontalface.xml"))
+    CLASSIFIER_PATH = os.path.join(
+        os.path.dirname(__file__), "..", "config", "frontalface.xml")
     _classifier = None
 
     def __init__(self, stream):
@@ -66,9 +66,9 @@ class Image(object):
             cvim,
             self._get_face_classifier(),
             cv.CreateMemStorage(0),
-            1.3, # Scale factor
-            4, # Minimum neighbors
-            0, # HAAR Flags
+            1.3,  # Scale factor
+            4,  # Minimum neighbors
+            0,  # HAAR Flags
             (20, 20))
 
     def _get_face_position(self, img):
@@ -86,7 +86,7 @@ class Image(object):
 
     def _get_face_classifier(self):
         if not Image._classifier:
-            Image._classifier = cv.Load(Image.CLASSIFIER_PATH)
+            Image._classifier = cv.Load(os.path.abspath(Image.CLASSIFIER_PATH))
         return Image._classifier
 
     def _pil_to_opencv(self, pi):
