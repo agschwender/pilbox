@@ -10,11 +10,6 @@ node default {
   include python
   include python::pillow
 
-  package { "python-scipy":
-    ensure => installed,
-    require => Class[ "python" ]
-  }
-
   package { "python-numpy":
     ensure => installed,
     require => Class[ "python" ],
@@ -22,9 +17,7 @@ node default {
 
   package { "python-opencv":
     ensure => installed,
-    require => [ Class[ "python" ],
-                 Package[ "python-numpy" ],
-                 Package[ "python-scipy" ] ],
+    require => [ Class[ "python" ], Package[ "python-numpy" ] ],
   }
 
   python::pip { "tornado":

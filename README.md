@@ -11,7 +11,8 @@ Dependencies
 
   * [Python 2.7](http://www.python.org/download/)
   * [Pillow 2.1.0](https://pypi.python.org/pypi/Pillow/2.1.0)
-  * [tornado 3.1](https://pypi.python.org/pypi/tornado/3.1)
+  * [Tornado 3.1](https://pypi.python.org/pypi/tornado/3.1)
+  * [OpenCV 2.x](http://opencv.org/)
   * Image Libraries: libjpeg-dev, libfreetype6, libfreetype6-dev, zlib1g-dev
 
 Vagrant
