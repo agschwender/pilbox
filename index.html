@@ -32,7 +32,7 @@
 
         <section id="main_content">
           <h1>
-<a name="pilbox--" class="anchor" href="#pilbox--"><span class="octicon octicon-link"></span></a>Pilbox <a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a> <a href="https://codeq.io/github/agschwender/pilbox/branches/master"><img src="https://codeq.io/github/agschwender/pilbox/badges/master.png" alt="codeq"></a>
+<a name="pilbox-" class="anchor" href="#pilbox-"><span class="octicon octicon-link"></span></a>Pilbox <a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a>
 </h1>
 
 <p>Pilbox is an image resizing application server built on Python's <a href="http://www.tornadoweb.org/en/stable/">Tornado web framework</a> using the <a href="https://pypi.python.org/pypi/Pillow/2.1.0">Python Imaging Library (Pillow)</a>. It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.</p>
@@ -124,14 +124,18 @@
 <li>
 <em>face</em>: Detect faces and crop using the face(s) as the center point</li>
 <li>
+<em>fill</em>: Fills the clipped space with a background color</li>
+<li>
 <em>scale</em>: Resize to fit within the desired region, ignoring aspect ratio</li>
 </ul>
 </li>
 <li>
+<em>bg</em>: Background color used with fill mode, 3- or 6-digit hexadecimal number</li>
+<li>
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code>, <code>w</code> and <code>h</code> parameters are required. <code>mode</code> is optional and defaults to <code>crop</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+</ul><p>The <code>url</code>, <code>w</code> and <code>h</code> parameters are required. <code>mode</code> is optional and defaults to <code>crop</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
 
 <h1>
 <a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h1>
@@ -178,6 +182,11 @@ Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a
 <pre><code>$ python -m pilbox.image --width=300 --height=300 http://i.imgur.com/zZ8XmBA.jpg &gt; /tmp/foo.jpg
 </code></pre>
 
+<p>If a new mode is added or a modification was made to the libraries that would change the current expected output for tests, run the generate test command to regenerate the expected output for the test cases.</p>
+
+<pre><code>$ python -m pilbox.test.genexpected
+</code></pre>
+
 <h1>
 <a name="deploying" class="anchor" href="#deploying"><span class="octicon octicon-link"></span></a>Deploying</h1>
 
@@ -187,7 +196,6 @@ Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
-<li>Fill resize with background</li>
 <li>Crop resize positioning</li>
 <li>Add backends (S3, file system, etc...) if necessary</li>
 </ul>
