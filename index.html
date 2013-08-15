@@ -114,15 +114,13 @@
 <li>
 <em>h</em>: The desired height of the image</li>
 <li>
-<em>mode</em>: The resizing method: clip, crop (default) and scale
+<em>mode</em>: The resizing method: clip, crop (default), fill and scale
 
 <ul>
 <li>
 <em>clip</em>: Resize to fit within the desired region, keeping aspect ratio</li>
 <li>
 <em>crop</em>: Resize so one dimension fits within region, center, cut remaining</li>
-<li>
-<em>face</em>: Detect faces and crop using the face(s) as the center point</li>
 <li>
 <em>fill</em>: Fills the clipped space with a background color</li>
 <li>
@@ -132,10 +130,36 @@
 <li>
 <em>bg</em>: Background color used with fill mode, 3- or 6-digit hexadecimal number</li>
 <li>
+<em>pos</em>: The crop position
+
+<ul>
+<li>
+<em>top-left</em>: Crop from the top left</li>
+<li>
+<em>top</em>: Crop from the top center</li>
+<li>
+<em>top_right</em>: Crop from the top right</li>
+<li>
+<em>left</em>: Crop from the center left</li>
+<li>
+<em>center</em>: Crop from the center</li>
+<li>
+<em>right</em>: Crop from the center right</li>
+<li>
+<em>bottom-left</em>: Crop from the bottom left</li>
+<li>
+<em>bottom</em>: Crop from the bottom center</li>
+<li>
+<em>bottom-right</em>: Crop from the bottom right</li>
+<li>
+<em>face</em>: Identify faces and crop from the midpoint of their position(s)</li>
+</ul>
+</li>
+<li>
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code>, <code>w</code> and <code>h</code> parameters are required. <code>mode</code> is optional and defaults to <code>crop</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+</ul><p>The <code>url</code>, <code>w</code> and <code>h</code> parameters are required. <code>mode</code> is optional and defaults to <code>crop</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
 
 <h1>
 <a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h1>
@@ -196,7 +220,6 @@ Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
-<li>Crop resize positioning</li>
 <li>Add backends (S3, file system, etc...) if necessary</li>
 </ul>
         </section>
