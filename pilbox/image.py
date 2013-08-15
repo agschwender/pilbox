@@ -25,9 +25,17 @@ import tornado.httpclient
 
 logger = logging.getLogger("tornado.application")
 
+_positions_to_ratios = {
+    "top-left": (0.0, 0.0), "top": (0.5, 0.0), "top-right": (1.0, 0.0),
+    "left": (0.0, 0.5), "center": (0.5, 0.5), "right": (1.0, 0.5),
+    "bottom-left": (0.0, 1.0), "bottom": (0.5, 1.0), "bottom-right": (1.0, 1.0),
+    "face": None}
+
 
 class Image(object):
-    MODES = ["clip", "crop", "face", "fill", "scale"]
+    MODES = ["clip", "crop", "fill", "scale"]
+    POSITIONS_TO_RATIOS = _positions_to_ratios
+    POSITIONS = _positions_to_ratios.keys()
     FORMATS = ["PNG", "JPEG", "JPG"]
     CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "..", "config", "frontalface.xml")
@@ -36,7 +44,7 @@ class Image(object):
     def __init__(self, stream):
         self.stream = stream
 
-    def resize(self, width, height, mode=None, bg=None):
+    def resize(self, width, height, mode=None, bg=None, pos=None):
         """Returns a buffer to the resized image for saving"""
         if mode is not None and mode not in self.MODES:
             raise ImageModeError("Invalid image mode: '%s'" % mode)
@@ -50,10 +58,8 @@ class Image(object):
             resized = self._fill(img, size, bg)
         elif mode == "scale":
             resized = self._scale(img, size)
-        elif mode == "face":
-            resized = self._face(img, size)
         else:
-            resized = self._crop(img, size)
+            resized = self._crop(img, size, pos)
         outfile = cStringIO.StringIO()
         resized.save(outfile, img.format, quality=90)
         outfile.reset()
@@ -63,13 +69,12 @@ class Image(object):
         image.thumbnail(size, PilImage.ANTIALIAS)
         return image
 
-    def _crop(self, image, size):
-        pos = (0.5, 0.5)
-        return PilImageOps.fit(image, size, PilImage.ANTIALIAS, 0, pos)
-
-    def _face(self, image, size):
-        pos = self._get_face_position(image)
-        return PilImageOps.fit(image, size, PilImage.ANTIALIAS, 0, pos)
+    def _crop(self, image, size, pos):
+        if pos == "face":
+            pos_ratio = self._get_face_position(image)
+        else:
+            pos_ratio = Image.POSITIONS_TO_RATIOS.get(pos, (0.5, 0.5))
+        return PilImageOps.fit(image, size, PilImage.ANTIALIAS, 0, pos_ratio)
 
     def _fill(self, image, size, bg):
         bg = bg or "fff"
@@ -137,9 +142,14 @@ def main():
     define("height", help="the desired image height", type=int)
     define("mode", help="the resizing mode",
            metavar="|".join(Image.MODES), default="crop", type=str)
+    define("background", help="the hexidecimal fill background color",
+           default="ffffff", type=str)
+    define("position", help="the crop position",
+           metavar="|".join(Image.POSITIONS), default="center", type=str)
 
     args = parse_command_line()
-    if None in [options.width, options.height, options.mode]:
+    if None in [options.width, options.height, options.mode, options.background,
+                options.position]:
         tornado.options.print_help()
         sys.exit()
     elif not args:
@@ -152,7 +162,8 @@ def main():
         image = Image(resp.buffer)
     else:
         image = Image(open(args[0], "r"))
-    stream = image.resize(options.width, options.height, mode=options.mode)
+    stream = image.resize(options.width, options.height, mode=options.mode,
+                          bg=options.background, pos=options.position)
     sys.stdout.write(stream.read())
 
 if __name__ == "__main__":

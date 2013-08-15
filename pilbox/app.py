@@ -70,6 +70,7 @@ class ImageHandler(tornado.web.RequestHandler):
     INVALID_SIGNATURE = "Invalid signature"
     INVALID_HOST = "Invalid image host"
     INVALID_BACKGROUND = "Invalid background color"
+    INVALID_POSITION = "Invalid crop position"
     UNSUPPORTED_IMAGE_TYPE = "Unsupported image type"
 
     @tornado.web.asynchronous
@@ -83,7 +84,8 @@ class ImageHandler(tornado.web.RequestHandler):
             resized = image.resize(self.get_argument("w"),
                                    self.get_argument("h"),
                                    mode=self.get_argument("mode", "crop"),
-                                   bg=self.get_argument("bg", None))
+                                   bg=self.get_argument("bg", None),
+                                   pos=self.get_argument("pos", None))
         except ImageFormatError:
             raise tornado.web.HTTPError(415, self.UNSUPPORTED_IMAGE_TYPE)
         self._import_headers(resp.headers)
@@ -122,9 +124,12 @@ class ImageHandler(tornado.web.RequestHandler):
             raise tornado.web.HTTPError(400, self.INVALID_HEIGHT)
         elif self.get_argument("mode", "crop") not in Image.MODES:
             raise tornado.web.HTTPError(400, self.INVALID_MODE)
-        elif self.get_argument("mode", None) == "fill" \
+        elif self.get_argument("mode", "crop") == "fill" \
                 and not self._validate_background():
             raise tornado.web.HTTPError(400, self.INVALID_BACKGROUND)
+        elif self.get_argument("mode", "crop") == "crop" \
+                and self.get_argument("pos", "center") not in Image.POSITIONS:
+            raise tornado.web.HTTPError(400, self.INVALID_POSITION)
         elif s.get("client_name") \
                 and self.get_argument("client", None) != s.get("client_name"):
             raise tornado.web.HTTPError(403, self.INVALID_CLIENT)
@@ -165,6 +170,7 @@ def main():
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
         tornado.ioloop.IOLoop.instance().stop()
+
 
 if __name__ == "__main__":
     main()

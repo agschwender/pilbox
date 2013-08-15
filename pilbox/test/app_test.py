@@ -36,8 +36,9 @@ class _AppAsyncMixin(object):
                 w=case["width"],
                 h=case["height"],
                 mode=case["mode"])
-            if "bg" in case:
-                cases[i]["source_query_params"]["bg"] = case["bg"]
+            for k in ["bg", "pos"]:
+                if k in case:
+                    cases[i]["source_query_params"][k] = case[k]
         return cases
 
 
@@ -65,6 +66,12 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error"), ImageHandler.INVALID_HEIGHT)
 
+    def test_invalid_mode(self):
+        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
+                                   mode="foo"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error"), ImageHandler.INVALID_MODE)
+
     def test_invalid_background(self):
         qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
                                    mode="fill", bg="r"))
@@ -76,13 +83,21 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error"), ImageHandler.INVALID_BACKGROUND)
 
+    def test_invalid_position(self):
+        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
+                                   pos="foo"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error"), ImageHandler.INVALID_POSITION)
+
     def test_valid(self):
         cases = self.get_image_resize_cases()
         for case in cases:
             qs = urllib.urlencode(case["source_query_params"])
             resp = self.fetch_success("/?%s" % qs)
+            msg = "/?%s does not match %s" \
+                % (qs, case["expected_path"])
             with open(case["expected_path"]) as expected:
-                self.assertEqual(resp.buffer.read(), expected.read())
+                self.assertEqual(resp.buffer.read(), expected.read(), msg)
 
 
 class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):

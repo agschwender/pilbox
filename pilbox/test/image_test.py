@@ -21,18 +21,21 @@ class ImageTest(unittest.TestCase):
         """Returns a list of test cases of the form:
             [dict(source_path, expected_path, width, height, mode, bg), ...]
         """
-        bgs = ["F00", "", "cccccc"]
-        sizes = [(400, 300), (300, 300), (100, 200)]
-        bg_modes = ["fill"]
-        simple_modes = list(set(Image.MODES) - set(bg_modes))
-
         params = []
-        for a in list(itertools.product(*[simple_modes, sizes])):
+
+        sizes = [(400, 300), (300, 300), (100, 200)]
+        for a in list(itertools.product(*[Image.MODES, sizes])):
             params.append(dict(mode=a[0], width=a[1][0], height=a[1][1]))
 
-        for a in list(itertools.product(*[bg_modes, sizes, bgs])):
+        fill_choices = [["fill"], [(100, 100)], ["F00", "cccccc"]]
+        for a in list(itertools.product(*fill_choices)):
             params.append(dict(mode=a[0], width=a[1][0], height=a[1][1],
                                bg=a[2]))
+
+        crop_choices = [["crop"], [(100, 100)], Image.POSITIONS]
+        for a in list(itertools.product(*crop_choices)):
+            params.append(dict(mode=a[0], width=a[1][0], height=a[1][1],
+                               pos=a[2]))
 
         cases = []
         for filename in os.listdir(DATADIR):
@@ -46,6 +49,10 @@ class ImageTest(unittest.TestCase):
                     expected = "test%d-%dx%d-%s-%s.%s" \
                         % (int(m.group(1)), p["width"], p["height"], p["mode"],
                            p["bg"], m.group(2))
+                elif p.get("pos", None):
+                    expected = "test%d-%dx%d-%s-%s.%s" \
+                        % (int(m.group(1)), p["width"], p["height"], p["mode"],
+                           p["pos"], m.group(2))
                 else:
                     expected = "test%d-%dx%d-%s.%s" \
                         % (int(m.group(1)), p["width"], p["height"], p["mode"],
@@ -64,7 +71,7 @@ class ImageTest(unittest.TestCase):
             with open(case["source_path"]) as f:
                 img = Image(f).resize(
                     case["width"], case["height"], mode=case["mode"],
-                    bg=case.get("bg", None))
+                    bg=case.get("bg", None), pos=case.get("pos", None))
                 with open(case["expected_path"]) as expected:
                     msg = "%s does not match %s" \
                         % (case["source_path"], case["expected_path"])

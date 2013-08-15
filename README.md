@@ -71,17 +71,27 @@ This will request the image served at the supplied url and resize it to 300x300 
   * _url_: The url of the image to be resized
   * _w_: The desired width of the image
   * _h_: The desired height of the image
-  * _mode_: The resizing method: clip, crop (default) and scale
+  * _mode_: The resizing method: clip, crop (default), fill and scale
     * _clip_: Resize to fit within the desired region, keeping aspect ratio
     * _crop_: Resize so one dimension fits within region, center, cut remaining
-    * _face_: Detect faces and crop using the face(s) as the center point
     * _fill_: Fills the clipped space with a background color
     * _scale_: Resize to fit within the desired region, ignoring aspect ratio
   * _bg_: Background color used with fill mode, 3- or 6-digit hexadecimal number
+  * _pos_: The crop position
+    * _top-left_: Crop from the top left
+    * _top_: Crop from the top center
+    * _top_right_: Crop from the top right
+    * _left_: Crop from the center left
+    * _center_: Crop from the center
+    * _right_: Crop from the center right
+    * _bottom-left_: Crop from the bottom left
+    * _bottom_: Crop from the bottom center
+    * _bottom-right_: Crop from the bottom right
+    * _face_: Identify faces and crop from the midpoint of their position(s)
   * _client_: The client name
   * _sig_: The signature
 
-The `url`, `w` and `h` parameters are required. `mode` is optional and defaults to `crop`. `bg` is optional and defaults to `fff`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+The `url`, `w` and `h` parameters are required. `mode` is optional and defaults to `crop`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
 
 Testing
 =======
@@ -137,5 +147,4 @@ The application itself does not include any caching. It is recommended that the 
 TODO
 ====
 
-  * Crop resize positioning
   * Add backends (S3, file system, etc...) if necessary

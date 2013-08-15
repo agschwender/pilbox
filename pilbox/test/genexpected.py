@@ -40,7 +40,7 @@ def main():
             print "Generating %s" % case["expected_path"]
             img = Image(f).resize(
                 case["width"], case["height"], mode=case["mode"],
-                bg=case.get("bg", None))
+                bg=case.get("bg", None), pos=case.get("pos", None))
             with open(case["expected_path"], "w") as expected:
                 expected.write(img.read())
 
