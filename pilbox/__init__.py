@@ -27,13 +27,14 @@ Versions:
   * 0.3.1: Signature command-line tool
   * 0.4: Image resize command-line tool
   * 0.5: Facial recognition cropping
+  * 0.6: Fill resizing mode
 """
 
 # human-readable version number
-version = "0.5.4"
+version = "0.6.0"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (0, 5, 4, 0)
+version_info = (0, 6, 0, 0)

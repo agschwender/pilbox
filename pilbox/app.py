@@ -69,6 +69,7 @@ class ImageHandler(tornado.web.RequestHandler):
     INVALID_CLIENT = "Invalid client"
     INVALID_SIGNATURE = "Invalid signature"
     INVALID_HOST = "Invalid image host"
+    INVALID_BACKGROUND = "Invalid background color"
     UNSUPPORTED_IMAGE_TYPE = "Unsupported image type"
 
     @tornado.web.asynchronous
@@ -81,7 +82,8 @@ class ImageHandler(tornado.web.RequestHandler):
         try:
             resized = image.resize(self.get_argument("w"),
                                    self.get_argument("h"),
-                                   mode=self.get_argument("mode", "crop"))
+                                   mode=self.get_argument("mode", "crop"),
+                                   bg=self.get_argument("bg", None))
         except ImageFormatError:
             raise tornado.web.HTTPError(415, self.UNSUPPORTED_IMAGE_TYPE)
         self._import_headers(resp.headers)
@@ -120,6 +122,9 @@ class ImageHandler(tornado.web.RequestHandler):
             raise tornado.web.HTTPError(400, self.INVALID_HEIGHT)
         elif self.get_argument("mode", "crop") not in Image.MODES:
             raise tornado.web.HTTPError(400, self.INVALID_MODE)
+        elif self.get_argument("mode", None) == "fill" \
+                and not self._validate_background():
+            raise tornado.web.HTTPError(400, self.INVALID_BACKGROUND)
         elif s.get("client_name") \
                 and self.get_argument("client", None) != s.get("client_name"):
             raise tornado.web.HTTPError(403, self.INVALID_CLIENT)
@@ -140,6 +145,14 @@ class ImageHandler(tornado.web.RequestHandler):
             if parsed.hostname not in self.settings.get("allowed_hosts"):
                 return False
         return True
+
+    def _validate_background(self):
+        try:
+            if self.get_argument("bg", None):
+                int(self.get_argument("bg"), 16)
+        except ValueError:
+            return False
+        return len(self.get_argument("bg", "")) in [0, 3, 6]
 
 
 def main():

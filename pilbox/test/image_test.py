@@ -1,6 +1,8 @@
 from __future__ import absolute_import, division, print_function, \
     with_statement
 
+import collections
+import itertools
 import os
 import os.path
 import re
@@ -17,20 +19,40 @@ class ImageTest(unittest.TestCase):
     @staticmethod
     def get_image_resize_cases():
         """Returns a list of test cases of the form:
-            [dict(source_path, expected_path, width, height, mode), ...]
+            [dict(source_path, expected_path, width, height, mode, bg), ...]
         """
+        bgs = ["F00", "", "cccccc"]
+        sizes = [(400, 300), (300, 300), (100, 200)]
+        bg_modes = ["fill"]
+        simple_modes = list(set(Image.MODES) - set(bg_modes))
+
+        params = []
+        for a in list(itertools.product(*[simple_modes, sizes])):
+            params.append(dict(mode=a[0], width=a[1][0], height=a[1][1]))
+
+        for a in list(itertools.product(*[bg_modes, sizes, bgs])):
+            params.append(dict(mode=a[0], width=a[1][0], height=a[1][1],
+                               bg=a[2]))
+
         cases = []
-        for filename in os.listdir(EXPECTED_DATADIR):
-            m = re.match(r"^(.*)\-(\d+)x(\d+)\-([a-z]+)\.(.*)$", filename)
+        for filename in os.listdir(DATADIR):
+            m = re.match(r"^test(\d+)\.([^\.]+)$", filename)
             if not m:
                 continue
-            source_filename = "%s.%s" % m.group(1, 5)
-            cases.append(
-                dict(source_path=os.path.join(DATADIR, source_filename),
-                     expected_path=os.path.join(EXPECTED_DATADIR, filename),
-                     width=m.group(2),
-                     height=m.group(3),
-                     mode=m.group(4)))
+            for p in params:
+                case = dict(source_path=os.path.join(DATADIR, filename))
+                case.update(p)
+                if p.get("bg", None):
+                    expected = "test%d-%dx%d-%s-%s.%s" \
+                        % (int(m.group(1)), p["width"], p["height"], p["mode"],
+                           p["bg"], m.group(2))
+                else:
+                    expected = "test%d-%dx%d-%s.%s" \
+                        % (int(m.group(1)), p["width"], p["height"], p["mode"],
+                           m.group(2))
+                case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
+                cases.append(case)
+
         return cases
 
     def test_resize(self):
@@ -41,9 +63,12 @@ class ImageTest(unittest.TestCase):
         for case in cases:
             with open(case["source_path"]) as f:
                 img = Image(f).resize(
-                    case["width"], case["height"], mode=case["mode"])
+                    case["width"], case["height"], mode=case["mode"],
+                    bg=case.get("bg", None))
                 with open(case["expected_path"]) as expected:
-                    self.assertEqual(img.read(), expected.read())
+                    msg = "%s does not match %s" \
+                        % (case["source_path"], case["expected_path"])
+                    self.assertEqual(img.read(), expected.read(), msg)
 
     def test_bad_format(self):
         path = os.path.join(DATADIR, "test-bad-format.gif")

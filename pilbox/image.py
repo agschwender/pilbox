@@ -27,7 +27,7 @@ logger = logging.getLogger("tornado.application")
 
 
 class Image(object):
-    MODES = ["crop", "scale", "clip", "face"]
+    MODES = ["clip", "crop", "face", "fill", "scale"]
     FORMATS = ["PNG", "JPEG", "JPG"]
     CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "..", "config", "frontalface.xml")
@@ -36,7 +36,7 @@ class Image(object):
     def __init__(self, stream):
         self.stream = stream
 
-    def resize(self, width, height, mode=None):
+    def resize(self, width, height, mode=None, bg=None):
         """Returns a buffer to the resized image for saving"""
         if mode is not None and mode not in self.MODES:
             raise ImageModeError("Invalid image mode: '%s'" % mode)
@@ -45,20 +45,43 @@ class Image(object):
             raise ImageFormatError("Unknown format: '%s'" % img.format)
         size = (int(width), int(height))
         if mode == "clip":
-            resized = img
-            resized.thumbnail(size, PilImage.ANTIALIAS)
+            resized = self._clip(img, size)
+        elif mode == "fill":
+            resized = self._fill(img, size, bg)
         elif mode == "scale":
-            resized = img.resize(size, PilImage.ANTIALIAS)
+            resized = self._scale(img, size)
         elif mode == "face":
-            pos = self._get_face_position(img)
-            resized = PilImageOps.fit(img, size, PilImage.ANTIALIAS, 0, pos)
+            resized = self._face(img, size)
         else:
-            pos = (0.5, 0.5)
-            resized = PilImageOps.fit(img, size, PilImage.ANTIALIAS, 0, pos)
+            resized = self._crop(img, size)
         outfile = cStringIO.StringIO()
         resized.save(outfile, img.format, quality=90)
         outfile.reset()
         return outfile
+
+    def _clip(self, image, size):
+        image.thumbnail(size, PilImage.ANTIALIAS)
+        return image
+
+    def _crop(self, image, size):
+        pos = (0.5, 0.5)
+        return PilImageOps.fit(image, size, PilImage.ANTIALIAS, 0, pos)
+
+    def _face(self, image, size):
+        pos = self._get_face_position(image)
+        return PilImageOps.fit(image, size, PilImage.ANTIALIAS, 0, pos)
+
+    def _fill(self, image, size, bg):
+        bg = bg or "fff"
+        clipped = self._clip(image, size)
+        x = max((size[0] - clipped.size[0]) / 2, 0)
+        y = max((size[1] - clipped.size[1]) / 2, 0)
+        img = PilImage.new(mode=clipped.mode, size=size, color="#" + bg)
+        img.paste(clipped, (x, y))
+        return img
+
+    def _scale(self, image, size):
+        return image.resize(size, PilImage.ANTIALIAS)
 
     def _get_face_rectangles(self, img):
         cvim = self._pil_to_opencv(img)

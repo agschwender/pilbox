@@ -75,11 +75,13 @@ This will request the image served at the supplied url and resize it to 300x300 
     * _clip_: Resize to fit within the desired region, keeping aspect ratio
     * _crop_: Resize so one dimension fits within region, center, cut remaining
     * _face_: Detect faces and crop using the face(s) as the center point
+    * _fill_: Fills the clipped space with a background color
     * _scale_: Resize to fit within the desired region, ignoring aspect ratio
+  * _bg_: Background color used with fill mode, 3- or 6-digit hexadecimal number
   * _client_: The client name
   * _sig_: The signature
 
-The `url`, `w` and `h` parameters are required. `mode` is optional and defaults to `crop`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+The `url`, `w` and `h` parameters are required. `mode` is optional and defaults to `crop`. `bg` is optional and defaults to `fff`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
 
 Testing
 =======
@@ -135,6 +137,5 @@ The application itself does not include any caching. It is recommended that the 
 TODO
 ====
 
-  * Fill resize with background
   * Crop resize positioning
   * Add backends (S3, file system, etc...) if necessary

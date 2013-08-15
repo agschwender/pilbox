@@ -36,6 +36,8 @@ class _AppAsyncMixin(object):
                 w=case["width"],
                 h=case["height"],
                 mode=case["mode"])
+            if "bg" in case:
+                cases[i]["source_query_params"]["bg"] = case["bg"]
         return cases
 
 
@@ -62,6 +64,17 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h="a"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error"), ImageHandler.INVALID_HEIGHT)
+
+    def test_invalid_background(self):
+        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
+                                   mode="fill", bg="r"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error"), ImageHandler.INVALID_BACKGROUND)
+
+        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
+                                   mode="fill", bg="0f0f0f0f"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error"), ImageHandler.INVALID_BACKGROUND)
 
     def test_valid(self):
         cases = self.get_image_resize_cases()

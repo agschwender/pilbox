@@ -37,10 +37,11 @@ def main():
     cases = ImageTest.get_image_resize_cases()
     for case in cases:
         with open(case["source_path"]) as f:
+            print "Generating %s" % case["expected_path"]
             img = Image(f).resize(
-                case["width"], case["height"], mode=case["mode"])
+                case["width"], case["height"], mode=case["mode"],
+                bg=case.get("bg", None))
             with open(case["expected_path"], "w") as expected:
-                print "Generated %s" % case["expected_path"]
                 expected.write(img.read())
 
 
