@@ -1,4 +1,4 @@
-Pilbox [![Build Status](https://travis-ci.org/agschwender/pilbox.png)](https://travis-ci.org/agschwender/pilbox) [![codeq](https://codeq.io/github/agschwender/pilbox/badges/master.png)](https://codeq.io/github/agschwender/pilbox/branches/master)
+Pilbox [![Build Status](https://travis-ci.org/agschwender/pilbox.png)](https://travis-ci.org/agschwender/pilbox)
 ======
 
 Pilbox is an image resizing application server built on Python's [Tornado web framework](http://www.tornadoweb.org/en/stable/) using the [Python Imaging Library (Pillow)](https://pypi.python.org/pypi/Pillow/2.1.0). It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.
@@ -122,6 +122,10 @@ To verify that your client application is generating correct signatures, use the
 The application allows the use of the resize functionality via the command line.
 
     $ python -m pilbox.image --width=300 --height=300 http://i.imgur.com/zZ8XmBA.jpg > /tmp/foo.jpg
+
+If a new mode is added or a modification was made to the libraries that would change the current expected output for tests, run the generate test command to regenerate the expected output for the test cases.
+
+    $ python -m pilbox.test.genexpected
 
 Deploying
 =========
