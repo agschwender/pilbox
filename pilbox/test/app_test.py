@@ -89,6 +89,12 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error"), ImageHandler.INVALID_POSITION)
 
+    def test_bad_format(self):
+        path = "/test-data/test-bad-format.gif"
+        qs = urllib.urlencode(dict(url=self.get_url(path), w=1, h=1))
+        resp = self.fetch_error(415, "/?%s" % qs)
+        self.assertEqual(resp.get("error"), ImageHandler.UNSUPPORTED_IMAGE_TYPE)
+
     def test_valid(self):
         cases = self.get_image_resize_cases()
         for case in cases:
@@ -148,5 +154,7 @@ class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
             params["client"] = self.NAME
             qs = sign(self.KEY, urllib.urlencode(params))
             resp = self.fetch_success("/?%s" % qs)
+            msg = "/?%s does not match %s" \
+                % (qs, case["expected_path"])
             with open(case["expected_path"]) as expected:
-                self.assertEqual(resp.buffer.read(), expected.read())
+                self.assertEqual(resp.buffer.read(), expected.read(), msg)

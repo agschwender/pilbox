@@ -2,3 +2,8 @@
 branch = true
 source = pilbox
 omit = pilbox/test/*
+
+[report]
+exclude_lines =
+    def main..:
+    if __name__ == .__main__.:

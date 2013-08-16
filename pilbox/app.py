@@ -145,10 +145,9 @@ class ImageHandler(tornado.web.RequestHandler):
         return verify_signature(self.settings.get("client_key"), parsed.query)
 
     def _validate_host(self):
-        if self.settings.get("allowed_hosts"):
-            parsed = urlparse.urlparse(self.get_argument("url"))
-            if parsed.hostname not in self.settings.get("allowed_hosts"):
-                return False
+        parsed = urlparse.urlparse(self.get_argument("url"))
+        if parsed.hostname not in self.settings.get("allowed_hosts", []):
+            return False
         return True
 
     def _validate_background(self):
