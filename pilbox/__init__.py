@@ -29,13 +29,14 @@ Versions:
   * 0.5: Facial recognition cropping
   * 0.6: Fill resizing mode
   * 0.7: Resize using crop position
+  * 0.7.1: Resize using a single dimension, maintaining aspect ratio
 """
 
 # human-readable version number
-version = "0.7.0"
+version = "0.7.1"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (0, 7, 0, 0)
+version_info = (0, 7, 1, 0)
