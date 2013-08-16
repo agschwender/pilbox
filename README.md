@@ -80,7 +80,7 @@ This will request the image served at the supplied url and resize it to 300x300 
   * _pos_: The crop position
     * _top-left_: Crop from the top left
     * _top_: Crop from the top center
-    * _top_right_: Crop from the top right
+    * _top-right_: Crop from the top right
     * _left_: Crop from the center left
     * _center_: Crop from the center
     * _right_: Crop from the center right
