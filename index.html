@@ -138,7 +138,7 @@
 <li>
 <em>top</em>: Crop from the top center</li>
 <li>
-<em>top_right</em>: Crop from the top right</li>
+<em>top-right</em>: Crop from the top right</li>
 <li>
 <em>left</em>: Crop from the center left</li>
 <li>
@@ -159,7 +159,7 @@
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code>, <code>w</code> and <code>h</code> parameters are required. <code>mode</code> is optional and defaults to <code>crop</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+</ul><p>The <code>url</code>, and either <code>w</code> or <code>h</code> parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
 
 <h1>
 <a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h1>
