@@ -23,7 +23,7 @@ class ImageTest(unittest.TestCase):
         """
         params = []
 
-        sizes = [(400, 300), (300, 300), (100, 200)]
+        sizes = [(400, 300), (300, 300), (100, 200), (125, None), (None, 125)]
         for a in list(itertools.product(*[Image.MODES, sizes])):
             params.append(dict(mode=a[0], width=a[1][0], height=a[1][1]))
 
@@ -46,17 +46,17 @@ class ImageTest(unittest.TestCase):
                 case = dict(source_path=os.path.join(DATADIR, filename))
                 case.update(p)
                 if p.get("bg", None):
-                    expected = "test%d-%dx%d-%s-%s.%s" \
-                        % (int(m.group(1)), p["width"], p["height"], p["mode"],
-                           p["bg"], m.group(2))
+                    expected = "test%d-%sx%s-%s-%s.%s" \
+                        % (int(m.group(1)), p["width"] or "",
+                           p["height"] or "", p["mode"], p["bg"], m.group(2))
                 elif p.get("pos", None):
-                    expected = "test%d-%dx%d-%s-%s.%s" \
-                        % (int(m.group(1)), p["width"], p["height"], p["mode"],
-                           p["pos"], m.group(2))
+                    expected = "test%d-%sx%s-%s-%s.%s" \
+                        % (int(m.group(1)), p["width"] or "",
+                           p["height"] or "", p["mode"], p["pos"], m.group(2))
                 else:
-                    expected = "test%d-%dx%d-%s.%s" \
-                        % (int(m.group(1)), p["width"], p["height"], p["mode"],
-                           m.group(2))
+                    expected = "test%d-%sx%s-%s.%s" \
+                        % (int(m.group(1)), p["width"] or "",
+                           p["height"] or "", p["mode"], m.group(2))
                 case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
                 cases.append(case)
 

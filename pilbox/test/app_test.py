@@ -33,8 +33,8 @@ class _AppAsyncMixin(object):
             path = "/test-data/%s" % os.path.basename(case["source_path"])
             cases[i]["source_query_params"] = dict(
                 url=self.get_url(path),
-                w=case["width"],
-                h=case["height"],
+                w=case["width"] or "",
+                h=case["height"] or "",
                 mode=case["mode"])
             for k in ["bg", "pos"]:
                 if k in case:

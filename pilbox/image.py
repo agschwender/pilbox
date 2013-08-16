@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import division
+
 import cStringIO
 import cv
 import logging
@@ -51,7 +53,7 @@ class Image(object):
         img = PilImage.open(self.stream)
         if img.format not in self.FORMATS:
             raise ImageFormatError("Unknown format: '%s'" % img.format)
-        size = (int(width), int(height))
+        size = self._get_size(img, width, height)
         if mode == "clip":
             resized = self._clip(img, size)
         elif mode == "fill":
@@ -77,10 +79,12 @@ class Image(object):
         return PilImageOps.fit(image, size, PilImage.ANTIALIAS, 0, pos_ratio)
 
     def _fill(self, image, size, bg):
-        bg = bg or "fff"
         clipped = self._clip(image, size)
-        x = max((size[0] - clipped.size[0]) / 2, 0)
-        y = max((size[1] - clipped.size[1]) / 2, 0)
+        if clipped.size == size:
+            return clipped # No need to fill
+        bg = bg or "fff"
+        x = max(int((size[0] - clipped.size[0]) / 2.0), 0)
+        y = max(int((size[1] - clipped.size[1]) / 2.0), 0)
         img = PilImage.new(mode=clipped.mode, size=size, color="#" + bg)
         img.paste(clipped, (x, y))
         return img
@@ -88,8 +92,16 @@ class Image(object):
     def _scale(self, image, size):
         return image.resize(size, PilImage.ANTIALIAS)
 
-    def _get_face_rectangles(self, img):
-        cvim = self._pil_to_opencv(img)
+    def _get_size(self, image, width, height):
+        aspect_ratio = image.size[0] / image.size[1]
+        if not width:
+            width = int((int(height) or image.size[1]) * aspect_ratio)
+        if not height:
+            height = int((int(width) or image.size[0]) / aspect_ratio)
+        return (int(width), int(height))
+
+    def _get_face_rectangles(self, image):
+        cvim = self._pil_to_opencv(image)
         return cv.HaarDetectObjects(
             cvim,
             self._get_face_classifier(),
@@ -99,18 +111,18 @@ class Image(object):
             0,  # HAAR Flags
             (20, 20))
 
-    def _get_face_position(self, img):
-        rects = self._get_face_rectangles(img)
+    def _get_face_position(self, image):
+        rects = self._get_face_rectangles(image)
         if not rects:
             return (0.5, 0.5)
 
         xt, yt = (0.0, 0.0)
         for rect in rects:
-            xt += float(rect[0][0]) + (float(rect[0][2]) / 2.0)
-            yt += float(rect[0][1]) + (float(rect[0][3]) / 2.0)
+            xt += rect[0][0] + (rect[0][2] / 2.0)
+            yt += rect[0][1] + (rect[0][3] / 2.0)
 
-        return (xt / (float(len(rects)) * float(img.size[0])),
-                yt / (float(len(rects)) * float(img.size[1])))
+        return (xt / (len(rects) * image.size[0]),
+                yt / (len(rects) * image.size[1]))
 
     def _get_face_classifier(self):
         if not Image._classifier:

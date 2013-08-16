@@ -81,8 +81,8 @@ class ImageHandler(tornado.web.RequestHandler):
         resp = yield client.fetch(self.get_argument("url"))
         image = Image(resp.buffer)
         try:
-            resized = image.resize(self.get_argument("w"),
-                                   self.get_argument("h"),
+            resized = image.resize(self.get_argument("w", None),
+                                   self.get_argument("h", None),
                                    mode=self.get_argument("mode", "crop"),
                                    bg=self.get_argument("bg", None),
                                    pos=self.get_argument("pos", None))
