@@ -1,7 +1,9 @@
 # http://travis-ci.org/#!/agschwender/pilbox
 language: python
 python:
-    - 2.7
+  - 2.7
+env:
+  - PYTHONPATH=$PYTHONPATH:$PWD
 virtualenv:
     system_site_packages: true
 before_install:
