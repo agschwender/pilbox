@@ -25,6 +25,11 @@ node default {
     require => Class[ "python" ],
   }
 
+  python::pip { "coverage":
+    ensure => installed,
+    require => Class[ "python" ],
+  }
+
   file { "/etc/init.d/pilbox":
     ensure => present,
     owner => "root",
