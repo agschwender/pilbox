@@ -93,6 +93,31 @@ This will request the image served at the supplied url and resize it to 300x300 
 
 The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
 
+Examples
+========
+
+The following images show the various resizing modes in action for an original image size of `384x480` that is being resized to `300x300`.
+
+Clip
+----
+
+![Clipped image](test/data/expected/test1-300x300-clip.jpg)
+
+Crop
+----
+
+![Cropped image](test/data/expected/test1-300x300-crop.jpg)
+
+Fill
+----
+
+![Filled image](test/data/expected/test1-300x300-fill.jpg)
+
+Scale
+-----
+
+![Scale image](test/data/expected/test1-300x300-scale.jpg)
+
 Testing
 =======
 
