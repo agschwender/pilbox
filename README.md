@@ -101,22 +101,22 @@ The following images show the various resizing modes in action for an original i
 Clip
 ----
 
-![Clipped image](test/data/expected/test1-300x300-clip.jpg)
+![Clipped image](pilbox/test/data/expected/test1-300x300-clip.jpg)
 
 Crop
 ----
 
-![Cropped image](test/data/expected/test1-300x300-crop.jpg)
+![Cropped image](pilbox/test/data/expected/test1-300x300-crop.jpg)
 
 Fill
 ----
 
-![Filled image](test/data/expected/test1-300x300-fill.jpg)
+![Filled image](pilbox/test/data/expected/test1-300x300-fill.jpg)
 
 Scale
 -----
 
-![Scale image](test/data/expected/test1-300x300-scale.jpg)
+![Scale image](pilbox/test/data/expected/test1-300x300-scale.jpg)
 
 Testing
 =======
