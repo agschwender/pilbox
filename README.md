@@ -143,7 +143,7 @@ Similar to clip, fill resizes the image to fit within a `500x400` box. Once clip
 Scale
 -----
 
-The image is clipped to fit with the `500x400` box and then stretched to fill the excess space. Scaling is not often useful in production settings as it generally produces poor quality images. This mode is largely included for completeness.
+The image is clipped to fit within the `500x400` box and then stretched to fill the excess space. Scaling is often not useful in production environments as it generally produces poor quality images. This mode is largely included for completeness.
 
 ![Scale image](pilbox/test/data/expected/example-500x400-scale.jpg)
 
