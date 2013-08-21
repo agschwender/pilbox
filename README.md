@@ -47,17 +47,17 @@ To see a list of all available options, run
 
     Options:
 
-      --allowed_hosts                  list of allowed image hosts (default [])
-      --background                     default bg color 3 or 6-digit hexadecimal
-      --client_key                     client key
-      --client_name                    client name
-      --config                         path to configuration file
-      --debug                          run in debug mode (default False)
-      --filter                         default filter to use when resizing
-      --help                           show this help information
-      --port                           run on the given port (default 8888)
-      --position                       default cropping position
-      --quality                        default jpeg quality, 0-100
+      --allowed_hosts            list of allowed image hosts (default [])
+      --background               default bg color 3 or 6-digit hexadecimal
+      --client_key               client key
+      --client_name              client name
+      --config                   path to configuration file
+      --debug                    run in debug mode (default False)
+      --filter                   default filter to use when resizing
+      --help                     show this help information
+      --port                     run on the given port (default 8888)
+      --position                 default cropping position
+      --quality                  default jpeg quality, 0-100
 
 Vagrant
 -------
@@ -108,7 +108,7 @@ This will request the image served at the supplied url and resize it to 300x300 
     * _bottom_: Crop from the bottom center
     * _bottom-right_: Crop from the bottom right
     * _face_: Identify faces and crop from the midpoint of their position(s)
-  * _q_: The quality used to save the image, only relevant to JPEGs. Values range from 1 to 100.
+  * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
   * _client_: The client name
   * _sig_: The signature
 
