@@ -43,6 +43,21 @@ By default, this will run the application on port 8888 and can be accessed by vi
 To see a list of all available options, run
 
     $ python -m pilbox.app --help
+    Usage: pilbox/app.py [OPTIONS]
+
+    Options:
+
+      --allowed_hosts                  list of allowed image hosts (default [])
+      --background                     default bg color 3 or 6-digit hexadecimal
+      --client_key                     client key
+      --client_name                    client name
+      --config                         path to configuration file
+      --debug                          run in debug mode (default False)
+      --filter                         default filter to use when resizing
+      --help                           show this help information
+      --port                           run on the given port (default 8888)
+      --position                       default cropping position
+      --quality                        default jpeg quality, 0-100
 
 Vagrant
 -------
@@ -76,6 +91,11 @@ This will request the image served at the supplied url and resize it to 300x300 
     * _crop_: Resize so one dimension fits within region, center, cut remaining
     * _fill_: Fills the clipped space with a background color
     * _scale_: Resize to fit within the desired region, ignoring aspect ratio
+  * _filter_: The filtering algorithm used for resizing
+    * _nearest_: Fastest, but often images appear pixelated
+    * _bilinear_: Faster, can produce acceptable results
+    * _bicubic_: Fast, can produce acceptable results
+    * _antialias_: Slower, produces the best results
   * _bg_: Background color used with fill mode, 3- or 6-digit hexadecimal number
   * _pos_: The crop position
     * _top-left_: Crop from the top left
@@ -88,35 +108,44 @@ This will request the image served at the supplied url and resize it to 300x300 
     * _bottom_: Crop from the bottom center
     * _bottom-right_: Crop from the bottom right
     * _face_: Identify faces and crop from the midpoint of their position(s)
+  * _q_: The quality used to save the image, only relevant to JPEGs. Values range from 1 to 100.
   * _client_: The client name
   * _sig_: The signature
 
-The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and default to `90`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
 
 Examples
 ========
 
-The following images show the various resizing modes in action for an original image size of `384x480` that is being resized to `300x300`.
+The following images show the various resizing modes in action for an original image size of `640x428` that is being resized to `500x400`.
 
 Clip
 ----
 
-![Clipped image](pilbox/test/data/expected/test1-300x300-clip.jpg)
+The image is resized to fit within a `500x400` box, producing an image that is `500x334`. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.
+
+![Clipped image](pilbox/test/data/expected/example-500x400-clip.jpg)
 
 Crop
 ----
 
-![Cropped image](pilbox/test/data/expected/test1-300x300-crop.jpg)
+The image is resized so that one dimension fits within the `500x400` box. It is then centered and the excess is cut from the image. Cropping is useful when the position of the subject is known and the image must be exactly the supplied size.
+
+![Cropped image](pilbox/test/data/expected/example-500x400-crop.jpg)
 
 Fill
 ----
 
-![Filled image](pilbox/test/data/expected/test1-300x300-fill.jpg)
+Similar to clip, fill resizes the image to fit within a `500x400` box. Once clipped, the image is centered within the box and all left over space is filled with the supplied background color. Filling is useful when no portion of the image can be lost and it must be exactly the supplied size.
+
+![Filled image](pilbox/test/data/expected/example-500x400-fill-ccc.jpg)
 
 Scale
 -----
 
-![Scale image](pilbox/test/data/expected/test1-300x300-scale.jpg)
+The image is clipped to fit with the `500x400` box and then stretched to fill the excess space. Scaling is not often useful in production settings as it generally produces poor quality images. This mode is largely included for completeness.
+
+![Scale image](pilbox/test/data/expected/example-500x400-scale.jpg)
 
 Testing
 =======
@@ -146,6 +175,30 @@ def derive_signature(key, qs):
 
 The signature is passed to the application by appending the `sig` paramater to the query string; e.g. `x=1&y=2&z=3&sig=c9516346abf62876b6345817dba2f9a0c797ef26`. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the `pilbox.signature` command described in the [tools section](#tools).
 
+Configuration
+=============
+
+All options that can be supplied to the application via the command line, can also be specified in the configuration file. Configuration files are simply python files that define the options as variables. The below is an example configuration.
+
+    # General settings
+    port = 8888
+
+    # Set client name and key if the application requires signed requests. The
+    # client must sign the request using the client_key, see README for
+    # instructions.
+    client_name = "sample"
+    client_key = "3NdajqH8mBLokepU4I2Bh6KK84GUf1lzjnuTdskY"
+
+    # Set the allowed hosts as an alternative to signed requests. Only those images
+    # which are served from the following hosts will be requested.
+    allowed_hosts = ["localhost"]
+
+    # Set default resizing options
+    background = "ccc"
+    filter = "bilinear"
+    position = "top"
+    quality = 90
+
 Tools
 =====
 
@@ -172,4 +225,5 @@ The application itself does not include any caching. It is recommended that the 
 TODO
 ====
 
+  * How to reconcile unavailable color profiles?
   * Add backends (S3, file system, etc...) if necessary

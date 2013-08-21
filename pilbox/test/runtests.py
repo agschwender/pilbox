@@ -11,6 +11,7 @@ from tornado.test.util import unittest
 
 TEST_MODULES = [
     'pilbox.test.app_test',
+    'pilbox.test.errors_test',
     'pilbox.test.image_test',
     'pilbox.test.signature_test',
 ]

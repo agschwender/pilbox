@@ -7,63 +7,38 @@ import os
 import os.path
 import re
 from tornado.test.util import unittest
-from ..image import Image, ImageFormatError, ImageModeError
+from ..errors import BackgroundError, DimensionsError, FilterError, \
+    ModeError, PositionError, QualityError, FormatError
+from ..image import Image
 
 
 DATADIR = os.path.join(os.path.dirname(__file__), "data")
 EXPECTED_DATADIR = os.path.join(DATADIR, "expected")
 
+def get_image_resize_cases():
+    """Returns a list of test cases of the form:
+    [dict(source_path, expected_path, width, height, mode, ...), ...]
+    """
+    cases = []
+    for filename in os.listdir(DATADIR):
+        if not re.match(r"^test\d+\.[^\.]+$", filename):
+            continue
+        for criteria in _get_simple_criteria_combinations():
+            cases.append(_criteria_to_resize_case(filename, criteria))
+
+    for criteria in _get_advanced_criteria_combinations():
+        cases.append(_criteria_to_resize_case("test-advanced.jpg", criteria))
+
+    for criteria in _get_example_criteria_combinations():
+        cases.append(_criteria_to_resize_case("example.jpg", criteria))
+
+    return filter(bool, cases)
+
 
 class ImageTest(unittest.TestCase):
 
-    @staticmethod
-    def get_image_resize_cases():
-        """Returns a list of test cases of the form:
-            [dict(source_path, expected_path, width, height, mode, bg), ...]
-        """
-        params = []
-
-        sizes = [(400, 300), (300, 300), (100, 200), (125, None), (None, 125)]
-        for a in list(itertools.product(*[Image.MODES, sizes])):
-            params.append(dict(mode=a[0], width=a[1][0], height=a[1][1]))
-
-        fill_choices = [["fill"], [(100, 100)], ["F00", "cccccc"]]
-        for a in list(itertools.product(*fill_choices)):
-            params.append(dict(mode=a[0], width=a[1][0], height=a[1][1],
-                               bg=a[2]))
-
-        crop_choices = [["crop"], [(100, 100)], Image.POSITIONS]
-        for a in list(itertools.product(*crop_choices)):
-            params.append(dict(mode=a[0], width=a[1][0], height=a[1][1],
-                               pos=a[2]))
-
-        cases = []
-        for filename in os.listdir(DATADIR):
-            m = re.match(r"^test(\d+)\.([^\.]+)$", filename)
-            if not m:
-                continue
-            for p in params:
-                case = dict(source_path=os.path.join(DATADIR, filename))
-                case.update(p)
-                if p.get("bg", None):
-                    expected = "test%d-%sx%s-%s-%s.%s" \
-                        % (int(m.group(1)), p["width"] or "",
-                           p["height"] or "", p["mode"], p["bg"], m.group(2))
-                elif p.get("pos", None):
-                    expected = "test%d-%sx%s-%s-%s.%s" \
-                        % (int(m.group(1)), p["width"] or "",
-                           p["height"] or "", p["mode"], p["pos"], m.group(2))
-                else:
-                    expected = "test%d-%sx%s-%s.%s" \
-                        % (int(m.group(1)), p["width"] or "",
-                           p["height"] or "", p["mode"], m.group(2))
-                case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
-                cases.append(case)
-
-        return cases
-
     def test_resize(self):
-        cases = ImageTest.get_image_resize_cases()
+        cases = get_image_resize_cases()
         if not cases:
             self.fail("no valid images for testing")
 
@@ -71,21 +46,134 @@ class ImageTest(unittest.TestCase):
             with open(case["source_path"]) as f:
                 img = Image(f).resize(
                     case["width"], case["height"], mode=case["mode"],
-                    bg=case.get("bg", None), pos=case.get("pos", None))
+                    background=case.get("background"),
+                    filter=case.get("filter"),
+                    position=case.get("position"),
+                    quality=case.get("quality"))
                 with open(case["expected_path"]) as expected:
                     msg = "%s does not match %s" \
                         % (case["source_path"], case["expected_path"])
-                    self.assertEqual(img.read(), expected.read(), msg)
+                    self.assertEqual(img.getvalue(), expected.read(), msg)
+
+    def test_valid_dimensions(self):
+        Image.validate_dimensions(100, 100)
+        Image.validate_dimensions("100", "100")
+
+    def test_invalid_dimensions_none(self):
+        self.assertRaises(
+            DimensionsError, Image.validate_dimensions, None, None)
+        self.assertRaises(
+            DimensionsError, Image.validate_dimensions, "", "")
+
+    def test_invalid_dimensions_not_integer(self):
+        self.assertRaises(
+            DimensionsError, Image.validate_dimensions, "a", 100)
+        self.assertRaises(
+            DimensionsError, Image.validate_dimensions, 100, "a")
+
+    def test_valid_default_options(self):
+        Image.validate_options(dict())
+
+    def test_valid_default_options_with_empty_values(self):
+        opts = dict(mode=None, filter=None, background=None, position=None,
+                    quality=None)
+        Image.validate_options(opts)
 
     def test_bad_format(self):
         path = os.path.join(DATADIR, "test-bad-format.gif")
         with open(path) as f:
             image = Image(f)
-            self.assertRaises(ImageFormatError, image.resize, 100, 100)
+            self.assertRaises(FormatError, image.resize, 100, 100)
 
     def test_bad_mode(self):
-        path = os.path.join(DATADIR, "test1.jpg")
-        with open(path) as f:
-            image = Image(f)
-            self.assertRaises(
-                ImageModeError, image.resize, 100, 100, mode="foo")
+        self.assertRaises(
+            ModeError, Image.validate_options, dict(mode="foo"))
+
+    def test_bad_filter(self):
+        self.assertRaises(
+            FilterError, Image.validate_options, dict(filter="foo"))
+
+    def test_bad_background_invalid_number(self):
+        self.assertRaises(
+            BackgroundError, Image.validate_options, dict(background="foo"))
+
+    def test_bad_background_wrong_length(self):
+        self.assertRaises(
+            BackgroundError, Image.validate_options, dict(background="0f"))
+        self.assertRaises(
+            BackgroundError, Image.validate_options, dict(background="0f0f"))
+        self.assertRaises(
+            BackgroundError, Image.validate_options, dict(background="0f0f0"))
+        self.assertRaises(
+            BackgroundError, Image.validate_options, dict(background="0f0f0f0"))
+
+    def test_bad_position(self):
+        self.assertRaises(
+            PositionError, Image.validate_options, dict(position="foo"))
+
+    def test_bad_quality_invalid_number(self):
+        self.assertRaises(
+            QualityError, Image.validate_options, dict(quality="foo"))
+
+    def test_bad_quality_invalid_range(self):
+        self.assertRaises(
+            QualityError, Image.validate_options, dict(quality=101))
+        self.assertRaises(
+            QualityError, Image.validate_options, dict(quality=-1))
+
+
+def _get_simple_criteria_combinations():
+    return _make_combinations(
+        [dict(values=[Image.MODES, [(400, 300), (300, 300), (100, 200)]],
+              fields=["mode", "size"])])
+
+
+def _get_example_criteria_combinations():
+    return [dict(mode="clip", width=500, height=400),
+            dict(mode="crop", width=500, height=400),
+            dict(mode="fill", width=500, height=400, background="ccc"),
+            dict(mode="scale", width=500, height=400)]
+
+
+def _get_advanced_criteria_combinations():
+    return _make_combinations(
+        [dict(values=[["fill"], [(125, 75)], ["F00", "cccccc"]],
+              fields=["mode", "size", "background"]),
+         dict(values=[["crop"], [(125, 75)], Image.POSITIONS],
+              fields=["mode", "size", "position"]),
+         dict(values=[["crop"], [(125, 75)], Image.FILTERS],
+              fields=["mode", "size", "filter"]),
+         dict(values=[["crop"], [(125, 75)], [50, 75, 90]],
+              fields=["mode", "size", "quality"]),
+         dict(values=[Image.MODES, [(125, None), (None, 125)]],
+              fields=["mode", "size"])])
+
+
+def _make_combinations(choices):
+    combos = []
+    for choice in choices:
+        for a in list(itertools.product(*choice["values"])):
+            combo = dict(zip(choice["fields"], a))
+            combo["width"] = combo["size"][0]
+            combo["height"] = combo["size"][1]
+            del combo["size"]
+            combos.append(combo)
+    return combos
+
+
+def _criteria_to_resize_case(filename, criteria):
+    m = re.match(r"^([^\.]+)\.([^\.]+)$", filename)
+    if not m:
+        return None
+    case = dict(source_path=os.path.join(DATADIR, filename))
+    case.update(criteria)
+    fields = ["mode", "filter", "quality", "background", "position"]
+    opts = filter(bool, [criteria.get(x) for x in fields])
+    expected = "%s-%sx%s%s.%s" \
+        % (m.group(1),
+           criteria.get("width") or "",
+           criteria.get("height") or "",
+           ("-%s" % "-".join([str(x) for x in opts])) if opts else "",
+           m.group(2))
+    case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
+    return case

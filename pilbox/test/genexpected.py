@@ -17,7 +17,7 @@
 import os.path
 import sys
 import textwrap
-from .image_test import ImageTest
+from . import image_test
 from ..image import Image
 
 
@@ -34,15 +34,18 @@ def main():
         print "Not proceeding, done"
         sys.exit()
 
-    cases = ImageTest.get_image_resize_cases()
+    cases = image_test.get_image_resize_cases()
     for case in cases:
         with open(case["source_path"]) as f:
             print "Generating %s" % case["expected_path"]
             img = Image(f).resize(
                 case["width"], case["height"], mode=case["mode"],
-                bg=case.get("bg", None), pos=case.get("pos", None))
+                background=case.get("background"),
+                filter=case.get("filter"),
+                position=case.get("position"),
+                quality=case.get("quality"))
             with open(case["expected_path"], "w") as expected:
-                expected.write(img.read())
+                expected.write(img.getvalue())
 
 
 if __name__ == "__main__":

@@ -23,9 +23,10 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-import urlparse
+from urlparse import urlparse
 
-from image import Image, ImageFormatError
+import errors
+from image import Image
 from signature import verify_signature
 
 from tornado.options import define, options, parse_config_file
@@ -34,10 +35,18 @@ define("config", help="path to configuration file", type=str,
        callback=lambda path: parse_config_file(path, final=False))
 define("debug", default=False, help="run in debug mode", type=bool)
 define("port", default=8888, help="run on the given port", type=int)
+
+# security related settings
 define("client_name", help="client name", type=str)
 define("client_key", help="client key", type=str)
 define("allowed_hosts", default=[], help="list of allowed image hosts",
        type=str, multiple=True)
+
+# default resizing option settings
+define("background", help="default bg color 3 or 6-digit hexadecimal", type=str)
+define("filter", help="default filter to use when resizing", type=str)
+define("position", help="default cropping position", type=str)
+define("quality", help="default jpeg quality, 0-100", type=int)
 
 
 logger = logging.getLogger("tornado.application")
@@ -55,23 +64,17 @@ class PilboxApplication(tornado.web.Application):
         settings = dict(debug=options.debug,
                         client_name=options.client_name,
                         client_key=options.client_key,
-                        allowed_hosts=options.allowed_hosts)
+                        allowed_hosts=options.allowed_hosts or [],
+                        background=options.background,
+                        filter=options.filter,
+                        position=options.position,
+                        quality=options.quality)
         settings.update(kwargs)
         tornado.web.Application.__init__(self, handlers, **settings)
 
 
 class ImageHandler(tornado.web.RequestHandler):
-    MISSING_URL = "Missing image url"
-    MISSING_DIMENSIONS = "Missing image width and height"
-    INVALID_WIDTH = "Invalid image width"
-    INVALID_HEIGHT = "Invalid image height"
-    INVALID_MODE = "Invalid mode"
-    INVALID_CLIENT = "Invalid client"
-    INVALID_SIGNATURE = "Invalid signature"
-    INVALID_HOST = "Invalid image host"
-    INVALID_BACKGROUND = "Invalid background color"
-    INVALID_POSITION = "Invalid crop position"
-    UNSUPPORTED_IMAGE_TYPE = "Unsupported image type"
+    FORWARD_HEADERS = ['Cache-Control', 'Expires', 'Last-Modified']
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
@@ -79,84 +82,71 @@ class ImageHandler(tornado.web.RequestHandler):
         self._validate_request()
         client = tornado.httpclient.AsyncHTTPClient()
         resp = yield client.fetch(self.get_argument("url"))
-        image = Image(resp.buffer)
-        try:
-            resized = image.resize(self.get_argument("w", None),
-                                   self.get_argument("h", None),
-                                   mode=self.get_argument("mode", "crop"),
-                                   bg=self.get_argument("bg", None),
-                                   pos=self.get_argument("pos", None))
-        except ImageFormatError:
-            raise tornado.web.HTTPError(415, self.UNSUPPORTED_IMAGE_TYPE)
-        self._import_headers(resp.headers)
-        self.write(resized.read())
+        image = Image(resp.buffer, self.settings)
+        opts = self._get_resize_options()
+        resized = image.resize(
+            self.get_argument("w"), self.get_argument("h"), **opts)
+        self._forward_headers(resp.headers)
+        self.write(resized.getvalue())
+        resized.close()
         self.finish()
 
-    def _import_headers(self, headers):
-        self.set_header('Content-Type', headers['Content-Type'])
-        for k in ['Cache-Control', 'Expires', 'Last-Modified']:
-            if k in headers and headers[k]:
-                self.set_header(k, headers[k])
+    def get_argument(self, name, default=None):
+        return super(ImageHandler, self).get_argument(name, default)
 
     def write_error(self, status_code, **kwargs):
         err = None
         if "exc_info" in kwargs:
             err = kwargs["exc_info"][1]
-        if isinstance(err, tornado.web.HTTPError):
+        if isinstance(err, errors.PilboxError):
             self.set_header('Content-Type', 'application/json')
-            resp = dict(code=status_code, error=err.log_message)
+            resp = dict(status_code=status_code,
+                        error_code=err.get_code(),
+                        error=err.log_message)
             self.finish(tornado.escape.json_encode(resp))
         else:
             super(ImageHandler, self).write_error(status_code, **kwargs)
 
+    def _forward_headers(self, headers):
+        self.set_header('Content-Type', headers['Content-Type'])
+        for k in ImageHandler.FORWARD_HEADERS:
+            if k in headers and headers[k]:
+                self.set_header(k, headers[k])
+
+    def _get_resize_options(self):
+        return dict(mode=self.get_argument("mode"),
+                    filter=self.get_argument("filter"),
+                    position=self.get_argument("pos"),
+                    background=self.get_argument("bg"),
+                    quality=self.get_argument("q"))
+
     def _validate_request(self):
-        s = self.application.settings
-        if not self.get_argument("url", None):
-            raise tornado.web.HTTPError(400, self.MISSING_URL)
-        elif not self.get_argument("w", None) \
-                and not self.get_argument("h", None):
-            raise tornado.web.HTTPError(400, self.MISSING_DIMENSIONS)
-        elif self.get_argument("w", None) \
-                and not self.get_argument("w").isdigit():
-            raise tornado.web.HTTPError(400, self.INVALID_WIDTH)
-        elif self.get_argument("h", None) \
-                and not self.get_argument("h").isdigit():
-            raise tornado.web.HTTPError(400, self.INVALID_HEIGHT)
-        elif self.get_argument("mode", "crop") not in Image.MODES:
-            raise tornado.web.HTTPError(400, self.INVALID_MODE)
-        elif self.get_argument("mode", "crop") == "fill" \
-                and not self._validate_background():
-            raise tornado.web.HTTPError(400, self.INVALID_BACKGROUND)
-        elif self.get_argument("mode", "crop") == "crop" \
-                and self.get_argument("pos", "center") not in Image.POSITIONS:
-            raise tornado.web.HTTPError(400, self.INVALID_POSITION)
-        elif s.get("client_name") \
-                and self.get_argument("client", None) != s.get("client_name"):
-            raise tornado.web.HTTPError(403, self.INVALID_CLIENT)
-        elif s.get("client_key") and not self._validate_signature():
-            raise tornado.web.HTTPError(403, self.INVALID_SIGNATURE)
-        elif s.get("allowed_hosts") and not self._validate_host():
-            raise tornado.web.HTTPError(403, self.INVALID_HOST)
+        self._validate_url()
+        self._validate_signature()
+        self._validate_client()
+        self._validate_host()
+        Image.validate_dimensions(
+            self.get_argument("w"), self.get_argument("h"))
+        Image.validate_options(self._get_resize_options())
+
+    def _validate_url(self):
+        if not self.get_argument("url"):
+            raise errors.UrlError("Missing url")
+
+    def _validate_client(self):
+        client = self.settings.get("client_name")
+        if client and self.get_argument("client") != client:
+            raise errors.ClientError("Invalid client")
 
     def _validate_signature(self):
-        if not self.get_argument("sig", None):
-            return False
-        parsed = urlparse.urlparse(self.request.uri)
-        return verify_signature(self.settings.get("client_key"), parsed.query)
+        key = self.settings.get("client_key")
+        if key and not verify_signature(key, urlparse(self.request.uri).query):
+            raise errors.SignatureError("Invalid signature")
 
     def _validate_host(self):
-        parsed = urlparse.urlparse(self.get_argument("url"))
-        if parsed.hostname not in self.settings.get("allowed_hosts", []):
-            return False
-        return True
-
-    def _validate_background(self):
-        try:
-            if self.get_argument("bg", None):
-                int(self.get_argument("bg"), 16)
-        except ValueError:
-            return False
-        return len(self.get_argument("bg", "")) in [0, 3, 6]
+        hosts = self.settings.get("allowed_hosts", [])
+        if hosts and urlparse(self.get_argument("url")).hostname not in hosts:
+            raise errors.HostError("Invalid host")
 
 
 def main():
