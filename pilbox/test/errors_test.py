@@ -1,6 +1,6 @@
 from ..errors import SignatureError, ClientError, HostError, \
     BackgroundError, DimensionsError, FilterError, ModeError, PositionError, \
-    QualityError, UrlError, FormatError
+    QualityError, UrlError, FormatError, PilboxError
 
 from tornado.test.util import unittest
 
@@ -16,3 +16,6 @@ class ErrorsTest(unittest.TestCase):
             if code in codes:
                 self.fail("The error code, %s, is repeated" % str(code))
             codes.append(code)
+
+    def test_base_not_implemented(self):
+        self.assertRaises(NotImplementedError, PilboxError.get_code)
