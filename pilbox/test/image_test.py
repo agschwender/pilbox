@@ -125,7 +125,9 @@ class ImageTest(unittest.TestCase):
 def _get_simple_criteria_combinations():
     return _make_combinations(
         [dict(values=[Image.MODES, [(400, 300), (300, 300), (100, 200)]],
-              fields=["mode", "size"])])
+              fields=["mode", "size"]),
+         dict(values=[["crop"], [(200, 100)], ["center", "face"]],
+              fields=["mode", "size", "position"])])
 
 
 def _get_example_criteria_combinations():
