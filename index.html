@@ -81,6 +81,21 @@
 <p>To see a list of all available options, run</p>
 
 <pre><code>$ python -m pilbox.app --help
+Usage: pilbox/app.py [OPTIONS]
+
+Options:
+
+  --allowed_hosts              list of allowed image hosts (default [])
+  --background                 default bg color 3 or 6-digit hexadecimal
+  --client_key                 client key
+  --client_name                client name
+  --config                     path to configuration file
+  --debug                      run in debug mode (default False)
+  --filter                     default filter to use when resizing
+  --help                       show this help information
+  --port                       run on the given port (default 8888)
+  --position                   default cropping position
+  --quality                    default jpeg quality, 0-100
 </code></pre>
 
 <h2>
@@ -128,6 +143,20 @@
 </ul>
 </li>
 <li>
+<em>filter</em>: The filtering algorithm used for resizing
+
+<ul>
+<li>
+<em>nearest</em>: Fastest, but often images appear pixelated</li>
+<li>
+<em>bilinear</em>: Faster, can produce acceptable results</li>
+<li>
+<em>bicubic</em>: Fast, can produce acceptable results</li>
+<li>
+<em>antialias</em>: Slower, produces the best results</li>
+</ul>
+</li>
+<li>
 <em>bg</em>: Background color used with fill mode, 3- or 6-digit hexadecimal number</li>
 <li>
 <em>pos</em>: The crop position
@@ -156,10 +185,45 @@
 </ul>
 </li>
 <li>
+<em>q</em>: The quality used to save the image, only relevant to JPEGs. Values range from 1 to 100.</li>
+<li>
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code>, and either <code>w</code> or <code>h</code> parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+</ul><p>The <code>url</code>, and either <code>w</code> or <code>h</code> parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>q</code> is optional and default to <code>90</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+
+<h1>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h1>
+
+<p>The following images show the various resizing modes in action for an original image size of <code>640x428</code> that is being resized to <code>500x400</code>.</p>
+
+<h2>
+<a name="clip" class="anchor" href="#clip"><span class="octicon octicon-link"></span></a>Clip</h2>
+
+<p>The image is resized to fit within a <code>500x400</code> box, producing an image that is <code>500x334</code>. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.</p>
+
+<p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-clip.jpg" alt="Clipped image"></p>
+
+<h2>
+<a name="crop" class="anchor" href="#crop"><span class="octicon octicon-link"></span></a>Crop</h2>
+
+<p>The image is resized so that one dimension fits within the <code>500x400</code> box. It is then centered and the excess is cut from the image. Cropping is useful when the position of the subject is known and the image must be exactly the supplied size.</p>
+
+<p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-crop.jpg" alt="Cropped image"></p>
+
+<h2>
+<a name="fill" class="anchor" href="#fill"><span class="octicon octicon-link"></span></a>Fill</h2>
+
+<p>Similar to clip, fill resizes the image to fit within a <code>500x400</code> box. Once clipped, the image is centered within the box and all left over space is filled with the supplied background color. Filling is useful when no portion of the image can be lost and it must be exactly the supplied size.</p>
+
+<p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-fill-ccc.jpg" alt="Filled image"></p>
+
+<h2>
+<a name="scale" class="anchor" href="#scale"><span class="octicon octicon-link"></span></a>Scale</h2>
+
+<p>The image is clipped to fit with the <code>500x400</code> box and then stretched to fill the excess space. Scaling is not often useful in production settings as it generally produces poor quality images. This mode is largely included for completeness.</p>
+
+<p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-scale.jpg" alt="Scale image"></p>
 
 <h1>
 <a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h1>
@@ -191,6 +255,31 @@
 <p>The signature is passed to the application by appending the <code>sig</code> paramater to the query string; e.g. <code>x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a0c797ef26</code>. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the <code>pilbox.signature</code> command described in the <a href="#tools">tools section</a>.</p>
 
 <h1>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h1>
+
+<p>All options that can be supplied to the application via the command line, can also be specified in the configuration file. Configuration files are simply python files that define the options as variables. The below is an example configuration.</p>
+
+<pre><code># General settings
+port = 8888
+
+# Set client name and key if the application requires signed requests. The
+# client must sign the request using the client_key, see README for
+# instructions.
+client_name = "sample"
+client_key = "3NdajqH8mBLokepU4I2Bh6KK84GUf1lzjnuTdskY"
+
+# Set the allowed hosts as an alternative to signed requests. Only those images
+# which are served from the following hosts will be requested.
+allowed_hosts = ["localhost"]
+
+# Set default resizing options
+background = "ccc"
+filter = "bilinear"
+position = "top"
+quality = 90
+</code></pre>
+
+<h1>
 <a name="tools" class="anchor" href="#tools"><span class="octicon octicon-link"></span></a>Tools</h1>
 
 <p>To verify that your client application is generating correct signatures, use the signature command.</p>
@@ -220,6 +309,7 @@ Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
+<li>How to reconcile unavailable color profiles?</li>
 <li>Add backends (S3, file system, etc...) if necessary</li>
 </ul>
         </section>
