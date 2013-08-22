@@ -104,10 +104,7 @@ class Image(object):
         position - The position used to crop: see Image.POSITIONS
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
-        try:
-            img = PIL.Image.open(self.stream)
-        except IOError:
-            raise FormatError("Unable to identify image format")
+        img = PIL.Image.open(self.stream)
         if img.format.lower() not in self.FORMATS:
             raise FormatError("Unknown format: %s" % img.format)
         opts = Image._normalize_options(kwargs, self.defaults)
