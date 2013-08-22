@@ -81,7 +81,7 @@ Would be replaced with this image url
 <img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&w=300&h=300&mode=crop" />
 ```
 
-This will request the image served at the supplied url and resize it to 300x300 using the crop mode. The following is the list of parameters that can be supplied to the service
+This will request the image served at the supplied url and resize it to `300x300` using the `crop` mode. The following is the list of parameters that can be supplied to the service
 
   * _url_: The url of the image to be resized
   * _w_: The desired width of the image
@@ -112,7 +112,7 @@ This will request the image served at the supplied url and resize it to 300x300 
   * _client_: The client name
   * _sig_: The signature
 
-The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and default to `90`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and defaults to `90`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
 
 Examples
 ========
@@ -122,7 +122,7 @@ The following images show the various resizing modes in action for an original i
 Clip
 ----
 
-The image is resized to fit within a `500x400` box, producing an image that is `500x334`. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.
+The image is resized to fit within a `500x400` box, maintaing aspect ratio and producing an image that is `500x334`. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.
 
 ![Clipped image](pilbox/test/data/expected/example-500x400-clip.jpg)
 
