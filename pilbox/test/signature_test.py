@@ -3,9 +3,15 @@ from __future__ import absolute_import, division, print_function, \
 
 import hashlib
 import hmac
+
 from tornado.test.util import unittest
-import urlparse
-from ..signature import derive_signature, sign, verify_signature
+
+from pilbox.signature import derive_signature, sign, verify_signature
+
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 
 class SignatureTest(unittest.TestCase):
@@ -13,8 +19,8 @@ class SignatureTest(unittest.TestCase):
         key = "abc123"
         qs_list = ["x=1&y=2&z=3", "x=%20%2B%2F!%40%23%24%25%5E%26"]
         for qs in qs_list:
-            m = hmac.new(key, None, hashlib.sha1)
-            m.update(qs)
+            m = hmac.new(key.encode(), None, hashlib.sha1)
+            m.update(qs.encode())
             self.assertEqual(derive_signature(key, qs), m.hexdigest())
 
     def test_sign(self):

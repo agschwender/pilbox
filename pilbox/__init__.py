@@ -31,13 +31,14 @@ Versions:
   * 0.7: Resize using crop position
   * 0.7.1: Resize using a single dimension, maintaining aspect ratio
   * 0.7.2: Added filter and quality options
+  * 0.7.3: Support python 3
 """
 
 # human-readable version number
-version = "0.7.2"
+version = "0.7.3"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (0, 7, 2, 0)
+version_info = (0, 7, 3, 0)

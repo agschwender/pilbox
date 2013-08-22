@@ -14,18 +14,28 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import division
+from __future__ import absolute_import, division, print_function, \
+    with_statement
 
-import cv
-import io
 import logging
+import os.path
+
 import PIL.Image
 import PIL.ImageOps
-import os.path
 import tornado.httpclient
 
-from errors import BackgroundError, DimensionsError, FilterError, \
+from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
     FormatError, ModeError, PositionError, QualityError
+
+try:
+    from io import BytesIO
+except ImportError:
+    from cStringIO import StringIO as BytesIO
+
+try:
+    import cv
+except ImportError:
+    cv = None
 
 logger = logging.getLogger("tornado.application")
 
@@ -94,12 +104,15 @@ class Image(object):
         position - The position used to crop: see Image.POSITIONS
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
-        img = PIL.Image.open(self.stream)
+        try:
+            img = PIL.Image.open(self.stream)
+        except IOError:
+            raise FormatError("Unable to identify image format")
         if img.format.lower() not in self.FORMATS:
             raise FormatError("Unknown format: %s" % img.format)
         opts = Image._normalize_options(kwargs, self.defaults)
         resized = self._resize(img, self._get_size(img, width, height), opts)
-        outfile = io.BytesIO()
+        outfile = BytesIO()
         resized.save(outfile, img.format, quality=int(opts["quality"]))
         return outfile
 
@@ -119,7 +132,10 @@ class Image(object):
 
     def _crop(self, image, size, opts):
         if opts["position"] == "face":
-            pos = self._get_face_position(image)
+            if cv is None:
+                raise NotImplementedError
+            else:
+                pos = self._get_face_position(image)
         else:
             pos = opts["pil"]["position"]
         return PIL.ImageOps.fit(image, size, opts["pil"]["filter"], 0, pos)
@@ -221,7 +237,7 @@ def main():
         tornado.options.print_help()
         sys.exit()
     elif not args:
-        print "Missing image source url"
+        print("Missing image source url")
         sys.exit()
 
     if args[0].startswith("http://") or args[0].startswith("https://"):

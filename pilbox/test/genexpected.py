@@ -36,7 +36,7 @@ def main():
 
     cases = image_test.get_image_resize_cases()
     for case in cases:
-        with open(case["source_path"]) as f:
+        with open(case["source_path"], "rb") as f:
             print "Generating %s" % case["expected_path"]
             img = Image(f).resize(
                 case["width"], case["height"], mode=case["mode"],
@@ -44,7 +44,7 @@ def main():
                 filter=case.get("filter"),
                 position=case.get("position"),
                 quality=case.get("quality"))
-            with open(case["expected_path"], "w") as expected:
+            with open(case["expected_path"], "wb") as expected:
                 expected.write(img.getvalue())
 
 

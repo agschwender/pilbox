@@ -14,22 +14,35 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import absolute_import, division, print_function, \
+    with_statement
+
 import hashlib
 import hmac
 import re
-import urllib
-import urlparse
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+
+try:
+    import urlparse
+
+except ImportError:
+    import urllib.parse as urlparse
 
 
 def derive_signature(key, qs):
     """Derives the signature from the supplied query string using the key."""
-    return hmac.new(key, qs, hashlib.sha1).hexdigest()
+    key, qs = (key or "", qs or "")
+    return hmac.new(key.encode(), qs.encode(), hashlib.sha1).hexdigest()
 
 
 def sign(key, qs):
     """Signs the query string using the key."""
     sig = derive_signature(key, qs)
-    return "%s&%s" % (qs, urllib.urlencode([("sig", sig)]))
+    return "%s&%s" % (qs, urlencode([("sig", sig)]))
 
 
 def verify_signature(key, qs):
@@ -48,15 +61,14 @@ def main():
     if not options.key:
         tornado.options.print_help()
         sys.exit()
-    for i, arg in enumerate(args):
-        if i > 0:
-            print "=" * 78
-        if arg and arg[0] == "?":
-            print "Invalid query string, should not include leading '?'"
-            continue
-        print "Query String: %s" % arg
-        print "Signature: %s" % derive_signature(options.key, arg)
-        print "Signed Query String: %s" % sign(options.key, arg)
+
+    qs = args[0]
+    if qs and qs[0] == "?":
+        print("Invalid query string, should not include leading '?'")
+        sys.exit()
+    print("Query String: %s" % qs)
+    print("Signature: %s" % derive_signature(options.key, qs))
+    print("Signed Query String: %s" % sign(options.key, qs))
 
 if __name__ == "__main__":
     main()

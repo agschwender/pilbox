@@ -1,8 +1,12 @@
-from ..errors import SignatureError, ClientError, HostError, \
+from __future__ import absolute_import, division, print_function, \
+    with_statement
+
+from tornado.test.util import unittest
+
+from pilbox.errors import SignatureError, ClientError, HostError, \
     BackgroundError, DimensionsError, FilterError, ModeError, PositionError, \
     QualityError, UrlError, FormatError, PilboxError
 
-from tornado.test.util import unittest
 
 class ErrorsTest(unittest.TestCase):
 

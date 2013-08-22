@@ -32,7 +32,7 @@ class python::pillow {
   }
 
   python::pip { "Pillow":
-    ensure => installed,
+    ensure => "2.1.0",
     require => File[ "/usr/lib/libjpeg.so",
                      "/usr/lib/libfreetype.so",
                      "/usr/lib/libz.so" ]

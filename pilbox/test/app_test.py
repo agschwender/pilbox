@@ -2,17 +2,28 @@ from __future__ import absolute_import, division, print_function, \
     with_statement
 
 import os.path
+
 import tornado.escape
+from tornado.test.util import unittest
 from tornado.testing import AsyncHTTPTestCase
 import tornado.web
-import urllib
 
-from ..app import PilboxApplication
-from ..errors import SignatureError, ClientError, HostError, \
+from pilbox.app import PilboxApplication
+from pilbox.errors import SignatureError, ClientError, HostError, \
     BackgroundError, DimensionsError, FilterError, ModeError, PositionError, \
     QualityError, UrlError, FormatError
-from ..signature import sign
-from . import image_test
+from pilbox.signature import sign
+from pilbox.test import image_test
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+
+try:
+    import cv
+except ImportError:
+    cv = None
 
 
 class _AppAsyncMixin(object):
@@ -30,9 +41,6 @@ class _AppAsyncMixin(object):
 
     def get_image_resize_cases(self):
         cases = image_test.get_image_resize_cases()
-        if not cases:
-            self.fail("no valid images for testing")
-
         m = dict(background="bg", filter="filter", position="pos", quality="q")
         for i, case in enumerate(cases):
             path = "/test-data/%s" % os.path.basename(case["source_path"])
@@ -52,82 +60,90 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         return PilboxApplication()
 
     def test_missing_url(self):
-        qs = urllib.urlencode(dict(w=1, h=1))
+        qs = urlencode(dict(w=1, h=1))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), UrlError.get_code())
 
     def test_missing_dimensions(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg"))
+        qs = urlencode(dict(url="http://foo.co/x.jpg"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), DimensionsError.get_code())
 
     def test_invalid_width(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w="a", h=1))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w="a", h=1))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), DimensionsError.get_code())
 
     def test_invalid_height(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h="a"))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h="a"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), DimensionsError.get_code())
 
     def test_invalid_mode(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
-                                   mode="foo"))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, mode="foo"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), ModeError.get_code())
 
     def test_invalid_hexadecimal_background(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
-                                   mode="fill", bg="r"))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
+                            mode="fill", bg="r"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), BackgroundError.get_code())
 
     def test_invalid_long_background(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
-                                   mode="fill", bg="0f0f0f0f"))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
+                            mode="fill", bg="0f0f0f0f"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), BackgroundError.get_code())
 
     def test_invalid_position(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
-                                   pos="foo"))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, pos="foo"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), PositionError.get_code())
 
     def test_invalid_filter(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
-                                   filter="bar"))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, filter="bar"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), FilterError.get_code())
 
     def test_invalid_integer_quality(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
-                                   q="a"))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, q="a"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), QualityError.get_code())
 
     def test_outofbounds_quality(self):
-        qs = urllib.urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
-                                   q=200))
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, q=200))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), QualityError.get_code())
 
     def test_bad_format(self):
         path = "/test-data/test-bad-format.gif"
-        qs = urllib.urlencode(dict(url=self.get_url(path), w=1, h=1))
+        qs = urlencode(dict(url=self.get_url(path), w=1, h=1))
         resp = self.fetch_error(415, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), FormatError.get_code())
 
     def test_valid(self):
         cases = self.get_image_resize_cases()
         for case in cases:
-            qs = urllib.urlencode(case["source_query_params"])
-            resp = self.fetch_success("/?%s" % qs)
-            msg = "/?%s does not match %s" \
-                % (qs, case["expected_path"])
-            with open(case["expected_path"]) as expected:
-                self.assertEqual(resp.buffer.getvalue(), expected.read(), msg)
+            if case.get("mode") == "crop" and case.get("position") == "face":
+                continue
+            self._assert_expected_resize(case)
+
+    @unittest.skipIf(cv is None, "OpenCV is not installed")
+    def test_valid_face(self):
+        cases = self.get_image_resize_cases()
+        for case in cases:
+            if case.get("mode") == "crop" and case.get("position") == "face":
+                self._assert_expected_resize(case)
+
+    def _assert_expected_resize(self, case):
+        qs = urlencode(case["source_query_params"])
+        resp = self.fetch_success("/?%s" % qs)
+        msg = "/?%s does not match %s" \
+            % (qs, case["expected_path"])
+        with open(case["expected_path"], "rb") as expected:
+            self.assertEqual(resp.buffer.getvalue(), expected.read(), msg)
+
 
 
 class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
@@ -142,43 +158,45 @@ class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
 
     def test_missing_client_name(self):
         params = dict(url="http://foo.co/x.jpg", w=1, h=1)
-        qs = sign(self.KEY, urllib.urlencode(params))
+        qs = sign(self.KEY, urlencode(params))
         resp = self.fetch_error(403, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), ClientError.get_code())
 
     def test_bad_client_name(self):
         params = dict(url="http://foo.co/x.jpg", w=1, h=1, client="123")
-        qs = sign(self.KEY, urllib.urlencode(params))
+        qs = sign(self.KEY, urlencode(params))
         resp = self.fetch_error(403, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), ClientError.get_code())
 
     def test_missing_signature(self):
         params = dict(url="http://foo.co/x.jpg", w=1, h=1, client=self.NAME)
-        qs = urllib.urlencode(params)
+        qs = urlencode(params)
         resp = self.fetch_error(403, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), SignatureError.get_code())
 
     def test_bad_signature(self):
         params = dict(url="http://foo.co/x.jpg", w=1, h=1,
                       client=self.NAME, sig="abc123")
-        qs = urllib.urlencode(params)
+        qs = urlencode(params)
         resp = self.fetch_error(403, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), SignatureError.get_code())
 
     def test_bad_host(self):
         params = dict(url="http://bar.co/x.jpg", w=1, h=1, client=self.NAME)
-        qs = sign(self.KEY, urllib.urlencode(params))
+        qs = sign(self.KEY, urlencode(params))
         resp = self.fetch_error(403, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), HostError.get_code())
 
     def test_valid(self):
         cases = self.get_image_resize_cases()
         for case in cases:
+            if case.get("mode") == "crop" and case.get("position") == "face":
+                continue
             params = case["source_query_params"]
             params["client"] = self.NAME
-            qs = sign(self.KEY, urllib.urlencode(params))
+            qs = sign(self.KEY, urlencode(params))
             resp = self.fetch_success("/?%s" % qs)
             msg = "/?%s does not match %s" \
                 % (qs, case["expected_path"])
-            with open(case["expected_path"]) as expected:
+            with open(case["expected_path"], "rb") as expected:
                 self.assertEqual(resp.buffer.getvalue(), expected.read(), msg)

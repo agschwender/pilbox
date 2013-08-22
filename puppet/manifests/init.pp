@@ -21,12 +21,12 @@ node default {
   }
 
   python::pip { "tornado":
-    ensure => installed,
+    ensure => "3.1",
     require => Class[ "python" ],
   }
 
   python::pip { "coverage":
-    ensure => installed,
+    ensure => "3.6",
     require => Class[ "python" ],
   }
 

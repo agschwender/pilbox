@@ -6,10 +6,22 @@ import itertools
 import os
 import os.path
 import re
+
 from tornado.test.util import unittest
-from ..errors import BackgroundError, DimensionsError, FilterError, \
+
+from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
     ModeError, PositionError, QualityError, FormatError
-from ..image import Image
+from pilbox.image import Image
+
+try:
+    import cv
+except ImportError:
+    cv = None
+
+try:
+    from io import BytesIO
+except ImportError:
+    from cStringIO import StringIO as BytesIO
 
 
 DATADIR = os.path.join(os.path.dirname(__file__), "data")
@@ -32,28 +44,22 @@ def get_image_resize_cases():
     for criteria in _get_example_criteria_combinations():
         cases.append(_criteria_to_resize_case("example.jpg", criteria))
 
-    return filter(bool, cases)
+    return list(filter(bool, cases))
 
 
 class ImageTest(unittest.TestCase):
 
     def test_resize(self):
-        cases = get_image_resize_cases()
-        if not cases:
-            self.fail("no valid images for testing")
+        for case in get_image_resize_cases():
+            if case.get("mode") == "crop" and case.get("position") == "face":
+                continue
+            self._assert_expected_resize(case)
 
-        for case in cases:
-            with open(case["source_path"]) as f:
-                img = Image(f).resize(
-                    case["width"], case["height"], mode=case["mode"],
-                    background=case.get("background"),
-                    filter=case.get("filter"),
-                    position=case.get("position"),
-                    quality=case.get("quality"))
-                with open(case["expected_path"]) as expected:
-                    msg = "%s does not match %s" \
-                        % (case["source_path"], case["expected_path"])
-                    self.assertEqual(img.getvalue(), expected.read(), msg)
+    @unittest.skipIf(cv is None, "OpenCV is not installed")
+    def test_face_crop_resize(self):
+        for case in get_image_resize_cases():
+            if case.get("mode") == "crop" and case.get("position") == "face":
+                self._assert_expected_resize(case)
 
     def test_valid_dimensions(self):
         Image.validate_dimensions(100, 100)
@@ -81,7 +87,7 @@ class ImageTest(unittest.TestCase):
 
     def test_bad_format(self):
         path = os.path.join(DATADIR, "test-bad-format.gif")
-        with open(path) as f:
+        with open(path, "rb") as f:
             image = Image(f)
             self.assertRaises(FormatError, image.resize, 100, 100)
 
@@ -120,6 +126,21 @@ class ImageTest(unittest.TestCase):
             QualityError, Image.validate_options, dict(quality=101))
         self.assertRaises(
             QualityError, Image.validate_options, dict(quality=-1))
+
+    def _assert_expected_resize(self, case):
+        with open(case["source_path"], "rb") as f:
+            img = Image(f).resize(
+                case["width"], case["height"], mode=case["mode"],
+                background=case.get("background"),
+                filter=case.get("filter"),
+                position=case.get("position"),
+                quality=case.get("quality"))
+            with open(case["expected_path"], "rb") as expected:
+                msg = "%s does not match %s" \
+                    % (case["source_path"], case["expected_path"])
+                self.assertEqual(img.getvalue(), expected.read(), msg)
+
+
 
 
 def _get_simple_criteria_combinations():
