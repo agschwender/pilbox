@@ -44,7 +44,8 @@
 <a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
 
 <ul>
-<li><a href="http://www.python.org/download/">Python 2.7</a></li>
+<li>&gt;= <a href="http://www.python.org/download/">Python 2.7</a>
+</li>
 <li><a href="https://pypi.python.org/pypi/Pillow/2.1.0">Pillow 2.1.0</a></li>
 <li><a href="https://pypi.python.org/pypi/tornado/3.1">Tornado 3.1</a></li>
 <li><a href="http://opencv.org/">OpenCV 2.x</a></li>
@@ -119,7 +120,7 @@ Options:
 <div class="highlight"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop"</span> <span class="nt">/&gt;</span>
 </pre></div>
 
-<p>This will request the image served at the supplied url and resize it to 300x300 using the crop mode. The following is the list of parameters that can be supplied to the service</p>
+<p>This will request the image served at the supplied url and resize it to <code>300x300</code> using the <code>crop</code> mode. The following is the list of parameters that can be supplied to the service</p>
 
 <ul>
 <li>
@@ -190,7 +191,7 @@ Options:
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code>, and either <code>w</code> or <code>h</code> parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>q</code> is optional and default to <code>90</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+</ul><p>The <code>url</code>, and either <code>w</code> or <code>h</code> parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>q</code> is optional and defaults to <code>90</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
 
 <h1>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h1>
@@ -200,7 +201,7 @@ Options:
 <h2>
 <a name="clip" class="anchor" href="#clip"><span class="octicon octicon-link"></span></a>Clip</h2>
 
-<p>The image is resized to fit within a <code>500x400</code> box, producing an image that is <code>500x334</code>. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.</p>
+<p>The image is resized to fit within a <code>500x400</code> box, maintaing aspect ratio and producing an image that is <code>500x334</code>. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.</p>
 
 <p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-clip.jpg" alt="Clipped image"></p>
 
@@ -221,7 +222,7 @@ Options:
 <h2>
 <a name="scale" class="anchor" href="#scale"><span class="octicon octicon-link"></span></a>Scale</h2>
 
-<p>The image is clipped to fit with the <code>500x400</code> box and then stretched to fill the excess space. Scaling is not often useful in production settings as it generally produces poor quality images. This mode is largely included for completeness.</p>
+<p>The image is clipped to fit within the <code>500x400</code> box and then stretched to fill the excess space. Scaling is often not useful in production environments as it generally produces poor quality images. This mode is largely included for completeness.</p>
 
 <p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-scale.jpg" alt="Scale image"></p>
 
