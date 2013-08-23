@@ -222,15 +222,16 @@ def main():
     define("width", help="the desired image width", type=int)
     define("height", help="the desired image height", type=int)
     define("mode", help="the resizing mode",
-           metavar="|".join(Image.MODES), default="crop", type=str)
-    define("background", help="the hexidecimal fill background color",
-           default="ffffff", type=str)
+           metavar="|".join(Image.MODES), type=str)
+    define("background", help="the hexidecimal fill background color", type=str)
     define("position", help="the crop position",
-           metavar="|".join(Image.POSITIONS), default="center", type=str)
+           metavar="|".join(Image.POSITIONS), type=str)
+    define("filter", help="default filter to use when resizing",
+           metavar="|".join(Image.FILTERS), type=str)
+    define("quality", help="default jpeg quality, 0-100", type=int)
 
     args = parse_command_line()
-    if None in [options.width, options.height, options.mode, options.background,
-                options.position]:
+    if None in [options.width, options.height]:
         tornado.options.print_help()
         sys.exit()
     elif not args:
@@ -244,8 +245,10 @@ def main():
     else:
         image = Image(open(args[0], "r"))
     stream = image.resize(options.width, options.height, mode=options.mode,
-                          bg=options.background, pos=options.position)
-    sys.stdout.write(stream.read())
+                          filter=options.filter, background=options.background,
+                          position=options.position, quality=options.quality)
+    sys.stdout.write(stream.getvalue())
+    stream.close()
 
 if __name__ == "__main__":
     main()
