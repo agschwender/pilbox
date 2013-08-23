@@ -111,6 +111,7 @@ class Image(object):
         resized = self._resize(img, self._get_size(img, width, height), opts)
         outfile = BytesIO()
         resized.save(outfile, img.format, quality=int(opts["quality"]))
+        outfile.seek(0)
         return outfile
 
     def _resize(self, image, size, opts):

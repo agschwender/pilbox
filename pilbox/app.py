@@ -95,7 +95,11 @@ class ImageHandler(tornado.web.RequestHandler):
         resized = image.resize(
             self.get_argument("w"), self.get_argument("h"), **opts)
         self._forward_headers(resp.headers)
-        self.write(resized.getvalue())
+        while True:
+            s = resized.read(16384)
+            if not s:
+                break
+            self.write(s)
         resized.close()
         self.finish()
 
