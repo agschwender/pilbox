@@ -55,6 +55,18 @@ class ImageTest(unittest.TestCase):
                 continue
             self._assert_expected_resize(case)
 
+    def test_resize_using_settings(self):
+        for case in get_image_resize_cases():
+            if case.get("mode") == "crop" and case.get("position") == "face":
+                continue
+            with open(case["source_path"], "rb") as f:
+                img = Image(f, case).resize(
+                    case["width"], case["height"], mode=case["mode"])
+                with open(case["expected_path"], "rb") as expected:
+                    msg = "%s does not match %s" \
+                        % (case["source_path"], case["expected_path"])
+                    self.assertEqual(img.getvalue(), expected.read(), msg)
+
     @unittest.skipIf(cv is None, "OpenCV is not installed")
     def test_face_crop_resize(self):
         for case in get_image_resize_cases():
