@@ -65,7 +65,7 @@ class ImageTest(unittest.TestCase):
                 with open(case["expected_path"], "rb") as expected:
                     msg = "%s does not match %s" \
                         % (case["source_path"], case["expected_path"])
-                    self.assertEqual(img.getvalue(), expected.read(), msg)
+                    self.assertEqual(img.read(), expected.read(), msg)
 
     @unittest.skipIf(cv is None, "OpenCV is not installed")
     def test_face_crop_resize(self):
@@ -150,7 +150,7 @@ class ImageTest(unittest.TestCase):
             with open(case["expected_path"], "rb") as expected:
                 msg = "%s does not match %s" \
                     % (case["source_path"], case["expected_path"])
-                self.assertEqual(img.getvalue(), expected.read(), msg)
+                self.assertEqual(img.read(), expected.read(), msg)
 
 
 

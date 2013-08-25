@@ -248,7 +248,7 @@ def main():
     stream = image.resize(options.width, options.height, mode=options.mode,
                           filter=options.filter, background=options.background,
                           position=options.position, quality=options.quality)
-    sys.stdout.write(stream.getvalue())
+    sys.stdout.write(stream.read())
     stream.close()
 
 if __name__ == "__main__":

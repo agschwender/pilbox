@@ -45,7 +45,7 @@ def main():
                 position=case.get("position"),
                 quality=case.get("quality"))
             with open(case["expected_path"], "wb") as expected:
-                expected.write(img.getvalue())
+                expected.write(img.read())
 
 
 if __name__ == "__main__":

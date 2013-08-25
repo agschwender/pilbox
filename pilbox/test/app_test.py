@@ -142,7 +142,7 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         msg = "/?%s does not match %s" \
             % (qs, case["expected_path"])
         with open(case["expected_path"], "rb") as expected:
-            self.assertEqual(resp.buffer.getvalue(), expected.read(), msg)
+            self.assertEqual(resp.buffer.read(), expected.read(), msg)
 
 
 
@@ -199,4 +199,4 @@ class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
             msg = "/?%s does not match %s" \
                 % (qs, case["expected_path"])
             with open(case["expected_path"], "rb") as expected:
-                self.assertEqual(resp.buffer.getvalue(), expected.read(), msg)
+                self.assertEqual(resp.buffer.read(), expected.read(), msg)
