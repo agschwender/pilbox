@@ -51,7 +51,8 @@ define("allowed_hosts", default=[], help="list of allowed image hosts",
        type=str, multiple=True)
 
 # default resizing option settings
-define("background", help="default bg color 3 or 6-digit hexadecimal", type=str)
+define("background", help="default hexadecimal bg color (RGB or ARGB)",
+       type=str)
 define("filter", help="default filter to use when resizing", type=str)
 define("position", help="default cropping position", type=str)
 define("quality", help="default jpeg quality, 0-100", type=int)

@@ -92,7 +92,7 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
 
     def test_invalid_long_background(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1,
-                            mode="fill", bg="0f0f0f0f"))
+                            mode="fill", bg="0f0f0f0f0"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), BackgroundError.get_code())
 

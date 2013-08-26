@@ -88,7 +88,7 @@ class Image(object):
         elif opts["position"] not in Image.POSITIONS:
             raise PositionError("Invalid position: %s" % opts["position"])
         elif not Image._isint(opts["background"], 16) \
-                or len(opts["background"]) not in [3, 6]:
+                or len(opts["background"]) not in [3, 4, 6, 8]:
             raise BackgroundError("Invalid background: %s" % opts["background"])
         elif not Image._isint(opts["quality"]) \
                 or int(opts["quality"]) > 100 or int(opts["quality"]) < 0:
@@ -100,7 +100,7 @@ class Image(object):
 
         mode - The resizing mode to use, see Image.MODES
         filter - The filter to use: see Image.FILTERS
-        background - The background color to fill with, 3- or 6-digit hexdecimal
+        background - The hexadecimal background fill color, RGB or ARGB
         position - The position used to crop: see Image.POSITIONS
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
@@ -144,8 +144,9 @@ class Image(object):
             return clipped # No need to fill
         x = max(int((size[0] - clipped.size[0]) / 2.0), 0)
         y = max(int((size[1] - clipped.size[1]) / 2.0), 0)
-        img = PIL.Image.new(
-            mode=clipped.mode, size=size, color="#" + opts["background"])
+        color = color_hex_to_dec_tuple(opts["background"])
+        mode = "RGBA" if len(color) == 4 else "RGB"
+        img = PIL.Image.new(mode=mode, size=size, color=color)
         img.paste(clipped, (x, y))
         return img
 
@@ -188,6 +189,7 @@ class Image(object):
             Image._classifier = cv.Load(os.path.abspath(Image._CLASSIFIER_PATH))
         return Image._classifier
 
+
     def _pil_to_opencv(self, pi):
         mono = pi.convert("L")
         cvim = cv.CreateImageHeader(mono.size, cv.IPL_DEPTH_8U, 1)
@@ -214,6 +216,20 @@ class Image(object):
             return False
         return True
 
+
+def color_hex_to_dec_tuple(color):
+    """Converts a color from hexadecimal to decimal tuple, color can be in
+    the following formats: 3-digit RGB, 4-digit ARGB, 6-digit RGB and
+    8-digit ARGB.
+    """
+    assert len(color) in [3, 4, 6, 8]
+    if len(color) in [3, 4]:
+        color = "".join([c*2 for c in color])
+    n = int(color, 16)
+    t = ((n >> 16) & 255, (n >> 8) & 255, n & 255)
+    if len(color) == 8:
+        t = t + ((n >> 24) & 255,)
+    return t
 
 def main():
     import sys

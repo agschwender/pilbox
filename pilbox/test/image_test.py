@@ -11,7 +11,7 @@ from tornado.test.util import unittest
 
 from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
     ModeError, PositionError, QualityError, FormatError
-from pilbox.image import Image
+from pilbox.image import Image, color_hex_to_dec_tuple
 
 try:
     import cv
@@ -43,6 +43,9 @@ def get_image_resize_cases():
 
     for criteria in _get_example_criteria_combinations():
         cases.append(_criteria_to_resize_case("example.jpg", criteria))
+
+    for criteria in _get_transparent_criteria_combinations():
+        cases.append(_criteria_to_resize_case("test2.png", criteria))
 
     return list(filter(bool, cases))
 
@@ -119,11 +122,10 @@ class ImageTest(unittest.TestCase):
         self.assertRaises(
             BackgroundError, Image.validate_options, dict(background="0f"))
         self.assertRaises(
-            BackgroundError, Image.validate_options, dict(background="0f0f"))
-        self.assertRaises(
             BackgroundError, Image.validate_options, dict(background="0f0f0"))
-        self.assertRaises(
-            BackgroundError, Image.validate_options, dict(background="0f0f0f0"))
+        self.assertRaises(BackgroundError,
+                          Image.validate_options,
+                          dict(background="0f0f0f0f0"))
 
     def test_bad_position(self):
         self.assertRaises(
@@ -138,6 +140,26 @@ class ImageTest(unittest.TestCase):
             QualityError, Image.validate_options, dict(quality=101))
         self.assertRaises(
             QualityError, Image.validate_options, dict(quality=-1))
+
+    def test_color_hex_to_dec_tuple(self):
+        tests  = [["fff", (255, 255, 255)],
+                  ["ccc", (204, 204, 204)],
+                  ["abc", (170, 187, 204)],
+                  ["ffffff", (255, 255, 255)],
+                  ["cccccc", (204, 204, 204)],
+                  ["abcdef", (171, 205, 239)],
+                  ["fabc", (170, 187, 204, 255)],
+                  ["0abc", (170, 187, 204, 0)],
+                  ["8abc", (170, 187, 204, 136)],
+                  ["80abcdef", (171, 205, 239, 128)],
+                  ["ffabcdef", (171, 205, 239, 255)],
+                  ["00abcdef", (171, 205, 239, 0)]]
+        for test in tests:
+            self.assertTupleEqual(color_hex_to_dec_tuple(test[0]), test[1])
+
+    def test_invalid_color_hex_to_dec_tuple(self):
+        for color in ["9", "99", "99999", "9999999", "999999999"]:
+            self.assertRaises(AssertionError, color_hex_to_dec_tuple, color)
 
     def _assert_expected_resize(self, case):
         with open(case["source_path"], "rb") as f:
@@ -183,6 +205,10 @@ def _get_advanced_criteria_combinations():
          dict(values=[Image.MODES, [(125, None), (None, 125)]],
               fields=["mode", "size"])])
 
+def _get_transparent_criteria_combinations():
+    return _make_combinations(
+        [dict(values=[["fill"], [(75, 125)], ["1ccc", "a0cccccc"]],
+              fields=["mode", "size", "background"])])
 
 def _make_combinations(choices):
     combos = []

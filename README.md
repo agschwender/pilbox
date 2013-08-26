@@ -48,7 +48,7 @@ To see a list of all available options, run
     Options:
 
       --allowed_hosts            list of allowed image hosts (default [])
-      --background               default bg color 3 or 6-digit hexadecimal
+      --background               default hexadecimal bg color (RGB or ARGB)
       --client_key               client key
       --client_name              client name
       --config                   path to configuration file
@@ -96,7 +96,9 @@ This will request the image served at the supplied url and resize it to `300x300
     * _bilinear_: Faster, can produce acceptable results
     * _bicubic_: Fast, can produce acceptable results
     * _antialias_: Slower, produces the best results
-  * _bg_: Background color used with fill mode, 3- or 6-digit hexadecimal number
+  * _bg_: Background color used with fill mode (RGB or ARGB)
+    * _RGB_: 3- or 6-digit hexadecimal number
+    * _ARGB_: 4- or 8-digit hexadecimal number, only relevant for PNG images
   * _pos_: The crop position
     * _top-left_: Crop from the top left
     * _top_: Crop from the top center
