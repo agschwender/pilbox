@@ -199,7 +199,7 @@ Options:
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code>, and either <code>w</code> or <code>h</code> parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>q</code> is optional and defaults to <code>90</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+</ul><p>The <code>url</code>, and either <code>w</code> or <code>h</code> parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>bicubic</code>. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>q</code> is optional and defaults to <code>75</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
 
 <h1>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h1>
@@ -314,7 +314,35 @@ Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a
 
 <p>The application itself does not include any caching. It is recommended that the application run behind a CDN for larger applications or behind varnish for smaller ones.</p>
 
+<p>Defaults for the application have been optimized for quality rather than performance. If you wish to get higher performance out of the application, it is recommended you use a less computationally expensive filtering algorithm and a lower JPEG quality. For examples, add the following to the configuration.</p>
+
+<pre><code># Set default resizing options
+filter = "bicubic"
+quality = 75
+</code></pre>
+
 <h1>
+<a name="changelog" class="anchor" href="#changelog"><span class="octicon octicon-link"></span></a>Changelog</h1>
+
+<ul>
+<li>0.1: Image resizing fit</li>
+<li>0.1.1: Image cropping</li>
+<li>0.1.2: Image scaling</li>
+<li>0.2: Configuration integration</li>
+<li>0.3: Signature generation</li>
+<li>0.3.1: Signature command-line tool</li>
+<li>0.4: Image resize command-line tool</li>
+<li>0.5: Facial recognition cropping</li>
+<li>0.6: Fill resizing mode</li>
+<li>0.7: Resize using crop position</li>
+<li>0.7.1: Resize using a single dimension, maintaining aspect ratio</li>
+<li>0.7.2: Added filter and quality options</li>
+<li>0.7.3: Support python 3</li>
+<li>0.7.4: Fixed cli for image generation</li>
+<li>0.7.5: Write output in 16K blocks</li>
+<li>0.8: Added support for ARGB (alpha-channel)</li>
+<li>0.8.1: Increased max clients and write block sizes</li>
+</ul><h1>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
