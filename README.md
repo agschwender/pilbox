@@ -114,7 +114,7 @@ This will request the image served at the supplied url and resize it to `300x300
   * _client_: The client name
   * _sig_: The signature
 
-The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and defaults to `90`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `bicubic`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and defaults to `75`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
 
 Examples
 ========
@@ -223,6 +223,33 @@ Deploying
 =========
 
 The application itself does not include any caching. It is recommended that the application run behind a CDN for larger applications or behind varnish for smaller ones.
+
+Defaults for the application have been optimized for quality rather than performance. If you wish to get higher performance out of the application, it is recommended you use a less computationally expensive filtering algorithm and a lower JPEG quality. For examples, add the following to the configuration.
+
+    # Set default resizing options
+    filter = "bicubic"
+    quality = 75
+
+Changelog
+=========
+
+  * 0.1: Image resizing fit
+  * 0.1.1: Image cropping
+  * 0.1.2: Image scaling
+  * 0.2: Configuration integration
+  * 0.3: Signature generation
+  * 0.3.1: Signature command-line tool
+  * 0.4: Image resize command-line tool
+  * 0.5: Facial recognition cropping
+  * 0.6: Fill resizing mode
+  * 0.7: Resize using crop position
+  * 0.7.1: Resize using a single dimension, maintaining aspect ratio
+  * 0.7.2: Added filter and quality options
+  * 0.7.3: Support python 3
+  * 0.7.4: Fixed cli for image generation
+  * 0.7.5: Write output in 16K blocks
+  * 0.8: Added support for ARGB (alpha-channel)
+  * 0.8.1: Increased max clients and write block sizes
 
 TODO
 ====

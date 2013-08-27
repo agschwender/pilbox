@@ -84,12 +84,14 @@ class PilboxApplication(tornado.web.Application):
 
 class ImageHandler(tornado.web.RequestHandler):
     FORWARD_HEADERS = ['Cache-Control', 'Expires', 'Last-Modified']
+    MAX_HTTP_CLIENTS = 25
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
     def get(self):
         self._validate_request()
-        client = tornado.httpclient.AsyncHTTPClient()
+        client = tornado.httpclient.AsyncHTTPClient(
+            max_clients=self.MAX_HTTP_CLIENTS)
         resp = yield client.fetch(self.get_argument("url"))
         image = Image(resp.buffer, self.settings)
         opts = self._get_resize_options()
@@ -97,7 +99,7 @@ class ImageHandler(tornado.web.RequestHandler):
             self.get_argument("w"), self.get_argument("h"), **opts)
         self._forward_headers(resp.headers)
         while True:
-            s = resized.read(16384)
+            s = resized.read(65536)
             if not s:
                 break
             self.write(s)
