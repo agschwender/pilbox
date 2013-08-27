@@ -9,21 +9,21 @@ class python {
   define pip($ensure = installed) {
     case $ensure {
       installed: {
-        exec { "pip install $name":
+        exec { "pip install --use-mirrors $name":
           require => Package[ "python-pip" ],
           tries => 3,
           try_sleep => 15,
         }
       }
       latest: {
-        exec { "pip install --upgrade $name":
+        exec { "pip install --use-mirrors --upgrade $name":
           require => Package[ "python-pip" ],
           tries => 3,
           try_sleep => 15,
         }
       }
       default: {
-        exec { "pip install $name==$ensure":
+        exec { "pip install --use-mirrors $name==$ensure":
           require => Package[ "python-pip" ],
           tries => 3,
           try_sleep => 15,
