@@ -14,6 +14,10 @@ client_key = "3NdajqH8mBLokepU4I2Bh6KK84GUf1lzjnuTdskY"
 
 allowed_hosts = ["localhost"]
 
+# Request related settings
+
+max_requests = 50
+timeout = 7.5
 
 # Set default resizing options
 

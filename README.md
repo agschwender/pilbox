@@ -47,7 +47,7 @@ To see a list of all available options, run
 
     Options:
 
-      --allowed_hosts            list of allowed image hosts (default [])
+      --allowed_hosts            list of allowed hosts (default [])
       --background               default hexadecimal bg color (RGB or ARGB)
       --client_key               client key
       --client_name              client name
@@ -55,9 +55,11 @@ To see a list of all available options, run
       --debug                    run in debug mode (default False)
       --filter                   default filter to use when resizing
       --help                     show this help information
+      --max_requests             max concurrent requests (default 40)
       --port                     run on the given port (default 8888)
       --position                 default cropping position
       --quality                  default jpeg quality, 0-100
+      --timeout                  timeout of requests in seconds (default 10)
 
 Vagrant
 -------
@@ -191,9 +193,13 @@ All options that can be supplied to the application via the command line, can al
     client_name = "sample"
     client_key = "3NdajqH8mBLokepU4I2Bh6KK84GUf1lzjnuTdskY"
 
-    # Set the allowed hosts as an alternative to signed requests. Only those images
-    # which are served from the following hosts will be requested.
+    # Set the allowed hosts as an alternative to signed requests. Only those
+    # images which are served from the following hosts will be requested.
     allowed_hosts = ["localhost"]
+
+    # Request-related settings
+    max_requests = 50
+    timeout = 7.5
 
     # Set default resizing options
     background = "ccc"
@@ -250,6 +256,7 @@ Changelog
   * 0.7.5: Write output in 16K blocks
   * 0.8: Added support for ARGB (alpha-channel)
   * 0.8.1: Increased max clients and write block sizes
+  * 0.8.2: Added configuration for max clients and timeout
 
 TODO
 ====

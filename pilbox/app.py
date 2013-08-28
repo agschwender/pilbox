@@ -18,7 +18,8 @@ from __future__ import absolute_import, division, print_function, \
     with_statement
 
 import logging
-import os.path
+import socket
+import sys
 
 import tornado.escape
 import tornado.gen
@@ -39,22 +40,25 @@ except ImportError:
     from urllib.parse import urlparse
 
 
-define("config", help="path to configuration file", type=str,
+# general settings
+define("config", help="path to configuration file",
        callback=lambda path: parse_config_file(path, final=False))
 define("debug", default=False, help="run in debug mode", type=bool)
 define("port", default=8888, help="run on the given port", type=int)
 
 # security related settings
-define("client_name", help="client name", type=str)
-define("client_key", help="client key", type=str)
-define("allowed_hosts", default=[], help="list of allowed image hosts",
-       type=str, multiple=True)
+define("client_name", help="client name")
+define("client_key", help="client key")
+define("allowed_hosts", help="list of allowed hosts", default=[], multiple=True)
+
+# request related settings
+define("max_requests", help="max concurrent requests", type=int, default=40)
+define("timeout", help="timeout of requests in seconds", type=float, default=10)
 
 # default resizing option settings
-define("background", help="default hexadecimal bg color (RGB or ARGB)",
-       type=str)
-define("filter", help="default filter to use when resizing", type=str)
-define("position", help="default cropping position", type=str)
+define("background", help="default hexadecimal bg color (RGB or ARGB)")
+define("filter", help="default filter to use when resizing")
+define("position", help="default cropping position")
 define("quality", help="default jpeg quality, 0-100", type=int)
 
 
@@ -62,57 +66,50 @@ logger = logging.getLogger("tornado.application")
 
 
 class PilboxApplication(tornado.web.Application):
-    TESTDATADIR = os.path.join(os.path.dirname(__file__), "test", "data")
 
     def __init__(self, **kwargs):
-        handlers = [
-            (r"/test-data/(.*)",
-             tornado.web.StaticFileHandler,
-             {"path": self.TESTDATADIR}),
-            (r"/", ImageHandler)]
         settings = dict(debug=options.debug,
                         client_name=options.client_name,
                         client_key=options.client_key,
-                        allowed_hosts=options.allowed_hosts or [],
+                        allowed_hosts=options.allowed_hosts,
                         background=options.background,
                         filter=options.filter,
                         position=options.position,
-                        quality=options.quality)
+                        quality=options.quality,
+                        max_requests=options.max_requests,
+                        timeout=options.timeout)
         settings.update(kwargs)
-        tornado.web.Application.__init__(self, handlers, **settings)
+        tornado.web.Application.__init__(self, self.get_handlers(), **settings)
+
+    def get_handlers(self):
+        return [(r"/", ImageHandler)]
 
 
 class ImageHandler(tornado.web.RequestHandler):
     FORWARD_HEADERS = ['Cache-Control', 'Expires', 'Last-Modified']
-    MAX_HTTP_CLIENTS = 25
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
     def get(self):
         self._validate_request()
         client = tornado.httpclient.AsyncHTTPClient(
-            max_clients=self.MAX_HTTP_CLIENTS)
-        resp = yield client.fetch(self.get_argument("url"))
-        image = Image(resp.buffer, self.settings)
-        opts = self._get_resize_options()
-        resized = image.resize(
-            self.get_argument("w"), self.get_argument("h"), **opts)
-        self._forward_headers(resp.headers)
-        while True:
-            s = resized.read(65536)
-            if not s:
-                break
-            self.write(s)
-        resized.close()
+            max_clients=self.settings.get("max_requests"))
+        try:
+            resp = yield client.fetch(
+                self.get_argument("url"),
+                request_timeout=self.settings.get("timeout"))
+        except (socket.gaierror, tornado.httpclient.HTTPError, ValueError) as e:
+            logger.warn("Fetch error for %s: %s"
+                        % (self.get_argument("url"), str(e)))
+            raise errors.FetchError()
+        self._resize(resp)
         self.finish()
 
     def get_argument(self, name, default=None):
         return super(ImageHandler, self).get_argument(name, default)
 
     def write_error(self, status_code, **kwargs):
-        err = None
-        if "exc_info" in kwargs:
-            err = kwargs["exc_info"][1]
+        err = kwargs["exc_info"][1] if "exc_info" in kwargs else None
         if isinstance(err, errors.PilboxError):
             self.set_header('Content-Type', 'application/json')
             resp = dict(status_code=status_code,
@@ -134,6 +131,16 @@ class ImageHandler(tornado.web.RequestHandler):
                     position=self.get_argument("pos"),
                     background=self.get_argument("bg"),
                     quality=self.get_argument("q"))
+
+    def _resize(self, resp):
+        image = Image(resp.buffer, self.settings)
+        opts = self._get_resize_options()
+        resized = image.resize(
+            self.get_argument("w"), self.get_argument("h"), **opts)
+        self._forward_headers(resp.headers)
+        for block in iter(lambda: resized.read(65536), ""):
+            self.write(block)
+        resized.close()
 
     def _validate_request(self):
         self._validate_url()
@@ -164,8 +171,11 @@ class ImageHandler(tornado.web.RequestHandler):
             raise errors.HostError("Invalid host")
 
 
+
 def main():
     tornado.options.parse_command_line()
+    if options.debug:
+        logger.setLevel(logging.DEBUG)
     server = tornado.httpserver.HTTPServer(PilboxApplication())
     logger.info("Starting server...")
     try:

@@ -65,6 +65,14 @@ class UrlError(BadRequestError):
     def get_code(): return 8
 
 
+class FetchError(PilboxError):
+    def __init__(self, msg=None, *args, **kwargs):
+        super(FetchError, self).__init__(404, msg, *args, **kwargs)
+
+    @staticmethod
+    def get_code(): return 301
+
+
 class ForbiddenError(PilboxError):
     def __init__(self, msg=None, *args, **kwargs):
         super(ForbiddenError, self).__init__(403, msg, *args, **kwargs)

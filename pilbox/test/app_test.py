@@ -2,8 +2,10 @@ from __future__ import absolute_import, division, print_function, \
     with_statement
 
 import os.path
+import time
 
 import tornado.escape
+import tornado.ioloop
 from tornado.test.util import unittest
 from tornado.testing import AsyncHTTPTestCase
 import tornado.web
@@ -11,7 +13,7 @@ import tornado.web
 from pilbox.app import PilboxApplication
 from pilbox.errors import SignatureError, ClientError, HostError, \
     BackgroundError, DimensionsError, FilterError, ModeError, PositionError, \
-    QualityError, UrlError, FormatError
+    QualityError, UrlError, FormatError, FetchError
 from pilbox.signature import sign
 from pilbox.test import image_test
 
@@ -43,7 +45,7 @@ class _AppAsyncMixin(object):
         cases = image_test.get_image_resize_cases()
         m = dict(background="bg", filter="filter", position="pos", quality="q")
         for i, case in enumerate(cases):
-            path = "/test-data/%s" % os.path.basename(case["source_path"])
+            path = "/test/data/%s" % os.path.basename(case["source_path"])
             cases[i]["source_query_params"] = dict(
                 url=self.get_url(path),
                 w=case["width"] or "",
@@ -55,9 +57,25 @@ class _AppAsyncMixin(object):
         return cases
 
 
+class _PilboxTestApplication(PilboxApplication):
+    def get_handlers(self):
+        path = os.path.join(os.path.dirname(__file__), "data")
+        handlers = [(r"/test/data/(.*)", _DelayedFileHandler, {"path": path})]
+        handlers.extend(super(_PilboxTestApplication, self).get_handlers())
+        return handlers
+
+
+class _DelayedFileHandler(tornado.web.StaticFileHandler):
+    def get(self, path, **kwargs):
+        #delay = time.time() + float(self.get_argument("delay", 0.0))
+        #yield gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, delay)
+        time.sleep(float(self.get_argument("delay", 0.0)))
+        return super(_DelayedFileHandler, self).get(path, **kwargs)
+
+
 class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
     def get_app(self):
-        return PilboxApplication()
+        return _PilboxTestApplication()
 
     def test_missing_url(self):
         qs = urlencode(dict(w=1, h=1))
@@ -117,10 +135,27 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         self.assertEqual(resp.get("error_code"), QualityError.get_code())
 
     def test_bad_format(self):
-        path = "/test-data/test-bad-format.gif"
+        path = "/test/data/test-bad-format.gif"
         qs = urlencode(dict(url=self.get_url(path), w=1, h=1))
         resp = self.fetch_error(415, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), FormatError.get_code())
+
+    def test_not_found(self):
+        path = "/test/data/test-not-found.jpg"
+        qs = urlencode(dict(url=self.get_url(path), w=1, h=1))
+        resp = self.fetch_error(404, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), FetchError.get_code())
+
+    def test_not_connect(self):
+        qs = urlencode(dict(url="http://a.com/a.jpg", w=1, h=1))
+        resp = self.fetch_error(404, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), FetchError.get_code())
+
+    def test_invalid_protocol(self):
+        url = self.get_url("/test/data/a.jpg").replace("http:", "file:")
+        qs = urlencode(dict(url=url, w=1, h=1))
+        resp = self.fetch_error(404, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), FetchError.get_code())
 
     def test_valid(self):
         cases = self.get_image_resize_cases()
@@ -145,13 +180,12 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
             self.assertEqual(resp.buffer.read(), expected.read(), msg)
 
 
-
 class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
     KEY = "abcdef"
     NAME = "abc"
 
     def get_app(self):
-        return PilboxApplication(
+        return _PilboxTestApplication(
             client_name=self.NAME,
             client_key=self.KEY,
             allowed_hosts=["foo.co", "bar.io", "localhost"])
@@ -200,3 +234,14 @@ class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
                 % (qs, case["expected_path"])
             with open(case["expected_path"], "rb") as expected:
                 self.assertEqual(resp.buffer.read(), expected.read(), msg)
+
+
+class AppSlowTest(AsyncHTTPTestCase, _AppAsyncMixin):
+    def get_app(self):
+        return _PilboxTestApplication(timeout=0.5)
+
+    def test_invalid_protocol(self):
+        url = self.get_url("/test/data/test1.jpg?delay=1.0")
+        qs = urlencode(dict(url=url, w=1, h=1))
+        resp = self.fetch_error(404, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), FetchError.get_code())
