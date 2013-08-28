@@ -5,9 +5,10 @@ import os.path
 import time
 
 import tornado.escape
+import tornado.gen
 import tornado.ioloop
 from tornado.test.util import unittest
-from tornado.testing import AsyncHTTPTestCase
+from tornado.testing import AsyncHTTPTestCase, gen_test
 import tornado.web
 
 from pilbox.app import PilboxApplication
@@ -27,6 +28,9 @@ try:
 except ImportError:
     cv = None
 
+
+import logging
+logger = logging.getLogger("tornado.application")
 
 class _AppAsyncMixin(object):
     def fetch_error(self, code, *args, **kwargs):
@@ -60,17 +64,23 @@ class _AppAsyncMixin(object):
 class _PilboxTestApplication(PilboxApplication):
     def get_handlers(self):
         path = os.path.join(os.path.dirname(__file__), "data")
-        handlers = [(r"/test/data/(.*)", _DelayedFileHandler, {"path": path})]
+        handlers = [(r"/test/data/test-delayed.jpg", _DelayedHandler),
+                    (r"/test/data/(.*)",
+                     tornado.web.StaticFileHandler,
+                     {"path": path})]
         handlers.extend(super(_PilboxTestApplication, self).get_handlers())
         return handlers
 
 
-class _DelayedFileHandler(tornado.web.StaticFileHandler):
-    def get(self, path, **kwargs):
-        #delay = time.time() + float(self.get_argument("delay", 0.0))
-        #yield gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, delay)
-        time.sleep(float(self.get_argument("delay", 0.0)))
-        return super(_DelayedFileHandler, self).get(path, **kwargs)
+class _DelayedHandler(tornado.web.RequestHandler):
+
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def get(self):
+        delay = time.time() + float(self.get_argument("delay", 0.0))
+        yield tornado.gen.Task(
+            tornado.ioloop.IOLoop.instance().add_timeout, delay)
+        self.finish()
 
 
 class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
@@ -241,7 +251,7 @@ class AppSlowTest(AsyncHTTPTestCase, _AppAsyncMixin):
         return _PilboxTestApplication(timeout=0.5)
 
     def test_timeout(self):
-        url = self.get_url("/test/data/test1.jpg?delay=1.0")
+        url = self.get_url("/test/data/test-delayed.jpg?delay=1.0")
         qs = urlencode(dict(url=url, w=1, h=1))
-        resp = self.fetch_error(404, "/?%s" % qs)
+        resp = self.fetch_error(404, "/?%s" %qs)
         self.assertEqual(resp.get("error_code"), FetchError.get_code())

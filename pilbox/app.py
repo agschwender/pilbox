@@ -138,7 +138,7 @@ class ImageHandler(tornado.web.RequestHandler):
         resized = image.resize(
             self.get_argument("w"), self.get_argument("h"), **opts)
         self._forward_headers(resp.headers)
-        for block in iter(lambda: resized.read(65536), ""):
+        for block in iter(lambda: resized.read(65536), b""):
             self.write(block)
         resized.close()
 
