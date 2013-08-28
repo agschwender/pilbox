@@ -240,7 +240,7 @@ class AppSlowTest(AsyncHTTPTestCase, _AppAsyncMixin):
     def get_app(self):
         return _PilboxTestApplication(timeout=0.5)
 
-    def test_invalid_protocol(self):
+    def test_timeout(self):
         url = self.get_url("/test/data/test1.jpg?delay=1.0")
         qs = urlencode(dict(url=url, w=1, h=1))
         resp = self.fetch_error(404, "/?%s" % qs)
