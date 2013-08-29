@@ -230,7 +230,7 @@ Deploying
 
 The application itself does not include any caching. It is recommended that the application run behind a CDN for larger applications or behind varnish for smaller ones.
 
-Defaults for the application have been optimized for quality rather than performance. If you wish to get higher performance out of the application, it is recommended you use a less computationally expensive filtering algorithm and a lower JPEG quality. For examples, add the following to the configuration.
+Defaults for the application have been optimized for quality rather than performance. If you wish to get higher performance out of the application, it is recommended you use a less computationally expensive filtering algorithm and a lower JPEG quality. For example, add the following to the configuration.
 
     # Set default resizing options
     filter = "bicubic"
