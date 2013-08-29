@@ -162,10 +162,10 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         self.assertEqual(resp.get("error_code"), FetchError.get_code())
 
     def test_invalid_protocol(self):
-        url = self.get_url("/test/data/a.jpg").replace("http:", "file:")
-        qs = urlencode(dict(url=url, w=1, h=1))
-        resp = self.fetch_error(404, "/?%s" % qs)
-        self.assertEqual(resp.get("error_code"), FetchError.get_code())
+        path = os.path.join(os.path.dirname(__file__), "data", "test1.jpg")
+        qs = urlencode(dict(url="file://%s" % path, w=1, h=1))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), UrlError.get_code())
 
     def test_valid(self):
         cases = self.get_image_resize_cases()

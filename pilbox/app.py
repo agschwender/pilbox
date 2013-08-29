@@ -98,7 +98,7 @@ class ImageHandler(tornado.web.RequestHandler):
             resp = yield client.fetch(
                 self.get_argument("url"),
                 request_timeout=self.settings.get("timeout"))
-        except (socket.gaierror, tornado.httpclient.HTTPError, ValueError) as e:
+        except (socket.gaierror, tornado.httpclient.HTTPError) as e:
             logger.warn("Fetch error for %s: %s"
                         % (self.get_argument("url"), str(e)))
             raise errors.FetchError()
@@ -154,6 +154,9 @@ class ImageHandler(tornado.web.RequestHandler):
     def _validate_url(self):
         if not self.get_argument("url"):
             raise errors.UrlError("Missing url")
+        elif not self.get_argument("url").startswith("http://") \
+                and not self.get_argument("url").startswith("https://"):
+            raise errors.UrlError("Unsupported protocol")
 
     def _validate_client(self):
         client = self.settings.get("client_name")
