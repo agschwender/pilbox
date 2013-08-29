@@ -116,7 +116,7 @@ This will request the image served at the supplied url and resize it to `300x300
   * _client_: The client name
   * _sig_: The signature
 
-The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `bicubic`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and defaults to `75`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and defaults to `90`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
 
 Examples
 ========
