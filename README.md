@@ -258,6 +258,7 @@ Changelog
   * 0.8.1: Increased max clients and write block sizes
   * 0.8.2: Added configuration for max clients and timeout
   * 0.8.3: Only allow http and https protocols
+  * 0.8.4: Added support for WebP
 
 TODO
 ====

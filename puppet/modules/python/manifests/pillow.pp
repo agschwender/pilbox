@@ -5,36 +5,28 @@ class python::pillow {
     ensure => installed
   }
 
-  file { "/usr/lib/libjpeg.so":
-    ensure => "link",
-    target => "/usr/lib/x86_64-linux-gnu/libjpeg.so",
-    require => Package[ "libjpeg-dev" ]
-  }
-
-  package { [ "libfreetype6", "libfreetype6-dev" ]:
+  package { [ "libfreetype6-dev" ]:
     ensure => installed
-  }
-
-  file { "/usr/lib/libfreetype.so":
-    ensure => "link",
-    target => "/usr/lib/x86_64-linux-gnu/libfreetype.so",
-    require => Package[ "libfreetype6", "libfreetype6-dev" ]
   }
 
   package { "zlib1g-dev":
     ensure => installed
   }
 
-  file { "/usr/lib/libz.so":
-    ensure => "link",
-    target => "/usr/lib/x86_64-linux-gnu/libz.so",
-    require => Package[ "zlib1g-dev" ]
+  package { "libwebp-dev":
+    ensure => installed
+  }
+
+  package { "liblcms1-dev":
+    ensure => installed
   }
 
   python::pip { "Pillow":
     ensure => "2.1.0",
-    require => File[ "/usr/lib/libjpeg.so",
-                     "/usr/lib/libfreetype.so",
-                     "/usr/lib/libz.so" ]
+    require => [ Package[ "libjpeg-dev",
+                          "libfreetype6-dev",
+                          "zlib1g-dev",
+                          "libwebp-dev",
+                          "liblcms1-dev" ] ]
   }
 }

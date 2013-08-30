@@ -174,7 +174,6 @@ class ImageHandler(tornado.web.RequestHandler):
             raise errors.HostError("Invalid host")
 
 
-
 def main():
     tornado.options.parse_command_line()
     if options.debug:

@@ -28,7 +28,6 @@ except ImportError:
 
 try:
     import urlparse
-
 except ImportError:
     import urllib.parse as urlparse
 
@@ -69,6 +68,7 @@ def main():
     print("Query String: %s" % qs)
     print("Signature: %s" % derive_signature(options.key, qs))
     print("Signed Query String: %s" % sign(options.key, qs))
+
 
 if __name__ == "__main__":
     main()

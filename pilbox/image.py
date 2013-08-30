@@ -56,7 +56,7 @@ _filters_to_pil = {
 
 class Image(object):
     FILTERS = _filters_to_pil.keys()
-    FORMATS = ["png", "jpeg", "jpg"]
+    FORMATS = ["jpeg", "jpg", "png", "webp"]
     MODES = ["clip", "crop", "fill", "scale"]
     POSITIONS = _positions_to_ratios.keys()
 
@@ -231,6 +231,7 @@ def color_hex_to_dec_tuple(color):
         t = t + ((n >> 24) & 255,)
     return t
 
+
 def main():
     import sys
     import tornado.options
@@ -248,7 +249,7 @@ def main():
     define("quality", help="default jpeg quality, 0-100", type=int)
 
     args = parse_command_line()
-    if None in [options.width, options.height]:
+    if not options.width and not options.height:
         tornado.options.print_help()
         sys.exit()
     elif not args:
@@ -266,6 +267,7 @@ def main():
                           position=options.position, quality=options.quality)
     sys.stdout.write(stream.read())
     stream.close()
+
 
 if __name__ == "__main__":
     main()
