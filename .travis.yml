@@ -12,7 +12,7 @@ before_install:
   - sudo apt-get install libwebp-dev liblcms1-dev
   - sudo apt-get install python-numpy python-opencv
 install:
-    - pip install --use-mirrors tornado==3.1 Pillow==2.1.0 coveralls==3.6
+    - pip install --use-mirrors tornado==3.1 Pillow==2.1.0 coveralls
 script:
     - coverage run -m pilbox.test.runtests
 after_success:
