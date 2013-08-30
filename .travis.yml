@@ -8,13 +8,11 @@ env:
 virtualenv:
     system_site_packages: true
 before_install:
-  - sudo apt-get install libjpeg8-dev libfreetype6 libfreetype6-dev zlib1g-dev
-  - sudo ln -s /usr/lib/`uname -i`-linux-gnu/libjpeg.so /usr/lib/
-  - sudo ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib/
-  - sudo ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib/
+  - sudo apt-get install libjpeg8-dev libfreetype6-dev zlib1g-dev
+  - sudo apt-get install libwebp-dev liblcms1-dev
   - sudo apt-get install python-numpy python-opencv
 install:
-    - pip install --use-mirrors tornado Pillow coveralls
+    - pip install --use-mirrors tornado==3.1 Pillow==2.1.0 coveralls==3.6
 script:
     - coverage run -m pilbox.test.runtests
 after_success:
