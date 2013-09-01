@@ -19,6 +19,6 @@ expose 8888
 CMD cd /pilbox && python -m pilbox.app
 
 # TODO
-# Start the application with the CMD command.
 # Setup security keys 
+# Add nginx as a proxy cache
 # ???
