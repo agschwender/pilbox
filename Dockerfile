@@ -14,7 +14,11 @@ run pip install coverage
 run pip install tornado
 run pip install numpy
 
+ADD . /pilbox
+expose 8888
+CMD cd /pilbox && python -m pilbox.app
+
 # TODO
 # Start the application with the CMD command.
 # Setup security keys 
-
+# ???
