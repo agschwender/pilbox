@@ -45,6 +45,11 @@ class FilterError(BadRequestError):
     def get_code(): return 3
 
 
+class FormatError(BadRequestError):
+    @staticmethod
+    def get_code(): return 4
+
+
 class ModeError(BadRequestError):
     @staticmethod
     def get_code(): return 5
@@ -98,6 +103,6 @@ class UnsupportedError(PilboxError):
         super(UnsupportedError, self).__init__(415, msg, *args, **kwargs)
 
 
-class FormatError(UnsupportedError):
+class ImageFormatError(UnsupportedError):
     @staticmethod
     def get_code(): return 201

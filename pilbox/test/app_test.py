@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, \
     with_statement
 
+import logging
 import os.path
 import time
 
@@ -13,8 +14,8 @@ import tornado.web
 
 from pilbox.app import PilboxApplication
 from pilbox.errors import SignatureError, ClientError, HostError, \
-    BackgroundError, DimensionsError, FilterError, ModeError, PositionError, \
-    QualityError, UrlError, FormatError, FetchError
+    BackgroundError, DimensionsError, FilterError, FormatError, ModeError, \
+    PositionError, QualityError, UrlError, ImageFormatError, FetchError
 from pilbox.signature import sign
 from pilbox.test import image_test
 
@@ -29,8 +30,8 @@ except ImportError:
     cv = None
 
 
-import logging
 logger = logging.getLogger("tornado.application")
+
 
 class _AppAsyncMixin(object):
     def fetch_error(self, code, *args, **kwargs):
@@ -47,7 +48,8 @@ class _AppAsyncMixin(object):
 
     def get_image_resize_cases(self):
         cases = image_test.get_image_resize_cases()
-        m = dict(background="bg", filter="filter", position="pos", quality="q")
+        m = dict(background="bg", filter="filter", format="fmt",
+                 position="pos", quality="q")
         for i, case in enumerate(cases):
             path = "/test/data/%s" % os.path.basename(case["source_path"])
             cases[i]["source_query_params"] = dict(
@@ -58,6 +60,14 @@ class _AppAsyncMixin(object):
             for k in m.keys():
                 if k in case:
                     cases[i]["source_query_params"][m.get(k)] = case[k]
+            if case.get("format") in ["jpeg", "jpg"]:
+                cases[i]["content_type"] = "image/jpeg"
+            elif case.get("format") == "png":
+                cases[i]["content_type"] = "image/png"
+            elif case.get("format") == "webp":
+                cases[i]["content_type"] = "image/webp"
+            else:
+                cases[i]["content_type"] = None
         return cases
 
 
@@ -134,6 +144,11 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), FilterError.get_code())
 
+    def test_invalid_format(self):
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, fmt="foo"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), FormatError.get_code())
+
     def test_invalid_integer_quality(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, q="a"))
         resp = self.fetch_error(400, "/?%s" % qs)
@@ -144,11 +159,11 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), QualityError.get_code())
 
-    def test_bad_format(self):
+    def test_unsupported_image_format(self):
         path = "/test/data/test-bad-format.gif"
         qs = urlencode(dict(url=self.get_url(path), w=1, h=1))
         resp = self.fetch_error(415, "/?%s" % qs)
-        self.assertEqual(resp.get("error_code"), FormatError.get_code())
+        self.assertEqual(resp.get("error_code"), ImageFormatError.get_code())
 
     def test_not_found(self):
         path = "/test/data/test-not-found.jpg"
@@ -186,6 +201,9 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_success("/?%s" % qs)
         msg = "/?%s does not match %s" \
             % (qs, case["expected_path"])
+        if case["content_type"]:
+            self.assertEqual(resp.headers.get("Content-Type", None),
+                             case["content_type"])
         with open(case["expected_path"], "rb") as expected:
             self.assertEqual(resp.buffer.read(), expected.read(), msg)
 

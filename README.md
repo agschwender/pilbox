@@ -98,6 +98,10 @@ This will request the image served at the supplied url and resize it to `300x300
     * _bilinear_: Faster, can produce acceptable results
     * _bicubic_: Fast, can produce acceptable results
     * _antialias_: Slower, produces the best results
+  * _fmt_: The output format to save as, defaults to the source format
+    * _jpeg_: Save as JPEG
+    * _png_: Save as PNG
+    * _webp_: Save as WebP
   * _bg_: Background color used with fill mode (RGB or ARGB)
     * _RGB_: 3- or 6-digit hexadecimal number
     * _ARGB_: 4- or 8-digit hexadecimal number, only relevant for PNG images
@@ -116,7 +120,7 @@ This will request the image served at the supplied url and resize it to `300x300
   * _client_: The client name
   * _sig_: The signature
 
-The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and defaults to `90`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+The `url`, and either `w` or `h` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`. `fmt` is optional and defaults to the source image format. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and defaults to `90`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature. Note, all built-in defaults can be overridden by setting them in the configuration file. See the [configuration section](#configuration) for more details.
 
 Examples
 ========
@@ -204,6 +208,8 @@ All options that can be supplied to the application via the command line, can al
     # Set default resizing options
     background = "ccc"
     filter = "bilinear"
+    format = None
+    mode = "crop"
     position = "top"
     quality = 90
 
@@ -259,6 +265,7 @@ Changelog
   * 0.8.2: Added configuration for max clients and timeout
   * 0.8.3: Only allow http and https protocols
   * 0.8.4: Added support for WebP
+  * 0.8.5: Added format option and configuration overrides for mode and format
 
 TODO
 ====

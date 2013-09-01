@@ -10,7 +10,7 @@ import re
 from tornado.test.util import unittest
 
 from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
-    ModeError, PositionError, QualityError, FormatError
+    FormatError, ModeError, PositionError, QualityError, ImageFormatError
 from pilbox.image import Image, color_hex_to_dec_tuple
 
 try:
@@ -100,11 +100,11 @@ class ImageTest(unittest.TestCase):
                     quality=None)
         Image.validate_options(opts)
 
-    def test_bad_format(self):
+    def test_bad_image_format(self):
         path = os.path.join(DATADIR, "test-bad-format.gif")
         with open(path, "rb") as f:
             image = Image(f)
-            self.assertRaises(FormatError, image.resize, 100, 100)
+            self.assertRaises(ImageFormatError, image.resize, 100, 100)
 
     def test_bad_mode(self):
         self.assertRaises(
@@ -113,6 +113,10 @@ class ImageTest(unittest.TestCase):
     def test_bad_filter(self):
         self.assertRaises(
             FilterError, Image.validate_options, dict(filter="foo"))
+
+    def test_bad_format(self):
+        self.assertRaises(
+            FormatError, Image.validate_options, dict(format="foo"))
 
     def test_bad_background_invalid_number(self):
         self.assertRaises(
@@ -167,13 +171,13 @@ class ImageTest(unittest.TestCase):
                 case["width"], case["height"], mode=case["mode"],
                 background=case.get("background"),
                 filter=case.get("filter"),
+                format=case.get("format"),
                 position=case.get("position"),
                 quality=case.get("quality"))
             with open(case["expected_path"], "rb") as expected:
                 msg = "%s does not match %s" \
                     % (case["source_path"], case["expected_path"])
                 self.assertEqual(img.read(), expected.read(), msg)
-
 
 
 
@@ -203,12 +207,16 @@ def _get_advanced_criteria_combinations():
          dict(values=[["crop"], [(125, 75)], [50, 75, 90]],
               fields=["mode", "size", "quality"]),
          dict(values=[Image.MODES, [(125, None), (None, 125)]],
-              fields=["mode", "size"])])
+              fields=["mode", "size"]),
+         dict(values=[["crop"], [(125, 75)], Image.FORMATS],
+              fields=["mode", "size", "format"])])
+
 
 def _get_transparent_criteria_combinations():
     return _make_combinations(
         [dict(values=[["fill"], [(75, 125)], ["1ccc", "a0cccccc"]],
               fields=["mode", "size", "background"])])
+
 
 def _make_combinations(choices):
     combos = []
@@ -235,6 +243,6 @@ def _criteria_to_resize_case(filename, criteria):
            criteria.get("width") or "",
            criteria.get("height") or "",
            ("-%s" % "-".join([str(x) for x in opts])) if opts else "",
-           m.group(2))
+           criteria.get("format") or m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case

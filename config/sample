@@ -23,5 +23,7 @@ timeout = 7.5
 
 background = "ccc"
 filter = "bilinear"
+format = None
+mode = "crop"
 position = "top"
 quality = 90

@@ -42,6 +42,7 @@ def main():
                 case["width"], case["height"], mode=case["mode"],
                 background=case.get("background"),
                 filter=case.get("filter"),
+                format=case.get("format"),
                 position=case.get("position"),
                 quality=case.get("quality"))
             with open(case["expected_path"], "wb") as expected:

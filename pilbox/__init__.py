@@ -39,13 +39,14 @@ Versions:
   * 0.8.2: Added configuration for max clients and timeout
   * 0.8.3: Only allow http and https protocols
   * 0.8.4: Added support for WebP
+  * 0.8.5: Added format option and configuration for mode and format
 """
 
 # human-readable version number
-version = "0.8.4"
+version = "0.8.5"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (0, 8, 4, 0)
+version_info = (0, 8, 5, 0)

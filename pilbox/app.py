@@ -58,6 +58,8 @@ define("timeout", help="timeout of requests in seconds", type=float, default=10)
 # default resizing option settings
 define("background", help="default hexadecimal bg color (RGB or ARGB)")
 define("filter", help="default filter to use when resizing")
+define("format", help="default format to use when outputting")
+define("mode", help="default mode to use when resizing")
 define("position", help="default cropping position")
 define("quality", help="default jpeg quality, 0-100", type=int)
 
@@ -74,6 +76,8 @@ class PilboxApplication(tornado.web.Application):
                         allowed_hosts=options.allowed_hosts,
                         background=options.background,
                         filter=options.filter,
+                        format=options.format,
+                        mode=options.mode,
                         position=options.position,
                         quality=options.quality,
                         max_requests=options.max_requests,
@@ -87,6 +91,11 @@ class PilboxApplication(tornado.web.Application):
 
 class ImageHandler(tornado.web.RequestHandler):
     FORWARD_HEADERS = ['Cache-Control', 'Expires', 'Last-Modified']
+    _FORMAT_TO_MIME = {
+        "jpeg": "image/jpeg",
+        "jpg": "image/jpeg",
+        "png": "image/png",
+        "webp": "image/webp"}
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
@@ -120,7 +129,9 @@ class ImageHandler(tornado.web.RequestHandler):
             super(ImageHandler, self).write_error(status_code, **kwargs)
 
     def _forward_headers(self, headers):
-        self.set_header('Content-Type', headers['Content-Type'])
+        mime = self._FORMAT_TO_MIME.get(
+            self.get_argument("fmt"), headers['Content-Type'])
+        self.set_header('Content-Type', mime)
         for k in ImageHandler.FORWARD_HEADERS:
             if k in headers and headers[k]:
                 self.set_header(k, headers[k])
@@ -128,6 +139,7 @@ class ImageHandler(tornado.web.RequestHandler):
     def _get_resize_options(self):
         return dict(mode=self.get_argument("mode"),
                     filter=self.get_argument("filter"),
+                    format=self.get_argument("fmt"),
                     position=self.get_argument("pos"),
                     background=self.get_argument("bg"),
                     quality=self.get_argument("q"))

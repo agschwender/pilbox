@@ -25,7 +25,7 @@ import PIL.ImageOps
 import tornado.httpclient
 
 from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
-    FormatError, ModeError, PositionError, QualityError
+    FormatError, ModeError, PositionError, QualityError, ImageFormatError
 
 try:
     from io import BytesIO
@@ -53,15 +53,21 @@ _filters_to_pil = {
     "nearest": PIL.Image.NEAREST
     }
 
+_formats_to_pil = {
+    "jpg": "JPEG",
+    "jpeg": "JPEG",
+    "png": "PNG",
+    "webp": "WEBP"
+}
 
 class Image(object):
     FILTERS = _filters_to_pil.keys()
-    FORMATS = ["jpeg", "jpg", "png", "webp"]
+    FORMATS = _formats_to_pil.keys()
     MODES = ["clip", "crop", "fill", "scale"]
     POSITIONS = _positions_to_ratios.keys()
 
-    _DEFAULTS = dict(background="fff", filter="antialias", mode="crop",
-                     position="center", quality=90)
+    _DEFAULTS = dict(background="fff", filter="antialias", format=None,
+                     mode="crop", position="center", quality=90)
     _CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "..", "config", "frontalface.xml")
 
@@ -85,6 +91,8 @@ class Image(object):
             raise ModeError("Invalid mode: %s" % opts["mode"])
         elif opts["filter"] not in Image.FILTERS:
             raise FilterError("Invalid filter: %s" % opts["filter"])
+        elif opts["format"] and opts["format"] not in Image.FORMATS:
+            raise FormatError("Invalid format: %s" % opts["format"])
         elif opts["position"] not in Image.POSITIONS:
             raise PositionError("Invalid position: %s" % opts["position"])
         elif not Image._isint(opts["background"], 16) \
@@ -100,17 +108,19 @@ class Image(object):
 
         mode - The resizing mode to use, see Image.MODES
         filter - The filter to use: see Image.FILTERS
+        format - The format to save as: see Image.FORMATS
         background - The hexadecimal background fill color, RGB or ARGB
         position - The position used to crop: see Image.POSITIONS
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
         img = PIL.Image.open(self.stream)
         if img.format.lower() not in self.FORMATS:
-            raise FormatError("Unknown format: %s" % img.format)
+            raise ImageFormatError("Unknown format: %s" % img.format)
         opts = Image._normalize_options(kwargs, self.defaults)
         resized = self._resize(img, self._get_size(img, width, height), opts)
         outfile = BytesIO()
-        resized.save(outfile, img.format, quality=int(opts["quality"]))
+        format_ = opts["pil"]["format"] if opts["pil"]["format"] else img.format
+        resized.save(outfile, format_, quality=int(opts["quality"]))
         outfile.seek(0)
         return outfile
 
@@ -205,6 +215,7 @@ class Image(object):
         opts.update(dict([(k,v) for k,v in options.items() if v]))
         opts["pil"] = dict(
             filter=_filters_to_pil.get(opts["filter"]),
+            format=_formats_to_pil.get(opts["format"], None),
             position=_positions_to_ratios.get(opts["position"], None))
         return opts
 
@@ -246,6 +257,8 @@ def main():
            metavar="|".join(Image.POSITIONS), type=str)
     define("filter", help="default filter to use when resizing",
            metavar="|".join(Image.FILTERS), type=str)
+    define("format", help="default format to use when saving",
+           metavar="|".join(Image.FORMATS), type=str)
     define("quality", help="default jpeg quality, 0-100", type=int)
 
     args = parse_command_line()
