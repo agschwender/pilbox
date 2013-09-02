@@ -40,9 +40,9 @@ add         ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 run         touch /pilbox/config/default
 
 # Expose ports
-expose 80
-expose 8080
-expose 8888
+expose      80
+expose      8080
+expose      8888
 
 # Start supervisor
 cmd         ["/usr/bin/supervisord", "-n"]
