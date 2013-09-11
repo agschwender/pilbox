@@ -31,12 +31,12 @@ run         mkdir -p /var/log/supervisor
 add         . /pilbox
 
 # Add system configurations
-add         ./docker/varnish-profile.sh /etc/default/varnish
-add         ./docker/varnish.vcl /etc/varnish/default.vcl
-add         ./docker/varnish.sh /usr/local/bin/varnish.sh
+add         ./provisioning/files/etc/default/varnish /etc/default/varnish
+add         ./provisioning/files/etc/varnish/default.vcl /etc/varnish/default.vcl
+add         ./provisioning/files/usr/local/bin/varnish.sh /usr/local/bin/varnish.sh
 run         chmod ug+x /usr/local/bin/varnish.sh
-add         ./docker/nginx.conf /etc/nginx/nginx.conf
-add         ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+add         ./provisioning/files/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+add         ./provisioning/files/etc/supervisor/conf.d/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 run         touch /pilbox/config/default
 
 # Expose ports
