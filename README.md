@@ -18,7 +18,7 @@ Dependencies
 Vagrant
 -------
 
-Packaged with Pilbox is a [Vagrant](http://www.vagrantup.com/) configuration file which installs all necessary dependencies on a virtual box. See the [Vagrant documentation for installation instructions](http://docs.vagrantup.com/v2/installation/). Once installed, the following will start a virtual machine.
+Packaged with Pilbox is a [Vagrant](http://www.vagrantup.com/) configuration file which installs all necessary dependencies on a virtual box using [Ansible](http://www.ansibleworks.com/). See the [Vagrant documentation](http://docs.vagrantup.com/v2/installation/) and the [Ansible documentation](http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible) for installation instructions. Once installed, the following will start a virtual machine.
 
     $ vagrant up
 

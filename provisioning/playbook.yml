@@ -1,0 +1,42 @@
+- hosts: all
+  user: vagrant
+  sudo: True
+
+  tasks:
+    - name: update apt
+      apt: update_cache=yes
+
+    - name: install apt packages
+      apt: pkg=$item
+      with_items:
+        - build-essential
+        - python
+        - python-dev
+        - python-setuptools
+        - python-pip
+        - python-numpy
+        - python-opencv
+        - libjpeg-dev
+        - libfreetype6-dev
+        - zlib1g-dev
+        - libwebp-dev
+        - liblcms1-dev
+
+    - pip: name=Pillow version=2.1.0
+    - pip: name=tornado version=3.1
+    - pip: name=coverage version=3.6
+
+    - name: copy pilbox init script
+      copy: src=files/etc/init.d/pilbox dest=/etc/init.d/pilbox mode=0755
+      notify:
+        - restart pilbox
+
+    - name: install pilbox init script
+      command: update-rc.d pilbox defaults
+
+    - name: running pilbox check
+      service: name=pilbox state=running enabled=yes
+
+  handlers:
+    - name: restart pilbox
+      service: name=pilbox state=restarted

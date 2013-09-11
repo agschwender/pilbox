@@ -3,3 +3,4 @@
 .coverage
 htmlcov
 build
+vagrant_ansible_inventory_default
