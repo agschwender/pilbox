@@ -6,12 +6,18 @@
 # 2) Clone pilbox repo if you haven't already:
 #        git clone https://github.com/agschwender/pilbox.git
 # 3) Build: cd pilbox && docker build .
-# 4) Run: docker run -p :80 -p :8080 -p :8888 -t <imageid>
+# 4) Run ssh:
+#        docker run -p 2222:22 -v `pwd`:/pilbox -t <imageid> ssh
+# 5) Run ansible:
+#        ansible-playbook -i provisioning/docker provisioning/playbook.yml
+# 6) Run web:
+#        docker run -p :80 -p :8080 -p :8888 -v `pwd`:/pilbox -t <imageid> web
 #
-# VERSION		0.2
+# VERSION		0.3
 # DOCKER-VERSION	0.4.0
 
 from        ubuntu:12.04
+run         apt-get -y install python-software-properties
 run         echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
 run         apt-get -y update
 
@@ -19,30 +25,29 @@ run         apt-get -y update
 maintainer  joe@tanga.com
 maintainer  adam.gschwender@gmail.com
 
-# Install required packages
-run         apt-get -y install libjpeg-dev libfreetype6-dev zlib1g-dev
-run         apt-get -y install libwebp-dev liblcms1-dev
-run         apt-get -y install python-dev python-pip python-opencv python-numpy
-run         apt-get -y install nginx-light supervisor varnish
-run         pip install --use-mirrors Pillow==2.1.0 tornado==3.1 coverage==3.6
+# Install base container
+run         groupadd admin
+run         apt-get -y install openssh-server sudo
+run         mkdir /var/run/sshd
+add         ./provisioning/files/etc/sudoers /etc/
+run         chown root:root /etc/sudoers && chmod 0440 /etc/sudoers
+run         useradd -d /home/ansible -s /bin/bash -m ansible
+run         echo "ansible:ansible" | chpasswd
+run         usermod -a -G admin ansible
+run         mkdir -p /home/ansible/.ssh
+run         chown ansible:ansible /home/ansible/.ssh && chmod 0700 /home/ansible/.ssh
+add         ./provisioning/files/usr/local/bin/docker-entry.sh /usr/local/bin/
+run         chmod 0755 /usr/local/bin/docker-entry.sh
+run         mkdir -p /pilbox/config && touch /pilbox/config/default
 
-# Add directories
-run         mkdir -p /var/log/supervisor
-add         . /pilbox
-
-# Add system configurations
-add         ./provisioning/files/etc/default/varnish /etc/default/varnish
-add         ./provisioning/files/etc/varnish/default.vcl /etc/varnish/default.vcl
-add         ./provisioning/files/usr/local/bin/varnish.sh /usr/local/bin/varnish.sh
-run         chmod ug+x /usr/local/bin/varnish.sh
-add         ./provisioning/files/etc/nginx/nginx.conf /etc/nginx/nginx.conf
-add         ./provisioning/files/etc/supervisor/conf.d/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-run         touch /pilbox/config/default
 
 # Expose ports
+expose      22
 expose      80
 expose      8080
 expose      8888
 
-# Start supervisor
-cmd         ["/usr/bin/supervisord", "-n"]
+# Entrypoint
+
+entrypoint  ["/usr/local/bin/docker-entry.sh"]
+cmd         ["web"]

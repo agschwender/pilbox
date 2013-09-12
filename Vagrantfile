@@ -24,6 +24,7 @@ Vagrant.configure("2") do |config|
   # are contained in a directory path relative to this Vagrantfile.
   config.vm.provision :ansible do |ansible|
     ansible.playbook = "provisioning/playbook.yml"
+    ansible.inventory_path = "provisioning/vagrant"
     ansible.verbose = true
   end
 

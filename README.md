@@ -267,6 +267,17 @@ Changelog
   * 0.8.4: Added support for WebP
   * 0.8.5: Added format option and configuration overrides for mode and format
 
+Docker
+======
+
+Experimental support for [Docker](http://www.docker.io/). To build a docker container and provision it, issue the following:
+
+    $ docker build .
+    $ docker run -d -p 2222:22 -v `pwd`:/pilbox -t <imageid> ssh
+    $ ansible-playbook -i provisioning/docker provisioning/playbook.yml
+    $ docker stop $(docker ps -a -q)
+    $ docker run -i -p :80 -p :8080 -p :8888 -v `pwd`:/pilbox -t <imageid> web
+
 TODO
 ====
 
