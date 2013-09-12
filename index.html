@@ -53,7 +53,7 @@
 </ul><h2>
 <a name="vagrant" class="anchor" href="#vagrant"><span class="octicon octicon-link"></span></a>Vagrant</h2>
 
-<p>Packaged with Pilbox is a <a href="http://www.vagrantup.com/">Vagrant</a> configuration file which installs all necessary dependencies on a virtual box. See the <a href="http://docs.vagrantup.com/v2/installation/">Vagrant documentation for installation instructions</a>. Once installed, the following will start a virtual machine.</p>
+<p>Packaged with Pilbox is a <a href="http://www.vagrantup.com/">Vagrant</a> configuration file which installs all necessary dependencies on a virtual box using <a href="http://www.ansibleworks.com/">Ansible</a>. See the <a href="http://docs.vagrantup.com/v2/installation/">Vagrant documentation</a> and the <a href="http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible">Ansible documentation</a> for installation instructions. Once installed, the following will start a virtual machine.</p>
 
 <pre><code>$ vagrant up
 </code></pre>
@@ -114,12 +114,12 @@ Options:
 
 <p>To use the image resizing service, include the application url as you would any other image. E.g. this image url</p>
 
-<div class="highlight"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://i.imgur.com/zZ8XmBA.jpg"</span> <span class="nt">/&gt;</span>
+<div class="highlight highlight-html"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://i.imgur.com/zZ8XmBA.jpg"</span> <span class="nt">/&gt;</span>
 </pre></div>
 
 <p>Would be replaced with this image url</p>
 
-<div class="highlight"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop"</span> <span class="nt">/&gt;</span>
+<div class="highlight highlight-html"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop"</span> <span class="nt">/&gt;</span>
 </pre></div>
 
 <p>This will request the image served at the supplied url and resize it to <code>300x300</code> using the <code>crop</code> mode. The following is the list of parameters that can be supplied to the service</p>
@@ -266,7 +266,7 @@ Options:
 
 <p>In order to secure requests so that unknown third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the <code>client_key</code> option. The signature is a hexadecimal digest generated from the client key and the query string using the HMAC-SHA1 message authentication code (MAC) algorithm. The below python code provides an example implementation.</p>
 
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">hashlib</span>
+<div class="highlight highlight-python"><pre><span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">hmac</span>
 
 <span class="k">def</span> <span class="nf">derive_signature</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">qs</span><span class="p">):</span>
