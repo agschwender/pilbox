@@ -48,14 +48,16 @@
 </li>
 <li><a href="https://pypi.python.org/pypi/Pillow/2.1.0">Pillow 2.1.0</a></li>
 <li><a href="https://pypi.python.org/pypi/tornado/3.1">Tornado 3.1</a></li>
-<li><a href="http://opencv.org/">OpenCV 2.x</a></li>
+<li>
+<a href="http://opencv.org/">OpenCV 2.x</a> (optional)</li>
 <li>Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev, zlib1g-dev</li>
 </ul><h2>
 <a name="vagrant" class="anchor" href="#vagrant"><span class="octicon octicon-link"></span></a>Vagrant</h2>
 
-<p>Packaged with Pilbox is a <a href="http://www.vagrantup.com/">Vagrant</a> configuration file which installs all necessary dependencies on a virtual box using <a href="http://www.ansibleworks.com/">Ansible</a>. See the <a href="http://docs.vagrantup.com/v2/installation/">Vagrant documentation</a> and the <a href="http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible">Ansible documentation</a> for installation instructions. Once installed, the following will start a virtual machine.</p>
+<p>Packaged with Pilbox is a <a href="http://www.vagrantup.com/">Vagrant</a> configuration file which installs all necessary dependencies on a virtual box using <a href="http://www.ansibleworks.com/">Ansible</a>. See the <a href="http://docs.vagrantup.com/v2/installation/">Vagrant documentation</a> and the <a href="http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible">Ansible documentation</a> for installation instructions. Once installed, the following will start and provision a virtual machine.</p>
 
 <pre><code>$ vagrant up
+$ vagrant provision
 </code></pre>
 
 <p>To access the virtual machine itself, simply...</p>
@@ -367,6 +369,18 @@ quality = 75
 <li>0.8.4: Added support for WebP</li>
 <li>0.8.5: Added format option and configuration overrides for mode and format</li>
 </ul><h1>
+<a name="docker" class="anchor" href="#docker"><span class="octicon octicon-link"></span></a>Docker</h1>
+
+<p>Experimental support for <a href="http://www.docker.io/">Docker</a>. To build a docker container and provision it, issue the following:</p>
+
+<pre><code>$ docker build .
+$ docker run -d -p 2222:22 -v `pwd`:/pilbox -t &lt;imageid&gt; ssh
+$ ansible-playbook -i provisioning/docker provisioning/playbook.yml
+$ docker stop $(docker ps -a -q)
+$ docker run -i -p :80 -p :8080 -p :8888 -v `pwd`:/pilbox -t &lt;imageid&gt; web
+</code></pre>
+
+<h1>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
