@@ -12,15 +12,16 @@ Dependencies
   * >= [Python 2.7](http://www.python.org/download/)
   * [Pillow 2.1.0](https://pypi.python.org/pypi/Pillow/2.1.0)
   * [Tornado 3.1](https://pypi.python.org/pypi/tornado/3.1)
-  * [OpenCV 2.x](http://opencv.org/)
+  * [OpenCV 2.x](http://opencv.org/) (optional)
   * Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev, zlib1g-dev
 
 Vagrant
 -------
 
-Packaged with Pilbox is a [Vagrant](http://www.vagrantup.com/) configuration file which installs all necessary dependencies on a virtual box using [Ansible](http://www.ansibleworks.com/). See the [Vagrant documentation](http://docs.vagrantup.com/v2/installation/) and the [Ansible documentation](http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible) for installation instructions. Once installed, the following will start a virtual machine.
+Packaged with Pilbox is a [Vagrant](http://www.vagrantup.com/) configuration file which installs all necessary dependencies on a virtual box using [Ansible](http://www.ansibleworks.com/). See the [Vagrant documentation](http://docs.vagrantup.com/v2/installation/) and the [Ansible documentation](http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible) for installation instructions. Once installed, the following will start and provision a virtual machine.
 
     $ vagrant up
+    $ vagrant provision
 
 To access the virtual machine itself, simply...
 
