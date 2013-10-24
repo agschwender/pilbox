@@ -4,3 +4,7 @@
 htmlcov
 build
 vagrant_ansible_inventory_default
+/.Python
+/bin
+/include
+/lib
