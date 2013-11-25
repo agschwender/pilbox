@@ -1,16 +1,15 @@
-from __future__ import absolute_import, division, print_function, \
-    with_statement
+from __future__ import absolute_import, division, print_function, with_statement
 
-import collections
 import itertools
 import os
 import os.path
 import re
 
 from tornado.test.util import unittest
+import PIL.Image
 
 from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
-    FormatError, ModeError, PositionError, QualityError, ImageFormatError
+    FormatError, ModeError, PositionError, QualityError, ImageFormatError, AngleError
 from pilbox.image import Image, color_hex_to_dec_tuple
 
 try:
@@ -58,6 +57,17 @@ class ImageTest(unittest.TestCase):
                 continue
             self._assert_expected_resize(case)
 
+    def test_rotate(self):
+        with open(os.path.join(DATADIR, "test_rotation.jpg") ,"rb") as rotation_image:
+            image = PIL.Image.open(rotation_image)
+            original_size = image.size
+            rotation_image.seek(0)
+            img = Image(rotation_image)
+            new_img = img.rotate(90)
+            new_img = PIL.Image.open(new_img)
+            new_size = new_img.size
+            self.assertNotEqual(original_size, new_size)
+
     def test_resize_using_settings(self):
         for case in get_image_resize_cases():
             if case.get("mode") == "crop" and case.get("position") == "face":
@@ -75,6 +85,16 @@ class ImageTest(unittest.TestCase):
         for case in get_image_resize_cases():
             if case.get("mode") == "crop" and case.get("position") == "face":
                 self._assert_expected_resize(case)
+
+    def test_valid_angle(self):
+        valid_angles = [90, "90", "94.54", 87.432]
+        for angle in valid_angles:
+            Image.validate_angle(angle)
+
+    def test_invalid_angle(self):
+        invalid_angles = [None, "a", ""]
+        for inv_angle in invalid_angles:
+            self.assertRaises(AngleError, Image.validate_angle, inv_angle)
 
     def test_valid_dimensions(self):
         Image.validate_dimensions(100, 100)
