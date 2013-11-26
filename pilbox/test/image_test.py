@@ -135,6 +135,10 @@ class ImageTest(unittest.TestCase):
         self.assertRaises(
             PositionError, Image.validate_options, dict(position="foo"))
 
+    def test_bad_position_ratio(self):
+        self.assertRaises(
+            PositionError, Image.validate_options, dict(position="1.2,5.6"))
+
     def test_bad_quality_invalid_number(self):
         self.assertRaises(
             QualityError, Image.validate_options, dict(quality="foo"))

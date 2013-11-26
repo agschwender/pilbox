@@ -139,6 +139,11 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), PositionError.get_code())
 
+    def test_invalid_position_ratio(self):
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, pos="1.2,5.6"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), PositionError.get_code())
+
     def test_invalid_filter(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, filter="bar"))
         resp = self.fetch_error(400, "/?%s" % qs)
