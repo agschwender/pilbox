@@ -139,6 +139,10 @@ class ImageTest(unittest.TestCase):
         self.assertRaises(
             PositionError, Image.validate_options, dict(position="1.2,5.6"))
 
+    def test_valid_position_ratio(self):
+        for pos in ["0.0,0.5", "1.0,1.0", "0.111111,0.999999"]:
+            Image.validate_options(dict(position=pos))
+
     def test_bad_quality_invalid_number(self):
         self.assertRaises(
             QualityError, Image.validate_options, dict(quality="foo"))
