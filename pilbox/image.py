@@ -23,7 +23,6 @@ import os.path
 
 import PIL.Image
 import PIL.ImageOps
-import tornado.httpclient
 
 from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
     FormatError, ModeError, PositionError, QualityError, ImageFormatError
@@ -43,8 +42,8 @@ logger = logging.getLogger("tornado.application")
 _positions_to_ratios = {
     "top-left": (0.0, 0.0), "top": (0.5, 0.0), "top-right": (1.0, 0.0),
     "left": (0.0, 0.5), "center": (0.5, 0.5), "right": (1.0, 0.5),
-    "bottom-left": (0.0, 1.0), "bottom": (0.5, 1.0), "bottom-right": (1.0, 1.0),
-    "face": None
+    "bottom-left": (0.0, 1.0), "bottom": (0.5, 1.0),
+    "bottom-right": (1.0, 1.0), "face": None
     }
 
 _filters_to_pil = {
@@ -60,6 +59,7 @@ _formats_to_pil = {
     "png": "PNG",
     "webp": "WEBP"
 }
+
 
 class Image(object):
     FILTERS = _filters_to_pil.keys()
@@ -95,17 +95,19 @@ class Image(object):
         elif opts["format"] and opts["format"] not in Image.FORMATS:
             raise FormatError("Invalid format: %s" % opts["format"])
         elif opts["position"] not in Image.POSITIONS \
-             and not opts["pil"]["position"]:
+                and not opts["pil"]["position"]:
             raise PositionError("Invalid position: %s" % opts["position"])
         elif opts["pil"]["position"] \
-             and (opts["pil"]["position"][0] < 0.0
-                  or opts["pil"]["position"][0] > 1.0
-                  or opts["pil"]["position"][1] < 0.0
-                  or opts["pil"]["position"][1] > 1.0):
-            raise PositionError("Invalid position ratio: %s" % opts["position"])
+                and (opts["pil"]["position"][0] < 0.0
+                     or opts["pil"]["position"][0] > 1.0
+                     or opts["pil"]["position"][1] < 0.0
+                     or opts["pil"]["position"][1] > 1.0):
+            raise PositionError(
+                "Invalid position ratio: %s" % opts["position"])
         elif not Image._isint(opts["background"], 16) \
                 or len(opts["background"]) not in [3, 4, 6, 8]:
-            raise BackgroundError("Invalid background: %s" % opts["background"])
+            raise BackgroundError(
+                "Invalid background: %s" % opts["background"])
         elif not Image._isint(opts["quality"]) \
                 or int(opts["quality"]) > 100 or int(opts["quality"]) < 0:
             raise QualityError("Invalid quality: %s", str(opts["quality"]))
@@ -128,8 +130,8 @@ class Image(object):
         opts = Image._normalize_options(kwargs, self.defaults)
         resized = self._resize(img, self._get_size(img, width, height), opts)
         outfile = BytesIO()
-        format_ = opts["pil"]["format"] if opts["pil"]["format"] else img.format
-        resized.save(outfile, format_, quality=int(opts["quality"]))
+        fmt = opts["pil"]["format"] if opts["pil"]["format"] else img.format
+        resized.save(outfile, fmt, quality=int(opts["quality"]))
         outfile.seek(0)
         return outfile
 
@@ -160,7 +162,7 @@ class Image(object):
     def _fill(self, image, size, opts):
         clipped = self._clip(image, size, opts)
         if clipped.size == size:
-            return clipped # No need to fill
+            return clipped  # No need to fill
         x = max(int((size[0] - clipped.size[0]) / 2.0), 0)
         y = max(int((size[1] - clipped.size[1]) / 2.0), 0)
         color = color_hex_to_dec_tuple(opts["background"])
@@ -205,7 +207,8 @@ class Image(object):
 
     def _get_face_classifier(self):
         if not hasattr(Image, "_classifier"):
-            Image._classifier = cv.Load(os.path.abspath(Image._CLASSIFIER_PATH))
+            classifier_path = os.path.abspath(Image._CLASSIFIER_PATH)
+            Image._classifier = cv.Load(classifier_path)
         return Image._classifier
 
     def _pil_to_opencv(self, pi):
@@ -220,7 +223,7 @@ class Image(object):
         if not defaults:
             defaults = Image._DEFAULTS
         opts = defaults.copy()
-        opts.update(dict([(k,v) for k,v in options.items() if v]))
+        opts.update(dict([(k, v) for k, v in options.items() if v]))
         opts["pil"] = dict(
             filter=_filters_to_pil.get(opts["filter"]),
             format=_formats_to_pil.get(opts["format"], None),
@@ -265,6 +268,7 @@ def color_hex_to_dec_tuple(color):
 
 def main():
     import sys
+    import tornado.httpclient
     import tornado.options
     from tornado.options import define, options, parse_command_line
 
@@ -272,7 +276,8 @@ def main():
     define("height", help="the desired image height", type=int)
     define("mode", help="the resizing mode",
            metavar="|".join(Image.MODES), type=str)
-    define("background", help="the hexidecimal fill background color", type=str)
+    define("background", help="the hexidecimal fill background color",
+           type=str)
     define("position", help="the crop position",
            metavar="|".join(Image.POSITIONS), type=str)
     define("filter", help="default filter to use when resizing",

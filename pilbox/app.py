@@ -19,7 +19,6 @@ from __future__ import absolute_import, division, print_function, \
 
 import logging
 import socket
-import sys
 
 import tornado.escape
 import tornado.gen
@@ -49,11 +48,11 @@ define("port", default=8888, help="run on the given port", type=int)
 # security related settings
 define("client_name", help="client name")
 define("client_key", help="client key")
-define("allowed_hosts", help="list of allowed hosts", default=[], multiple=True)
+define("allowed_hosts", help="list of valid hosts", default=[], multiple=True)
 
 # request related settings
 define("max_requests", help="max concurrent requests", type=int, default=40)
-define("timeout", help="timeout of requests in seconds", type=float, default=10)
+define("timeout", help="request timeout in seconds", type=float, default=10)
 
 # default resizing option settings
 define("background", help="default hexadecimal bg color (RGB or ARGB)")

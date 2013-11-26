@@ -50,6 +50,8 @@
         - { name: 'Pillow', version: '2.1.0' }
         - { name: 'tornado', version: '3.1' }
         - { name: 'coverage', version: '3.6' }
+        - { name: 'pep8', version: '1.4.6' }
+        - { name: 'pyflakes', version: '0.7.3' }
 
 
 - hosts: app:!web
