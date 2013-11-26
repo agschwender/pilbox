@@ -117,6 +117,7 @@ This will request the image served at the supplied url and resize it to `300x300
     * _bottom_: Crop from the bottom center
     * _bottom-right_: Crop from the bottom right
     * _face_: Identify faces and crop from the midpoint of their position(s)
+    * _x,y_: Custom position ratio, e.g. 0.0,0.75
   * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
   * _client_: The client name
   * _sig_: The signature
@@ -267,6 +268,7 @@ Changelog
   * 0.8.3: Only allow http and https protocols
   * 0.8.4: Added support for WebP
   * 0.8.5: Added format option and configuration overrides for mode and format
+  * 0.8.6: Added custom position support
 
 Docker
 ======

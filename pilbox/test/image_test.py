@@ -202,6 +202,8 @@ def _get_advanced_criteria_combinations():
               fields=["mode", "size", "background"]),
          dict(values=[["crop"], [(125, 75)], Image.POSITIONS],
               fields=["mode", "size", "position"]),
+         dict(values=[["crop"], [(125, 75)], ["0.25,0.75", "0.25,0.25"]],
+              fields=["mode", "size", "position"]),
          dict(values=[["crop"], [(125, 75)], Image.FILTERS],
               fields=["mode", "size", "filter"]),
          dict(values=[["crop"], [(125, 75)], [50, 75, 90]],

@@ -18,6 +18,7 @@ from __future__ import absolute_import, division, print_function, \
     with_statement
 
 import logging
+import re
 import os.path
 
 import PIL.Image
@@ -93,8 +94,15 @@ class Image(object):
             raise FilterError("Invalid filter: %s" % opts["filter"])
         elif opts["format"] and opts["format"] not in Image.FORMATS:
             raise FormatError("Invalid format: %s" % opts["format"])
-        elif opts["position"] not in Image.POSITIONS:
+        elif opts["position"] not in Image.POSITIONS \
+             and not opts["pil"]["position"]:
             raise PositionError("Invalid position: %s" % opts["position"])
+        elif opts["pil"]["position"] \
+             and (opts["pil"]["position"][0] < 0.0
+                  or opts["pil"]["position"][0] > 1.0
+                  or opts["pil"]["position"][1] < 0.0
+                  or opts["pil"]["position"][1] > 1.0):
+            raise PositionError("Invalid position ratio: %s" % opts["position"])
         elif not Image._isint(opts["background"], 16) \
                 or len(opts["background"]) not in [3, 4, 6, 8]:
             raise BackgroundError("Invalid background: %s" % opts["background"])
@@ -110,7 +118,8 @@ class Image(object):
         filter - The filter to use: see Image.FILTERS
         format - The format to save as: see Image.FORMATS
         background - The hexadecimal background fill color, RGB or ARGB
-        position - The position used to crop: see Image.POSITIONS
+        position - The position used to crop: see Image.POSITIONS for
+                   pre-defined positions or a custom position ratio
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
         img = PIL.Image.open(self.stream)
@@ -199,7 +208,6 @@ class Image(object):
             Image._classifier = cv.Load(os.path.abspath(Image._CLASSIFIER_PATH))
         return Image._classifier
 
-
     def _pil_to_opencv(self, pi):
         mono = pi.convert("L")
         cvim = cv.CreateImageHeader(mono.size, cv.IPL_DEPTH_8U, 1)
@@ -216,8 +224,20 @@ class Image(object):
         opts["pil"] = dict(
             filter=_filters_to_pil.get(opts["filter"]),
             format=_formats_to_pil.get(opts["format"], None),
-            position=_positions_to_ratios.get(opts["position"], None))
+            position=Image._get_custom_position(opts["position"]))
+
+        if not opts["pil"]["position"]:
+            opts["pil"]["position"] = _positions_to_ratios.get(
+                opts["position"], None)
+
         return opts
+
+    @staticmethod
+    def _get_custom_position(pos):
+        m = re.match(r'^(\d+(\.\d+)?),(\d+(\.\d+)?)$', pos)
+        if not m:
+            return None
+        return (float(m.group(1)), float(m.group(3)))
 
     @staticmethod
     def _isint(v, base=10):

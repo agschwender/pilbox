@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder "./pilbox", "/var/www/pilbox", :owner => "vagrant"
+  config.vm.synced_folder ".", "/var/www/pilbox", :owner => "vagrant"
 
   # Enable provisioning with Puppet stand alone.  Puppet manifests
   # are contained in a directory path relative to this Vagrantfile.
