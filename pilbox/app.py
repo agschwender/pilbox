@@ -14,12 +14,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement
-
+from __future__ import absolute_import, division, print_function, with_statement
+from io import BytesIO
 import logging
 import socket
-import sys
 
 import tornado.escape
 import tornado.gen
@@ -41,8 +39,7 @@ except ImportError:
 
 
 # general settings
-define("config", help="path to configuration file",
-       callback=lambda path: parse_config_file(path, final=False))
+define("config", help="path to configuration file", callback=lambda path: parse_config_file(path, final=False))
 define("debug", default=False, help="run in debug mode", type=bool)
 define("port", default=8888, help="run on the given port", type=int)
 
@@ -62,7 +59,6 @@ define("format", help="default format to use when outputting")
 define("mode", help="default mode to use when resizing")
 define("position", help="default cropping position")
 define("quality", help="default jpeg quality, 0-100", type=int)
-
 
 logger = logging.getLogger("tornado.application")
 
@@ -111,7 +107,9 @@ class ImageHandler(tornado.web.RequestHandler):
             logger.warn("Fetch error for %s: %s"
                         % (self.get_argument("url"), str(e)))
             raise errors.FetchError()
-        self._resize(resp)
+
+        self._process_response(resp)
+
         self.finish()
 
     def get_argument(self, name, default=None):
@@ -144,23 +142,50 @@ class ImageHandler(tornado.web.RequestHandler):
                     background=self.get_argument("bg"),
                     quality=self.get_argument("q"))
 
-    def _resize(self, resp):
-        image = Image(resp.buffer, self.settings)
-        opts = self._get_resize_options()
-        resized = image.resize(
-            self.get_argument("w"), self.get_argument("h"), **opts)
-        self._forward_headers(resp.headers)
-        for block in iter(lambda: resized.read(65536), b""):
+    def _process_response(self, response):
+        """ processes response by its arguments.
+
+        if `rotate` is provided, it will happen after all other args.
+        """
+        image = Image(response.buffer, self.settings)
+
+        output = BytesIO()
+        resize, rotate = self.get_argument("w") or self.get_argument("h"), self.get_argument("rotate")
+
+        if resize:
+            opts = self._get_resize_options()
+            resized = image.resize(self.get_argument("w"), self.get_argument("h"), **opts)
+            output.write(resized.read())
+            output.seek(0)
+            resized.close()
+
+        if rotate:
+            if resize:
+                # copy stream, reset output.
+                image.stream, output = output, BytesIO()
+
+            rotated = image.rotate(self.get_argument("rotate"))
+            output.write(rotated.read())
+            output.seek(0)
+            rotated.close()
+
+        self._forward_headers(response.headers)
+        for block in iter(lambda: output.read(65536), b""):
             self.write(block)
-        resized.close()
 
     def _validate_request(self):
+        self._validate_transform_arguments()
         self._validate_url()
         self._validate_signature()
         self._validate_client()
         self._validate_host()
-        Image.validate_dimensions(
-            self.get_argument("w"), self.get_argument("h"))
+
+        if self.get_argument("w") or self.get_argument("h"):
+            Image.validate_dimensions(self.get_argument("w"), self.get_argument("h"))
+
+        if self.get_argument("rotate"):
+            Image.validate_angle(self.get_argument("rotate"))
+
         Image.validate_options(self._get_resize_options())
 
     def _validate_url(self):
@@ -185,6 +210,10 @@ class ImageHandler(tornado.web.RequestHandler):
         if hosts and urlparse(self.get_argument("url")).hostname not in hosts:
             raise errors.HostError("Invalid host")
 
+    def _validate_transform_arguments(self):
+        """ checks if at least one transformation argument is provided. """
+        if not [x for x in ["w", "h", "rotate"] if self.get_argument(x)]:
+            raise errors.ArgumentsError("need more arguments")
 
 def main():
     tornado.options.parse_command_line()

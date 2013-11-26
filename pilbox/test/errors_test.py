@@ -6,7 +6,7 @@ from tornado.test.util import unittest
 from pilbox.errors import SignatureError, ClientError, HostError, \
     BackgroundError, DimensionsError, FilterError, FormatError, ModeError, \
     PositionError, QualityError, UrlError, ImageFormatError, FetchError, \
-    PilboxError
+    PilboxError, AngleError, ArgumentsError
 
 
 class ErrorsTest(unittest.TestCase):
@@ -15,7 +15,7 @@ class ErrorsTest(unittest.TestCase):
         errors = [SignatureError, ClientError, HostError, BackgroundError,
                   DimensionsError, FilterError, FormatError, ModeError,
                   PositionError, QualityError, UrlError, ImageFormatError,
-                  FetchError]
+                  FetchError, AngleError, ArgumentsError]
         codes = []
         for error in errors:
             code = str(error.get_code())

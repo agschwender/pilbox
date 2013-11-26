@@ -69,6 +69,14 @@ class UrlError(BadRequestError):
     @staticmethod
     def get_code(): return 8
 
+class AngleError(BadRequestError):
+    @staticmethod
+    def get_code(): return 9
+
+class ArgumentsError(BadRequestError):
+    @staticmethod
+    def get_code(): return 10
+
 
 class FetchError(PilboxError):
     def __init__(self, msg=None, *args, **kwargs):
