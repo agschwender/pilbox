@@ -13,7 +13,7 @@ before_install:
   - sudo apt-get install python-numpy python-opencv
 install:
   - pip install --use-mirrors tornado==3.1 Pillow==2.1.0 coveralls
-  - pip install --use-mirrors pep8=1.4.6 pyflakes=0.7.3
+  - pip install --use-mirrors pep8==1.4.6 pyflakes==0.7.3
 before_script:
   - pep8 --exclude=test pilbox
   - pyflakes pilbox/*.py
