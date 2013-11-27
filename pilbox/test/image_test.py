@@ -71,6 +71,16 @@ class ImageTest(unittest.TestCase):
             new_size = new_img.size
             self.assertNotEqual(original_size, new_size)
 
+    def test_operation_manipulates_internal_stream(self):
+        with open(os.path.join(DATADIR, "test_rotation.jpg") ,"rb") as rotation_image:
+            rotation_image.seek(0)
+            img = Image(rotation_image)
+            original_stream = img.stream
+            rotation = img.rotate(10)
+            self.assertEqual(rotation.read(), img.stream.read())
+            img.stream.seek(0)
+            self.assertNotEqual(original_stream.read(), img.stream.read())
+
     def test_resize_using_settings(self):
         for case in get_image_resize_cases():
             if case.get("mode") == "crop" and case.get("position") == "face":

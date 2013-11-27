@@ -136,6 +136,9 @@ class Image(object):
         format_ = opts["pil"]["format"] if opts["pil"]["format"] else img.format
         resized.save(outfile, format_, quality=int(opts["quality"]))
         outfile.seek(0)
+
+        self._set_stream(outfile)
+
         return outfile
 
     def rotate(self, angle, **kwargs):
@@ -157,7 +160,17 @@ class Image(object):
         rotated.save(outfile, img.format, quality=int(opts["quality"]))
         outfile.seek(0)
 
+        self._set_stream(outfile)
+
         return outfile
+
+    def _set_stream(self, new_stream):
+        """ Modifies internal stream
+            with new stream (after transformation). """
+        self.stream = BytesIO()
+        self.stream.write(new_stream.read())
+        self.stream.seek(0)
+        new_stream.seek(0)
 
     def _resize(self, image, size, opts):
         if opts["mode"] == "clip":

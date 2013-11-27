@@ -163,8 +163,7 @@ class ImageHandler(tornado.web.RequestHandler):
 
         if rotate:
             if resize:
-                # copy stream, reset output.
-                image.stream, output = output, BytesIO()
+                output = BytesIO()
 
             rotated = image.rotate(self.get_argument("rotate"))
             output.write(rotated.read())
