@@ -76,7 +76,6 @@ class Image(object):
     def __init__(self, stream, defaults=None):
         self.stream = stream
 
-        # check for defaults and set, to avoid mutable default parameter.
         if not defaults:
             defaults = {}
 
