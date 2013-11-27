@@ -215,7 +215,9 @@ class ImageHandler(tornado.web.RequestHandler):
     def _validate_transform_arguments(self):
         """ checks if at least one transformation argument is provided. """
         if not [x for x in ["w", "h", "rotate"] if self.get_argument(x)]:
-            raise errors.ArgumentsError("need more arguments")
+            raise errors.ArgumentsError("Missing required arguments. "
+                                        "Resize: require `w` or/and `h`."
+                                        "Rotate: require `rotate`.")
 
 def main():
     tornado.options.parse_command_line()
