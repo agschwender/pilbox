@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement
+from __future__ import (absolute_import, division, print_function,
+                        with_statement)
 
 import logging
-import textwrap
 import sys
-from tornado.test.util import unittest
+import textwrap
 
+from tornado.test.util import unittest
 
 TEST_MODULES = [
     'pilbox.test.app_test',

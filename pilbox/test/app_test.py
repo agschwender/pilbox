@@ -1,5 +1,5 @@
-from __future__ import absolute_import, division, print_function, \
-    with_statement
+from __future__ import (absolute_import, division, print_function,
+                        with_statement)
 
 import logging
 import os.path
@@ -8,14 +8,16 @@ import time
 import tornado.escape
 import tornado.gen
 import tornado.ioloop
-from tornado.test.util import unittest
-from tornado.testing import AsyncHTTPTestCase, gen_test
 import tornado.web
+from tornado.test.util import unittest
+from tornado.testing import AsyncHTTPTestCase
 
 from pilbox.app import PilboxApplication
-from pilbox.errors import SignatureError, ClientError, HostError, \
-    BackgroundError, DimensionsError, FilterError, FormatError, ModeError, \
-    PositionError, QualityError, UrlError, ImageFormatError, FetchError, ArgumentsError, AngleError
+from pilbox.errors import (AngleError, ArgumentsError, BackgroundError,
+                           ClientError, DimensionsError, FetchError,
+                           FilterError, FormatError, HostError,
+                           ImageFormatError, ModeError, PositionError,
+                           QualityError, SignatureError, UrlError)
 from pilbox.signature import sign
 from pilbox.test import image_test
 

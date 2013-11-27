@@ -14,8 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement
+from __future__ import (absolute_import, division, print_function,
+                        with_statement)
 
 import logging
 import os.path
@@ -24,8 +24,10 @@ import PIL.Image
 import PIL.ImageOps
 import tornado.httpclient
 
-from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
-    FormatError, ModeError, PositionError, QualityError, ImageFormatError, AngleError
+from pilbox.errors import (AngleError, BackgroundError,
+                           DimensionsError, FilterError,
+                           FormatError, ImageFormatError,
+                           ModeError, PositionError, QualityError)
 
 try:
     from io import BytesIO

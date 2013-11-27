@@ -14,10 +14,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import absolute_import, division, print_function, with_statement
-from io import BytesIO
+from __future__ import (absolute_import, division, print_function,
+                        with_statement)
+
 import logging
 import socket
+from io import BytesIO
 
 import tornado.escape
 import tornado.gen
@@ -25,8 +27,8 @@ import tornado.httpclient
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
-from tornado.options import define, options, parse_config_file
 import tornado.web
+from tornado.options import define, options, parse_config_file
 
 from pilbox import errors
 from pilbox.image import Image

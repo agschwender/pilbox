@@ -1,16 +1,19 @@
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import (absolute_import, division, print_function,
+                        with_statement)
 
 import itertools
 import os
 import os.path
 import re
 
-from tornado.test.util import unittest
 import PIL.Image
+from tornado.test.util import unittest
 
-from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
-    FormatError, ModeError, PositionError, QualityError, ImageFormatError, AngleError
-from pilbox.image import Image, color_hex_to_dec_tuple
+from pilbox.errors import (AngleError, BackgroundError,
+                           DimensionsError, FilterError,
+                           FormatError, ImageFormatError,
+                           ModeError, PositionError, QualityError)
+from pilbox.image import color_hex_to_dec_tuple, Image
 
 try:
     import cv
