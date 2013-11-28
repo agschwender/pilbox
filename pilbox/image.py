@@ -14,8 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement
+from __future__ import (absolute_import, division, print_function,
+                        with_statement)
 
 import logging
 import re
@@ -24,8 +24,10 @@ import os.path
 import PIL.Image
 import PIL.ImageOps
 
-from pilbox.errors import BackgroundError, DimensionsError, FilterError, \
-    FormatError, ModeError, PositionError, QualityError, ImageFormatError
+from pilbox.errors import (AngleError, BackgroundError,
+                           DimensionsError, FilterError,
+                           FormatError, ImageFormatError,
+                           ModeError, PositionError, QualityError)
 
 try:
     from io import BytesIO
@@ -72,8 +74,12 @@ class Image(object):
     _CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "..", "config", "frontalface.xml")
 
-    def __init__(self, stream, defaults=dict()):
+    def __init__(self, stream, defaults=None):
         self.stream = stream
+
+        if not defaults:
+            defaults = {}
+
         self.defaults = Image._normalize_options(defaults)
 
     @staticmethod
@@ -84,6 +90,13 @@ class Image(object):
             raise DimensionsError("Invalid width: %s" % width)
         elif height and not str(height).isdigit():
             raise DimensionsError("Invalid height: %s" % height)
+
+    @staticmethod
+    def validate_angle(angle):
+        if not angle:
+            raise AngleError("Missing angle")
+        elif angle and not Image._isfloat(angle):
+            raise AngleError("Invalid angle: %s" % angle)
 
     @staticmethod
     def validate_options(opts):
@@ -127,13 +140,48 @@ class Image(object):
         img = PIL.Image.open(self.stream)
         if img.format.lower() not in self.FORMATS:
             raise ImageFormatError("Unknown format: %s" % img.format)
+
         opts = Image._normalize_options(kwargs, self.defaults)
         resized = self._resize(img, self._get_size(img, width, height), opts)
         outfile = BytesIO()
         fmt = opts["pil"]["format"] if opts["pil"]["format"] else img.format
         resized.save(outfile, fmt, quality=int(opts["quality"]))
         outfile.seek(0)
+
+        self._set_stream(outfile)
+
         return outfile
+
+    def rotate(self, angle, **kwargs):
+        """ Returns a buffer to the rotated (clockwise around its centre) image for saving.
+        Supports the following optional keyword arguments:
+
+        quality - The quality used to save JPEGs: integer from 1 - 100
+        """
+        img = PIL.Image.open(self.stream)
+        if img.format.lower() not in self.FORMATS:
+            raise ImageFormatError("Unknown format: %s" % img.format)
+
+        opts = Image._normalize_options(kwargs, self.defaults)
+
+        # use bicubic resample as default, can be changed in the future.
+        rotated = img.rotate(float(angle), resample=_filters_to_pil["bicubic"], expand=1)
+
+        outfile = BytesIO()
+        rotated.save(outfile, img.format, quality=int(opts["quality"]))
+        outfile.seek(0)
+
+        self._set_stream(outfile)
+
+        return outfile
+
+    def _set_stream(self, new_stream):
+        """ Modifies internal stream
+            with new stream (after transformation). """
+        self.stream = BytesIO()
+        self.stream.write(new_stream.read())
+        self.stream.seek(0)
+        new_stream.seek(0)
 
     def _resize(self, image, size, opts):
         if opts["mode"] == "clip":
@@ -246,6 +294,14 @@ class Image(object):
     def _isint(v, base=10):
         try:
             int(str(v), base)
+        except ValueError:
+            return False
+        return True
+
+    @staticmethod
+    def _isfloat(v):
+        try:
+            float(v)
         except ValueError:
             return False
         return True

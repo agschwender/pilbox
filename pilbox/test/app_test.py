@@ -1,5 +1,5 @@
-from __future__ import absolute_import, division, print_function, \
-    with_statement
+from __future__ import (absolute_import, division, print_function,
+                        with_statement)
 
 import logging
 import os.path
@@ -8,14 +8,16 @@ import time
 import tornado.escape
 import tornado.gen
 import tornado.ioloop
-from tornado.test.util import unittest
-from tornado.testing import AsyncHTTPTestCase, gen_test
 import tornado.web
+from tornado.test.util import unittest
+from tornado.testing import AsyncHTTPTestCase
 
 from pilbox.app import PilboxApplication
-from pilbox.errors import SignatureError, ClientError, HostError, \
-    BackgroundError, DimensionsError, FilterError, FormatError, ModeError, \
-    PositionError, QualityError, UrlError, ImageFormatError, FetchError
+from pilbox.errors import (AngleError, ArgumentsError, BackgroundError,
+                           ClientError, DimensionsError, FetchError,
+                           FilterError, FormatError, HostError,
+                           ImageFormatError, ModeError, PositionError,
+                           QualityError, SignatureError, UrlError)
 from pilbox.signature import sign
 from pilbox.test import image_test
 
@@ -37,8 +39,7 @@ class _AppAsyncMixin(object):
     def fetch_error(self, code, *args, **kwargs):
         response = self.fetch(*args, **kwargs)
         self.assertEqual(response.code, code)
-        self.assertEqual(response.headers.get("Content-Type", None),
-                         "application/json")
+        self.assertEqual(response.headers.get("Content-Type", None), "application/json")
         return tornado.escape.json_decode(response.body)
 
     def fetch_success(self, *args, **kwargs):
@@ -102,10 +103,10 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), UrlError.get_code())
 
-    def test_missing_dimensions(self):
+    def test_missing_arguments(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg"))
         resp = self.fetch_error(400, "/?%s" % qs)
-        self.assertEqual(resp.get("error_code"), DimensionsError.get_code())
+        self.assertEqual(resp.get("error_code"), ArgumentsError.get_code())
 
     def test_invalid_width(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w="a", h=1))
@@ -116,6 +117,11 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h="a"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), DimensionsError.get_code())
+
+    def test_invalid_angle(self):
+        qs = urlencode(dict(url="http://foo.co/x.jpg", rotate="a"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), AngleError.get_code())
 
     def test_invalid_mode(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, mode="foo"))
