@@ -80,12 +80,14 @@ class UrlError(BadRequestError):
 
 class AngleError(BadRequestError):
     @staticmethod
-    def get_code(): return 9
+    def get_code():
+        return 9
 
 
 class ArgumentsError(BadRequestError):
     @staticmethod
-    def get_code(): return 10
+    def get_code():
+        return 10
 
 
 class FetchError(PilboxError):

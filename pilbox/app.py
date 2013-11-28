@@ -40,7 +40,8 @@ except ImportError:
 
 
 # general settings
-define("config", help="path to configuration file", callback=lambda path: parse_config_file(path, final=False))
+define("config", help="path to configuration file",
+       callback=lambda path: parse_config_file(path, final=False))
 define("debug", default=False, help="run in debug mode", type=bool)
 define("port", default=8888, help="run on the given port", type=int)
 
@@ -150,11 +151,13 @@ class ImageHandler(tornado.web.RequestHandler):
         image = Image(response.buffer, self.settings)
 
         output = BytesIO()
-        resize, rotate = self.get_argument("w") or self.get_argument("h"), self.get_argument("rotate")
+        resize, rotate = self.get_argument("w") or self.get_argument("h"), \
+            self.get_argument("rotate")
 
         if resize:
             opts = self._get_resize_options()
-            resized = image.resize(self.get_argument("w"), self.get_argument("h"), **opts)
+            resized = image.resize(
+                self.get_argument("w"), self.get_argument("h"), **opts)
             output.write(resized.read())
             output.seek(0)
             resized.close()
@@ -180,7 +183,8 @@ class ImageHandler(tornado.web.RequestHandler):
         self._validate_host()
 
         if self.get_argument("w") or self.get_argument("h"):
-            Image.validate_dimensions(self.get_argument("w"), self.get_argument("h"))
+            Image.validate_dimensions(
+                self.get_argument("w"), self.get_argument("h"))
 
         if self.get_argument("rotate"):
             Image.validate_angle(self.get_argument("rotate"))
@@ -215,6 +219,7 @@ class ImageHandler(tornado.web.RequestHandler):
             raise errors.ArgumentsError("Missing required arguments. "
                                         "Resize: require `w` or/and `h`."
                                         "Rotate: require `rotate`.")
+
 
 def main():
     tornado.options.parse_command_line()

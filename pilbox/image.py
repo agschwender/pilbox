@@ -152,8 +152,8 @@ class Image(object):
         return outfile
 
     def rotate(self, angle, **kwargs):
-        """ Returns a buffer to the rotated (clockwise around its centre) image for saving.
-        Supports the following optional keyword arguments:
+        """ Returns a buffer to the rotated (clockwise around its centre)
+        image for saving. Supports the following optional keyword arguments:
 
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
@@ -164,7 +164,8 @@ class Image(object):
         opts = Image._normalize_options(kwargs, self.defaults)
 
         # use bicubic resample as default, can be changed in the future.
-        rotated = img.rotate(float(angle), resample=_filters_to_pil["bicubic"], expand=1)
+        rotated = img.rotate(
+            float(angle), resample=_filters_to_pil["bicubic"], expand=1)
 
         outfile = BytesIO()
         rotated.save(outfile, img.format, quality=int(opts["quality"]))
