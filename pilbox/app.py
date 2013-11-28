@@ -96,7 +96,6 @@ class ImageHandler(tornado.web.RequestHandler):
         "png": "image/png",
         "webp": "image/webp"}
 
-    @tornado.web.asynchronous
     @tornado.gen.coroutine
     def get(self):
         self._validate_request()
