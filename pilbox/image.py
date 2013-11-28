@@ -14,8 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import (absolute_import, division, print_function,
-                        with_statement)
+from __future__ import absolute_import, division, print_function, \
+    with_statement
 
 import logging
 import re
@@ -24,10 +24,7 @@ import os.path
 import PIL.Image
 import PIL.ImageOps
 
-from pilbox.errors import (AngleError, BackgroundError,
-                           DimensionsError, FilterError,
-                           FormatError, ImageFormatError,
-                           ModeError, PositionError, QualityError)
+from pilbox import errors
 
 try:
     from io import BytesIO
@@ -85,45 +82,47 @@ class Image(object):
     @staticmethod
     def validate_dimensions(width, height):
         if not width and not height:
-            raise DimensionsError("Missing dimensions")
+            raise errors.DimensionsError("Missing dimensions")
         elif width and not str(width).isdigit():
-            raise DimensionsError("Invalid width: %s" % width)
+            raise errors.DimensionsError("Invalid width: %s" % width)
         elif height and not str(height).isdigit():
-            raise DimensionsError("Invalid height: %s" % height)
+            raise errors.DimensionsError("Invalid height: %s" % height)
 
     @staticmethod
     def validate_angle(angle):
         if not angle:
-            raise AngleError("Missing angle")
+            raise errors.AngleError("Missing angle")
         elif angle and not Image._isfloat(angle):
-            raise AngleError("Invalid angle: %s" % angle)
+            raise errors.AngleError("Invalid angle: %s" % angle)
 
     @staticmethod
     def validate_options(opts):
         opts = Image._normalize_options(opts)
         if opts["mode"] not in Image.MODES:
-            raise ModeError("Invalid mode: %s" % opts["mode"])
+            raise errors.ModeError("Invalid mode: %s" % opts["mode"])
         elif opts["filter"] not in Image.FILTERS:
-            raise FilterError("Invalid filter: %s" % opts["filter"])
+            raise errors.FilterError("Invalid filter: %s" % opts["filter"])
         elif opts["format"] and opts["format"] not in Image.FORMATS:
-            raise FormatError("Invalid format: %s" % opts["format"])
+            raise errors.FormatError("Invalid format: %s" % opts["format"])
         elif opts["position"] not in Image.POSITIONS \
                 and not opts["pil"]["position"]:
-            raise PositionError("Invalid position: %s" % opts["position"])
+            raise errors.PositionError(
+                "Invalid position: %s" % opts["position"])
         elif opts["pil"]["position"] \
                 and (opts["pil"]["position"][0] < 0.0
                      or opts["pil"]["position"][0] > 1.0
                      or opts["pil"]["position"][1] < 0.0
                      or opts["pil"]["position"][1] > 1.0):
-            raise PositionError(
+            raise errors.PositionError(
                 "Invalid position ratio: %s" % opts["position"])
         elif not Image._isint(opts["background"], 16) \
                 or len(opts["background"]) not in [3, 4, 6, 8]:
-            raise BackgroundError(
+            raise errors.BackgroundError(
                 "Invalid background: %s" % opts["background"])
         elif not Image._isint(opts["quality"]) \
                 or int(opts["quality"]) > 100 or int(opts["quality"]) < 0:
-            raise QualityError("Invalid quality: %s", str(opts["quality"]))
+            raise errors.QualityError(
+                "Invalid quality: %s", str(opts["quality"]))
 
     def resize(self, width, height, **kwargs):
         """Returns a buffer to the resized image for saving, supports the
@@ -139,7 +138,7 @@ class Image(object):
         """
         img = PIL.Image.open(self.stream)
         if img.format.lower() not in self.FORMATS:
-            raise ImageFormatError("Unknown format: %s" % img.format)
+            raise errors.ImageFormatError("Unknown format: %s" % img.format)
 
         opts = Image._normalize_options(kwargs, self.defaults)
         resized = self._resize(img, self._get_size(img, width, height), opts)
@@ -160,7 +159,7 @@ class Image(object):
         """
         img = PIL.Image.open(self.stream)
         if img.format.lower() not in self.FORMATS:
-            raise ImageFormatError("Unknown format: %s" % img.format)
+            raise errors.ImageFormatError("Unknown format: %s" % img.format)
 
         opts = Image._normalize_options(kwargs, self.defaults)
 

@@ -14,8 +14,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import (absolute_import, division, print_function,
-                        with_statement)
+from __future__ import absolute_import, division, with_statement
 
 import tornado.web
 
@@ -78,9 +77,11 @@ class UrlError(BadRequestError):
     def get_code():
         return 8
 
+
 class AngleError(BadRequestError):
     @staticmethod
     def get_code(): return 9
+
 
 class ArgumentsError(BadRequestError):
     @staticmethod
