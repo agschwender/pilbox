@@ -1,14 +1,8 @@
-from __future__ import (absolute_import, division, print_function,
-                        with_statement)
+from __future__ import absolute_import, division, with_statement
 
 from tornado.test.util import unittest
 
-from pilbox.errors import (AngleError, ArgumentsError, BackgroundError,
-                           ClientError, DimensionsError, FetchError,
-                           FilterError, FormatError, HostError,
-                           ImageFormatError, ModeError, PilboxError,
-                           PositionError, QualityError, SignatureError,
-                           UrlError)
+from pilbox.errors import *
 
 
 class ErrorsTest(unittest.TestCase):

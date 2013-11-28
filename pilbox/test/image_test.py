@@ -1,5 +1,4 @@
-from __future__ import (absolute_import, division, print_function,
-                        with_statement)
+from __future__ import absolute_import, division, with_statement
 
 import itertools
 import os
@@ -9,10 +8,7 @@ import re
 import PIL.Image
 from tornado.test.util import unittest
 
-from pilbox.errors import (AngleError, BackgroundError,
-                           DimensionsError, FilterError,
-                           FormatError, ImageFormatError,
-                           ModeError, PositionError, QualityError)
+from pilbox import errors
 from pilbox.image import color_hex_to_dec_tuple, Image
 
 try:
@@ -107,7 +103,8 @@ class ImageTest(unittest.TestCase):
     def test_invalid_angle(self):
         invalid_angles = [None, "a", ""]
         for inv_angle in invalid_angles:
-            self.assertRaises(AngleError, Image.validate_angle, inv_angle)
+            self.assertRaises(
+                errors.AngleError, Image.validate_angle, inv_angle)
 
     def test_valid_dimensions(self):
         Image.validate_dimensions(100, 100)
@@ -115,15 +112,15 @@ class ImageTest(unittest.TestCase):
 
     def test_invalid_dimensions_none(self):
         self.assertRaises(
-            DimensionsError, Image.validate_dimensions, None, None)
+            errors.DimensionsError, Image.validate_dimensions, None, None)
         self.assertRaises(
-            DimensionsError, Image.validate_dimensions, "", "")
+            errors.DimensionsError, Image.validate_dimensions, "", "")
 
     def test_invalid_dimensions_not_integer(self):
         self.assertRaises(
-            DimensionsError, Image.validate_dimensions, "a", 100)
+            errors.DimensionsError, Image.validate_dimensions, "a", 100)
         self.assertRaises(
-            DimensionsError, Image.validate_dimensions, 100, "a")
+            errors.DimensionsError, Image.validate_dimensions, 100, "a")
 
     def test_valid_default_options(self):
         Image.validate_options(dict())
@@ -137,40 +134,44 @@ class ImageTest(unittest.TestCase):
         path = os.path.join(DATADIR, "test-bad-format.gif")
         with open(path, "rb") as f:
             image = Image(f)
-            self.assertRaises(ImageFormatError, image.resize, 100, 100)
+            self.assertRaises(errors.ImageFormatError, image.resize, 100, 100)
 
     def test_bad_mode(self):
         self.assertRaises(
-            ModeError, Image.validate_options, dict(mode="foo"))
+            errors.ModeError, Image.validate_options, dict(mode="foo"))
 
     def test_bad_filter(self):
         self.assertRaises(
-            FilterError, Image.validate_options, dict(filter="foo"))
+            errors.FilterError, Image.validate_options, dict(filter="foo"))
 
     def test_bad_format(self):
         self.assertRaises(
-            FormatError, Image.validate_options, dict(format="foo"))
+            errors.FormatError, Image.validate_options, dict(format="foo"))
 
     def test_bad_background_invalid_number(self):
-        self.assertRaises(
-            BackgroundError, Image.validate_options, dict(background="foo"))
+        self.assertRaises(errors.BackgroundError,
+                          Image.validate_options,
+                          dict(background="foo"))
 
     def test_bad_background_wrong_length(self):
-        self.assertRaises(
-            BackgroundError, Image.validate_options, dict(background="0f"))
-        self.assertRaises(
-            BackgroundError, Image.validate_options, dict(background="0f0f0"))
-        self.assertRaises(BackgroundError,
+        self.assertRaises(errors.BackgroundError,
+                          Image.validate_options,
+                          dict(background="0f"))
+        self.assertRaises(errors.BackgroundError,
+                          Image.validate_options,
+                          dict(background="0f0f0"))
+        self.assertRaises(errors.BackgroundError,
                           Image.validate_options,
                           dict(background="0f0f0f0f0"))
 
     def test_bad_position(self):
         self.assertRaises(
-            PositionError, Image.validate_options, dict(position="foo"))
+            errors.PositionError, Image.validate_options, dict(position="foo"))
 
     def test_bad_position_ratio(self):
-        self.assertRaises(
-            PositionError, Image.validate_options, dict(position="1.2,5.6"))
+        self.assertRaises(errors.PositionError,
+                          Image.validate_options,
+                          dict(position="1.2,5.6"))
 
     def test_valid_position_ratio(self):
         for pos in ["0.0,0.5", "1.0,1.0", "0.111111,0.999999"]:
@@ -178,13 +179,13 @@ class ImageTest(unittest.TestCase):
 
     def test_bad_quality_invalid_number(self):
         self.assertRaises(
-            QualityError, Image.validate_options, dict(quality="foo"))
+            errors.QualityError, Image.validate_options, dict(quality="foo"))
 
     def test_bad_quality_invalid_range(self):
         self.assertRaises(
-            QualityError, Image.validate_options, dict(quality=101))
+            errors.QualityError, Image.validate_options, dict(quality=101))
         self.assertRaises(
-            QualityError, Image.validate_options, dict(quality=-1))
+            errors.QualityError, Image.validate_options, dict(quality=-1))
 
     def test_color_hex_to_dec_tuple(self):
         tests  = [["fff", (255, 255, 255)],
