@@ -94,6 +94,7 @@ Options:
   --client_name              client name
   --config                   path to configuration file
   --debug                    run in debug mode (default False)
+  --expand                   default to expand when rotating
   --filter                   default filter to use when resizing
   --help                     show this help information
   --max_requests             max concurrent requests (default 40)
@@ -124,11 +125,30 @@ Options:
 <div class="highlight highlight-html"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop"</span> <span class="nt">/&gt;</span>
 </pre></div>
 
-<p>This will request the image served at the supplied url and resize it to <code>300x300</code> using the <code>crop</code> mode. The following is the list of parameters that can be supplied to the service</p>
+<p>This will request the image served at the supplied url and resize it to <code>300x300</code> using the <code>crop</code> mode. The below is the list of parameters that can be supplied to the service.</p>
+
+<h2>
+<a name="general-parameters" class="anchor" href="#general-parameters"><span class="octicon octicon-link"></span></a>General Parameters</h2>
 
 <ul>
 <li>
 <em>url</em>: The url of the image to be resized</li>
+<li>
+<em>op</em>: The operation to perform: noop, resize (default), rotate
+
+<ul>
+<li>
+<em>noop</em>: No operation is performed, image is returned as it is received</li>
+<li>
+<em>resize</em>: Resize the image</li>
+<li>
+<em>rotate</em>: Rotate the image</li>
+</ul>
+</li>
+</ul><h2>
+<a name="resize-parameters" class="anchor" href="#resize-parameters"><span class="octicon octicon-link"></span></a>Resize Parameters</h2>
+
+<ul>
 <li>
 <em>w</em>: The desired width of the image</li>
 <li>
@@ -145,6 +165,16 @@ Options:
 <em>fill</em>: Fills the clipped space with a background color</li>
 <li>
 <em>scale</em>: Resize to fit within the desired region, ignoring aspect ratio</li>
+</ul>
+</li>
+<li>
+<em>bg</em>: Background color used with fill mode (RGB or ARGB)
+
+<ul>
+<li>
+<em>RGB</em>: 3- or 6-digit hexadecimal number</li>
+<li>
+<em>ARGB</em>: 4- or 8-digit hexadecimal number, only relevant for PNG images</li>
 </ul>
 </li>
 <li>
@@ -174,16 +204,6 @@ Options:
 </ul>
 </li>
 <li>
-<em>bg</em>: Background color used with fill mode (RGB or ARGB)
-
-<ul>
-<li>
-<em>RGB</em>: 3- or 6-digit hexadecimal number</li>
-<li>
-<em>ARGB</em>: 4- or 8-digit hexadecimal number, only relevant for PNG images</li>
-</ul>
-</li>
-<li>
 <em>pos</em>: The crop position
 
 <ul>
@@ -207,15 +227,49 @@ Options:
 <em>bottom-right</em>: Crop from the bottom right</li>
 <li>
 <em>face</em>: Identify faces and crop from the midpoint of their position(s)</li>
+<li>
+<em>x,y</em>: Custom center point position ratio, e.g. 0.0,0.75</li>
 </ul>
 </li>
 <li>
 <em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs.</li>
+</ul><h2>
+<a name="rotate-parameters" class="anchor" href="#rotate-parameters"><span class="octicon octicon-link"></span></a>Rotate Parameters</h2>
+
+<ul>
+<li>
+<em>deg</em>: The desired rotation angle degrees</li>
+<li>
+<em>expand</em>: Expand the sizeto include the full rotated image</li>
+<li>
+<em>fmt</em>: The output format to save as, defaults to the source format
+
+<ul>
+<li>
+<em>jpeg</em>: Save as JPEG</li>
+<li>
+<em>png</em>: Save as PNG</li>
+<li>
+<em>webp</em>: Save as WebP</li>
+</ul>
+</li>
+<li>
+<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs.</li>
+</ul><h2>
+<a name="security-related-parameters" class="anchor" href="#security-related-parameters"><span class="octicon octicon-link"></span></a>Security-related Parameters</h2>
+
+<ul>
 <li>
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code>, and either <code>w</code> or <code>h</code> parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>. <code>fmt</code> is optional and defaults to the source image format. <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>. <code>q</code> is optional and defaults to <code>90</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature. Note, all built-in defaults can be overridden by setting them in the configuration file. See the <a href="#configuration">configuration section</a> for more details.</p>
+</ul><p>The <code>url</code> parameter is always required as it dictates the image that will be manipulated. <code>op</code> is optional and defaults to <code>resize</code>. It also supports a comma separated list of operations, where each operation is applied in the order that it appears in the list. Depending on the operation, additional parameters are required.  All image manipulation requests accept <code>fmt</code> and <code>q</code>. <code>fmt</code> is optional and defaults to the source image format. <code>q</code> is optional and defaults to <code>90</code>. To ensure security, all requests also support, <code>client</code> and <code>sig</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+
+<p>For resizing, either the <code>w</code> or <code>h</code> parameter is required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>.  <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>.</p>
+
+<p>For rotating, <code>deg</code> is required. <code>expand</code> is optional and defaults to <code>0</code> (disabled). It is recommended that this feature not be used as it typically does not produce high quality images.</p>
+
+<p>Note, all built-in defaults can be overridden by setting them in the configuration file. See the <a href="#configuration">configuration section</a> for more details.</p>
 
 <h1>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h1>
@@ -225,7 +279,7 @@ Options:
 <h2>
 <a name="clip" class="anchor" href="#clip"><span class="octicon octicon-link"></span></a>Clip</h2>
 
-<p>The image is resized to fit within a <code>500x400</code> box, maintaing aspect ratio and producing an image that is <code>500x334</code>. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.</p>
+<p>The image is resized to fit within a <code>500x400</code> box, maintaining aspect ratio and producing an image that is <code>500x334</code>. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.</p>
 
 <p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-clip.jpg" alt="Clipped image"></p>
 
@@ -277,7 +331,7 @@ Options:
     <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 </pre></div>
 
-<p>The signature is passed to the application by appending the <code>sig</code> paramater to the query string; e.g. <code>x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a0c797ef26</code>. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the <code>pilbox.signature</code> command described in the <a href="#tools">tools section</a>.</p>
+<p>The signature is passed to the application by appending the <code>sig</code> parameter to the query string; e.g. <code>x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a0c797ef26</code>. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the <code>pilbox.signature</code> command described in the <a href="#tools">tools section</a>.</p>
 
 <h1>
 <a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h1>
@@ -304,9 +358,14 @@ timeout = 7.5
 # Set default resizing options
 background = "ccc"
 filter = "bilinear"
-format = None
 mode = "crop"
 position = "top"
+
+# Set default rotating options
+expand = False
+
+# Set default saving options
+format = None
 quality = 90
 </code></pre>
 
@@ -368,6 +427,8 @@ quality = 75
 <li>0.8.3: Only allow http and https protocols</li>
 <li>0.8.4: Added support for WebP</li>
 <li>0.8.5: Added format option and configuration overrides for mode and format</li>
+<li>0.8.6: Added custom position support</li>
+<li>0.9: Added rotate operation</li>
 </ul><h1>
 <a name="docker" class="anchor" href="#docker"><span class="octicon octicon-link"></span></a>Docker</h1>
 
