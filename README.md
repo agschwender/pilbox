@@ -54,6 +54,7 @@ To see a list of all available options, run
       --client_name              client name
       --config                   path to configuration file
       --debug                    run in debug mode (default False)
+      --expand                   default to expand when rotating
       --filter                   default filter to use when resizing
       --help                     show this help information
       --max_requests             max concurrent requests (default 40)
@@ -84,17 +85,28 @@ Would be replaced with this image url
 <img src="http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&w=300&h=300&mode=crop" />
 ```
 
-This will request the image served at the supplied url and resize it to `300x300` using the `crop` mode. The following is the list of parameters that can be supplied to the service
+This will request the image served at the supplied url and resize it to `300x300` using the `crop` mode. The below is the list of parameters that can be supplied to the service.
+
+### General Parameters
 
   * _url_: The url of the image to be resized
+  * _op_: The operation to perform: noop, resize (default), rotate
+    * _noop_: No operation is performed, image is returned as it is received
+    * _resize_: Resize the image
+    * _rotate_: Rotate the image
+
+### Resize Parameters
+
   * _w_: The desired width of the image
   * _h_: The desired height of the image
-  * _rotate_: The desired rotation angle of the image.
   * _mode_: The resizing method: clip, crop (default), fill and scale
     * _clip_: Resize to fit within the desired region, keeping aspect ratio
     * _crop_: Resize so one dimension fits within region, center, cut remaining
     * _fill_: Fills the clipped space with a background color
     * _scale_: Resize to fit within the desired region, ignoring aspect ratio
+  * _bg_: Background color used with fill mode (RGB or ARGB)
+    * _RGB_: 3- or 6-digit hexadecimal number
+    * _ARGB_: 4- or 8-digit hexadecimal number, only relevant for PNG images
   * _filter_: The filtering algorithm used for resizing
     * _nearest_: Fastest, but often images appear pixelated
     * _bilinear_: Faster, can produce acceptable results
@@ -104,9 +116,6 @@ This will request the image served at the supplied url and resize it to `300x300
     * _jpeg_: Save as JPEG
     * _png_: Save as PNG
     * _webp_: Save as WebP
-  * _bg_: Background color used with fill mode (RGB or ARGB)
-    * _RGB_: 3- or 6-digit hexadecimal number
-    * _ARGB_: 4- or 8-digit hexadecimal number, only relevant for PNG images
   * _pos_: The crop position
     * _top-left_: Crop from the top left
     * _top_: Crop from the top center
@@ -118,12 +127,31 @@ This will request the image served at the supplied url and resize it to `300x300
     * _bottom_: Crop from the bottom center
     * _bottom-right_: Crop from the bottom right
     * _face_: Identify faces and crop from the midpoint of their position(s)
-    * _x,y_: Custom position ratio, e.g. 0.0,0.75
+    * _x,y_: Custom center point position ratio, e.g. 0.0,0.75
   * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
+
+### Rotate Parameters
+
+  * _deg_: The desired rotation angle degrees
+  * _expand_: Expand the sizeto include the full rotated image
+  * _fmt_: The output format to save as, defaults to the source format
+    * _jpeg_: Save as JPEG
+    * _png_: Save as PNG
+    * _webp_: Save as WebP
+  * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
+
+### Security-related Parameters
+
   * _client_: The client name
   * _sig_: The signature
 
-The `url`, and either `w`, `h` or `rotate` parameters are required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. If `rotate` is provided along with other parameters, actual rotation will happen last (after all other operations). `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`. `fmt` is optional and defaults to the source image format. `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`. `q` is optional and defaults to `90`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature. Note, all built-in defaults can be overridden by setting them in the configuration file. See the [configuration section](#configuration) for more details.
+The `url` parameter is always required as it dictates the image that will be manipulated. `op` is optional and defaults to `resize`. It also supports a comma separated list of operations, where each operation is applied in the order that it appears in the list. Depending on the operation, additional parameters are required.  All image manipulation requests accept `fmt` and `q`. `fmt` is optional and defaults to the source image format. `q` is optional and defaults to `90`. To ensure security, all requests also support, `client` and `sig`. `client` is required only if the `client_name` is defined within the configuration file. Likewise, `sig` is required only if the `client_key` is defined within the configuration file. See the [signing section](#signing) for details on how to generate the signature.
+
+For resizing, either the `w` or `h` parameter is required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`.  `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`.
+
+For rotating, `deg` is required. `expand` is optional and defaults to `0` (disabled). It is recommended that this feature not be used as it typically does not produce high quality images.
+
+Note, all built-in defaults can be overridden by setting them in the configuration file. See the [configuration section](#configuration) for more details.
 
 Examples
 ========
@@ -157,6 +185,7 @@ Scale
 The image is clipped to fit within the `500x400` box and then stretched to fill the excess space. Scaling is often not useful in production environments as it generally produces poor quality images. This mode is largely included for completeness.
 
 ![Scale image](pilbox/test/data/expected/example-500x400-scale.jpg)
+
 
 Testing
 =======
@@ -211,9 +240,14 @@ All options that can be supplied to the application via the command line, can al
     # Set default resizing options
     background = "ccc"
     filter = "bilinear"
-    format = None
     mode = "crop"
     position = "top"
+
+    # Set default rotating options
+    expand = False
+
+    # Set default saving options
+    format = None
     quality = 90
 
 Tools
@@ -270,6 +304,7 @@ Changelog
   * 0.8.4: Added support for WebP
   * 0.8.5: Added format option and configuration overrides for mode and format
   * 0.8.6: Added custom position support
+  * 0.9: Added rotate operation
 
 Docker
 ======

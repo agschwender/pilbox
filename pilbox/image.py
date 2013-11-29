@@ -66,18 +66,19 @@ class Image(object):
     MODES = ["clip", "crop", "fill", "scale"]
     POSITIONS = _positions_to_ratios.keys()
 
-    _DEFAULTS = dict(background="fff", filter="antialias", format=None,
-                     mode="crop", position="center", quality=90)
+    _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
+                     format=None, mode="crop", position="center", quality=90)
     _CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "..", "config", "frontalface.xml")
 
-    def __init__(self, stream, defaults=None):
+    def __init__(self, stream):
         self.stream = stream
 
-        if not defaults:
-            defaults = {}
-
-        self.defaults = Image._normalize_options(defaults)
+        self.img = PIL.Image.open(self.stream)
+        if self.img.format.lower() not in self.FORMATS:
+            raise errors.ImageFormatError(
+                "Unknown format: %s" % self.img.format)
+        self._orig_format = self.img.format
 
     @staticmethod
     def validate_dimensions(width, height):
@@ -89,11 +90,13 @@ class Image(object):
             raise errors.DimensionsError("Invalid height: %s" % height)
 
     @staticmethod
-    def validate_angle(angle):
-        if not angle:
-            raise errors.AngleError("Missing angle")
-        elif angle and not Image._isfloat(angle):
-            raise errors.AngleError("Invalid angle: %s" % angle)
+    def validate_degree(deg):
+        if deg is None or deg == "":
+            raise errors.DegreeError("Missing degree")
+        elif not Image._isint(deg):
+            raise errors.DegreeError("Invalid degree: %s" % deg)
+        elif int(deg) < 0 or int(deg) >= 360:
+            raise errors.DegreeError("Invalid degree: %s" % deg)
 
     @staticmethod
     def validate_options(opts):
@@ -108,13 +111,6 @@ class Image(object):
                 and not opts["pil"]["position"]:
             raise errors.PositionError(
                 "Invalid position: %s" % opts["position"])
-        elif opts["pil"]["position"] \
-                and (opts["pil"]["position"][0] < 0.0
-                     or opts["pil"]["position"][0] > 1.0
-                     or opts["pil"]["position"][1] < 0.0
-                     or opts["pil"]["position"][1] > 1.0):
-            raise errors.PositionError(
-                "Invalid position ratio: %s" % opts["position"])
         elif not Image._isint(opts["background"], 16) \
                 or len(opts["background"]) not in [3, 4, 6, 8]:
             raise errors.BackgroundError(
@@ -125,113 +121,95 @@ class Image(object):
                 "Invalid quality: %s", str(opts["quality"]))
 
     def resize(self, width, height, **kwargs):
-        """Returns a buffer to the resized image for saving, supports the
-        following optional keyword arguments:
+        """Resizes the image to the supplied width/height. Returns the
+        instance. Supports the following optional keyword arguments:
 
         mode - The resizing mode to use, see Image.MODES
         filter - The filter to use: see Image.FILTERS
-        format - The format to save as: see Image.FORMATS
         background - The hexadecimal background fill color, RGB or ARGB
         position - The position used to crop: see Image.POSITIONS for
                    pre-defined positions or a custom position ratio
-        quality - The quality used to save JPEGs: integer from 1 - 100
         """
-        img = PIL.Image.open(self.stream)
-        if img.format.lower() not in self.FORMATS:
-            raise errors.ImageFormatError("Unknown format: %s" % img.format)
-
-        opts = Image._normalize_options(kwargs, self.defaults)
-        resized = self._resize(img, self._get_size(img, width, height), opts)
-        outfile = BytesIO()
-        fmt = opts["pil"]["format"] if opts["pil"]["format"] else img.format
-        resized.save(outfile, fmt, quality=int(opts["quality"]))
-        outfile.seek(0)
-
-        self._set_stream(outfile)
-
-        return outfile
-
-    def rotate(self, angle, **kwargs):
-        """ Returns a buffer to the rotated (clockwise around its centre)
-        image for saving. Supports the following optional keyword arguments:
-
-        quality - The quality used to save JPEGs: integer from 1 - 100
-        """
-        img = PIL.Image.open(self.stream)
-        if img.format.lower() not in self.FORMATS:
-            raise errors.ImageFormatError("Unknown format: %s" % img.format)
-
-        opts = Image._normalize_options(kwargs, self.defaults)
-
-        # use bicubic resample as default, can be changed in the future.
-        rotated = img.rotate(
-            float(angle), resample=_filters_to_pil["bicubic"], expand=1)
-
-        outfile = BytesIO()
-        rotated.save(outfile, img.format, quality=int(opts["quality"]))
-        outfile.seek(0)
-
-        self._set_stream(outfile)
-
-        return outfile
-
-    def _set_stream(self, new_stream):
-        """ Modifies internal stream
-            with new stream (after transformation). """
-        self.stream = BytesIO()
-        self.stream.write(new_stream.read())
-        self.stream.seek(0)
-        new_stream.seek(0)
-
-    def _resize(self, image, size, opts):
+        opts = Image._normalize_options(kwargs)
+        size = self._get_size(width, height)
         if opts["mode"] == "clip":
-            return self._clip(image, size, opts)
+            self._clip(size, opts)
         elif opts["mode"] == "fill":
-            return self._fill(image, size, opts)
+            self._fill(size, opts)
         elif opts["mode"] == "scale":
-            return self._scale(image, size, opts)
+            self._scale(size, opts)
         else:
-            return self._crop(image, size, opts)
+            self._crop(size, opts)
+        return self
 
-    def _clip(self, image, size, opts):
-        image.thumbnail(size, opts["pil"]["filter"])
-        return image
+    def rotate(self, deg, **kwargs):
+        """ Rotates the image clockwise around its center.  Returns the
+        instance. Supports the following optional keyword arguments:
 
-    def _crop(self, image, size, opts):
+        expand - Expand the output image to fit rotation
+        """
+        opts = Image._normalize_options(kwargs)
+        expand = False if int(deg) % 90 == 0 else bool(int(opts["expand"]))
+        self.img = self.img.rotate(360 - int(deg), expand=expand)
+        return self
+
+    def save(self, **kwargs):
+        """Returns a buffer to the image for saving, supports the
+        following optional keyword arguments:
+
+        format - The format to save as: see Image.FORMATS
+        quality - The quality used to save JPEGs: integer from 1 - 100
+        """
+        opts = Image._normalize_options(kwargs)
+        outfile = BytesIO()
+        if opts["pil"]["format"]:
+            fmt = opts["pil"]["format"]
+        else:
+            fmt = self._orig_format
+        self.img.save(outfile, fmt, quality=int(opts["quality"]))
+        outfile.seek(0)
+
+        return outfile
+
+    def _clip(self, size, opts):
+        self.img.thumbnail(size, opts["pil"]["filter"])
+
+    def _crop(self, size, opts):
         if opts["position"] == "face":
             if cv is None:
                 raise NotImplementedError
             else:
-                pos = self._get_face_position(image)
+                pos = self._get_face_position()
         else:
             pos = opts["pil"]["position"]
-        return PIL.ImageOps.fit(image, size, opts["pil"]["filter"], 0, pos)
+        self.img = PIL.ImageOps.fit(
+            self.img, size, opts["pil"]["filter"], 0, pos)
 
-    def _fill(self, image, size, opts):
-        clipped = self._clip(image, size, opts)
-        if clipped.size == size:
-            return clipped  # No need to fill
-        x = max(int((size[0] - clipped.size[0]) / 2.0), 0)
-        y = max(int((size[1] - clipped.size[1]) / 2.0), 0)
+    def _fill(self, size, opts):
+        self._clip(size, opts)
+        if self.img.size == size:
+            return  # No need to fill
+        x = max(int((size[0] - self.img.size[0]) / 2.0), 0)
+        y = max(int((size[1] - self.img.size[1]) / 2.0), 0)
         color = color_hex_to_dec_tuple(opts["background"])
         mode = "RGBA" if len(color) == 4 else "RGB"
         img = PIL.Image.new(mode=mode, size=size, color=color)
-        img.paste(clipped, (x, y))
-        return img
+        img.paste(self.img, (x, y))
+        self.img = img
 
-    def _scale(self, image, size, opts):
-        return image.resize(size, opts["pil"]["filter"])
+    def _scale(self, size, opts):
+        self.img = self.img.resize(size, opts["pil"]["filter"])
 
-    def _get_size(self, image, width, height):
-        aspect_ratio = image.size[0] / image.size[1]
+    def _get_size(self, width, height):
+        aspect_ratio = self.img.size[0] / self.img.size[1]
         if not width:
-            width = int((int(height) or image.size[1]) * aspect_ratio)
+            width = int((int(height) or self.img.size[1]) * aspect_ratio)
         if not height:
-            height = int((int(width) or image.size[0]) / aspect_ratio)
+            height = int((int(width) or self.img.size[0]) / aspect_ratio)
         return (int(width), int(height))
 
-    def _get_face_rectangles(self, image):
-        cvim = self._pil_to_opencv(image)
+    def _get_face_rectangles(self):
+        cvim = self._pil_to_opencv()
         return cv.HaarDetectObjects(
             cvim,
             self._get_face_classifier(),
@@ -241,8 +219,8 @@ class Image(object):
             0,  # HAAR Flags
             (20, 20))
 
-    def _get_face_position(self, image):
-        rects = self._get_face_rectangles(image)
+    def _get_face_position(self):
+        rects = self._get_face_rectangles()
         if not rects:
             return (0.5, 0.5)
         xt, yt = (0.0, 0.0)
@@ -250,8 +228,8 @@ class Image(object):
             xt += rect[0][0] + (rect[0][2] / 2.0)
             yt += rect[0][1] + (rect[0][3] / 2.0)
 
-        return (xt / (len(rects) * image.size[0]),
-                yt / (len(rects) * image.size[1]))
+        return (xt / (len(rects) * self.img.size[0]),
+                yt / (len(rects) * self.img.size[1]))
 
     def _get_face_classifier(self):
         if not hasattr(Image, "_classifier"):
@@ -259,22 +237,22 @@ class Image(object):
             Image._classifier = cv.Load(classifier_path)
         return Image._classifier
 
-    def _pil_to_opencv(self, pi):
-        mono = pi.convert("L")
+    def _pil_to_opencv(self):
+        mono = self.img.convert("L")
         cvim = cv.CreateImageHeader(mono.size, cv.IPL_DEPTH_8U, 1)
         cv.SetData(cvim, mono.tostring(), mono.size[0])
         cv.EqualizeHist(cvim, cvim)
         return cvim
 
     @staticmethod
-    def _normalize_options(options, defaults=None):
-        if not defaults:
-            defaults = Image._DEFAULTS
-        opts = defaults.copy()
-        opts.update(dict([(k, v) for k, v in options.items() if v]))
+    def _normalize_options(options):
+        opts = Image._DEFAULTS.copy()
+        for k, v in options.items():
+            if v is not None:
+                opts[k] = v
         opts["pil"] = dict(
             filter=_filters_to_pil.get(opts["filter"]),
-            format=_formats_to_pil.get(opts["format"], None),
+            format=_formats_to_pil.get(opts["format"]),
             position=Image._get_custom_position(opts["position"]))
 
         if not opts["pil"]["position"]:
@@ -288,20 +266,15 @@ class Image(object):
         m = re.match(r'^(\d+(\.\d+)?),(\d+(\.\d+)?)$', pos)
         if not m:
             return None
-        return (float(m.group(1)), float(m.group(3)))
+        pos = (float(m.group(1)), float(m.group(3)))
+        if pos[0] < 0.0 or pos[0] > 1.0 or pos[1] < 0.0 or pos[1] > 1.0:
+            return None
+        return pos
 
     @staticmethod
     def _isint(v, base=10):
         try:
             int(str(v), base)
-        except ValueError:
-            return False
-        return True
-
-    @staticmethod
-    def _isfloat(v):
-        try:
-            float(v)
         except ValueError:
             return False
         return True
@@ -328,6 +301,8 @@ def main():
     import tornado.options
     from tornado.options import define, options, parse_command_line
 
+    define("operation", help="the operation to be performed", type=str,
+           default="resize", metavar="|".join(["resize", "rotate", "none"]))
     define("width", help="the desired image width", type=int)
     define("height", help="the desired image height", type=int)
     define("mode", help="the resizing mode",
@@ -338,16 +313,26 @@ def main():
            metavar="|".join(Image.POSITIONS), type=str)
     define("filter", help="default filter to use when resizing",
            metavar="|".join(Image.FILTERS), type=str)
+    define("degree", help="the desired rotation degree", type=int)
+    define("expand", help="expand image size to accomodate rotation", type=int)
     define("format", help="default format to use when saving",
            metavar="|".join(Image.FORMATS), type=str)
     define("quality", help="default jpeg quality, 0-100", type=int)
 
     args = parse_command_line()
-    if not options.width and not options.height:
-        tornado.options.print_help()
-        sys.exit()
-    elif not args:
+    if not args:
         print("Missing image source url")
+        sys.exit()
+    elif options.operation == "rotate":
+        if not options.degree:
+            tornado.options.print_help()
+            sys.exit()
+    elif options.operation == "resize":
+        if not options.width and not options.height:
+            tornado.options.print_help()
+            sys.exit()
+    elif options.operation != "none":
+        tornado.options.print_help()
         sys.exit()
 
     if args[0].startswith("http://") or args[0].startswith("https://"):
@@ -356,9 +341,16 @@ def main():
         image = Image(resp.buffer)
     else:
         image = Image(open(args[0], "r"))
-    stream = image.resize(options.width, options.height, mode=options.mode,
-                          filter=options.filter, background=options.background,
-                          position=options.position, quality=options.quality)
+
+    if options.operation == "resize":
+        image.resize(options.width, options.height, mode=options.mode,
+                     filter=options.filter, background=options.background,
+                     position=options.position)
+    elif options.operation == "rotate":
+        image.rotate(options.degree, expand=options.expand,
+                     filter=options.filter)
+
+    stream = image.save(format=options.format, quality=options.quality)
     sys.stdout.write(stream.read())
     stream.close()
 

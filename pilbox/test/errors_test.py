@@ -11,7 +11,7 @@ class ErrorsTest(unittest.TestCase):
         errors = [SignatureError, ClientError, HostError, BackgroundError,
                   DimensionsError, FilterError, FormatError, ModeError,
                   PositionError, QualityError, UrlError, ImageFormatError,
-                  FetchError, AngleError, ArgumentsError]
+                  FetchError, DegreeError, OperationError]
         codes = []
         for error in errors:
             code = str(error.get_code())

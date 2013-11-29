@@ -37,16 +37,48 @@ def main():
     cases = image_test.get_image_resize_cases()
     for case in cases:
         with open(case["source_path"], "rb") as f:
+
             print "Generating %s" % case["expected_path"]
             img = Image(f).resize(
                 case["width"], case["height"], mode=case["mode"],
-                background=case.get("background"),
-                filter=case.get("filter"),
-                format=case.get("format"),
-                position=case.get("position"),
-                quality=case.get("quality"))
+                background=case.get("background"), filter=case.get("filter"),
+                position=case.get("position"))
+            rv = img.save(
+                format=case.get("format"), quality=case.get("quality"))
+
             with open(case["expected_path"], "wb") as expected:
-                expected.write(img.read())
+                expected.write(rv.read())
+
+    cases = image_test.get_image_rotate_cases()
+    for case in cases:
+        with open(case["source_path"], "rb") as f:
+
+            print "Generating %s" % case["expected_path"]
+            img = Image(f).rotate(
+                case["degree"], expand=case.get("expand"),
+                filter=case.get("filter"))
+            rv = img.save(
+                format=case.get("format"), quality=case.get("quality"))
+
+            with open(case["expected_path"], "wb") as expected:
+                expected.write(rv.read())
+
+
+    cases = image_test.get_image_chained_cases()
+    for case in cases:
+        with open(case["source_path"], "rb") as f:
+
+            print "Generating %s" % case["expected_path"]
+            img = Image(f)
+            for operation in case["operation"]:
+                if operation == "resize":
+                    img.resize(case["width"], case["height"])
+                elif operation == "rotate":
+                    img.rotate(case["degree"])
+
+            rv = img.save()
+            with open(case["expected_path"], "wb") as expected:
+                expected.write(rv.read())
 
 
 if __name__ == "__main__":

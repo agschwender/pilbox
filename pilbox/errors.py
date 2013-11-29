@@ -78,13 +78,13 @@ class UrlError(BadRequestError):
         return 8
 
 
-class AngleError(BadRequestError):
+class DegreeError(BadRequestError):
     @staticmethod
     def get_code():
         return 9
 
 
-class ArgumentsError(BadRequestError):
+class OperationError(BadRequestError):
     @staticmethod
     def get_code():
         return 10

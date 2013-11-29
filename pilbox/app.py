@@ -18,7 +18,6 @@ from __future__ import absolute_import, division, with_statement
 
 import logging
 import socket
-from io import BytesIO
 
 import tornado.escape
 import tornado.gen
@@ -54,8 +53,9 @@ define("allowed_hosts", help="list of valid hosts", default=[], multiple=True)
 define("max_requests", help="max concurrent requests", type=int, default=40)
 define("timeout", help="request timeout in seconds", type=float, default=10)
 
-# default resizing option settings
+# default image option settings
 define("background", help="default hexadecimal bg color (RGB or ARGB)")
+define("expand", help="default to expand when rotating", type=int)
 define("filter", help="default filter to use when resizing")
 define("format", help="default format to use when outputting")
 define("mode", help="default mode to use when resizing")
@@ -73,6 +73,7 @@ class PilboxApplication(tornado.web.Application):
                         client_key=options.client_key,
                         allowed_hosts=options.allowed_hosts,
                         background=options.background,
+                        expand=options.expand,
                         filter=options.filter,
                         format=options.format,
                         mode=options.mode,
@@ -89,6 +90,8 @@ class PilboxApplication(tornado.web.Application):
 
 class ImageHandler(tornado.web.RequestHandler):
     FORWARD_HEADERS = ['Cache-Control', 'Expires', 'Last-Modified']
+    OPERATIONS = ["resize", "rotate", "noop"]
+
     _FORMAT_TO_MIME = {
         "jpeg": "image/jpeg",
         "jpg": "image/jpeg",
@@ -98,6 +101,7 @@ class ImageHandler(tornado.web.RequestHandler):
     @tornado.gen.coroutine
     def get(self):
         self._validate_request()
+
         client = tornado.httpclient.AsyncHTTPClient(
             max_clients=self.settings.get("max_requests"))
         try:
@@ -109,7 +113,11 @@ class ImageHandler(tornado.web.RequestHandler):
                         % (self.get_argument("url"), str(e)))
             raise errors.FetchError()
 
-        self._process_response(resp)
+        outfile = self._process_response(resp)
+        self._forward_headers(resp.headers)
+        for block in iter(lambda: outfile.read(65536), b""):
+            self.write(block)
+        outfile.close()
 
         self.finish()
 
@@ -127,69 +135,87 @@ class ImageHandler(tornado.web.RequestHandler):
         else:
             super(ImageHandler, self).write_error(status_code, **kwargs)
 
+    def _process_response(self, resp):
+        if "noop" in self._get_operations():
+            return resp.buffer
+
+        image = Image(resp.buffer)
+        for operation in self._get_operations():
+            if operation == "resize":
+                self._image_resize(image)
+            elif operation == "rotate":
+                self._image_rotate(image)
+
+        return self._image_save(image)
+
+    def _image_resize(self, image):
+        opts = self._get_resize_options()
+        image.resize(self.get_argument("w"), self.get_argument("h"), **opts)
+
+    def _image_rotate(self, image):
+        opts = self._get_rotate_options()
+        image.rotate(self.get_argument("deg"), **opts)
+
+    def _image_save(self, image):
+        opts = self._get_save_options()
+        return image.save(**opts)
+
     def _forward_headers(self, headers):
         mime = self._FORMAT_TO_MIME.get(
-            self.get_argument("fmt"), headers['Content-Type'])
+            self.get_argument("fmt", self.settings.get("format")),
+            headers['Content-Type'])
         self.set_header('Content-Type', mime)
         for k in ImageHandler.FORWARD_HEADERS:
             if k in headers and headers[k]:
                 self.set_header(k, headers[k])
 
+    def _get_operations(self):
+        return self.get_argument("op", "resize").split(",")
+
     def _get_resize_options(self):
-        return dict(mode=self.get_argument("mode"),
-                    filter=self.get_argument("filter"),
-                    format=self.get_argument("fmt"),
-                    position=self.get_argument("pos"),
-                    background=self.get_argument("bg"),
-                    quality=self.get_argument("q"))
+        return self._get_options(
+            dict(mode=self.get_argument("mode"),
+                 filter=self.get_argument("filter"),
+                 position=self.get_argument("pos"),
+                 background=self.get_argument("bg")))
 
-    def _process_response(self, response):
-        """ processes response by its arguments.
+    def _get_rotate_options(self):
+        return self._get_options(
+            dict(expand=self.get_argument("expand")))
 
-        if `rotate` is provided, it will happen after all other args.
-        """
-        image = Image(response.buffer, self.settings)
+    def _get_save_options(self):
+        return self._get_options(
+            dict(format=self.get_argument("fmt"),
+                 quality=self.get_argument("q")))
 
-        output = BytesIO()
-        resize, rotate = self.get_argument("w") or self.get_argument("h"), \
-            self.get_argument("rotate")
-
-        if resize:
-            opts = self._get_resize_options()
-            resized = image.resize(
-                self.get_argument("w"), self.get_argument("h"), **opts)
-            output.write(resized.read())
-            output.seek(0)
-            resized.close()
-
-        if rotate:
-            if resize:
-                output = BytesIO()
-
-            rotated = image.rotate(self.get_argument("rotate"))
-            output.write(rotated.read())
-            output.seek(0)
-            rotated.close()
-
-        self._forward_headers(response.headers)
-        for block in iter(lambda: output.read(65536), b""):
-            self.write(block)
+    def _get_options(self, opts):
+        for k, v in opts.items():
+            if v is None:
+                opts[k] = self.settings.get(k, None)
+        return opts
 
     def _validate_request(self):
-        self._validate_transform_arguments()
+        self._validate_operation()
         self._validate_url()
         self._validate_signature()
         self._validate_client()
         self._validate_host()
 
-        if self.get_argument("w") or self.get_argument("h"):
+        opts = self._get_save_options()
+        if "resize" in self._get_operations():
             Image.validate_dimensions(
                 self.get_argument("w"), self.get_argument("h"))
+            opts.update(self._get_resize_options())
+        if "rotate" in self._get_operations():
+            Image.validate_degree(self.get_argument("deg"))
+            opts.update(self._get_rotate_options())
 
-        if self.get_argument("rotate"):
-            Image.validate_angle(self.get_argument("rotate"))
+        Image.validate_options(opts)
 
-        Image.validate_options(self._get_resize_options())
+    def _validate_operation(self):
+        operations = set(self._get_operations())
+        if not operations.issubset(set(ImageHandler.OPERATIONS)):
+            raise errors.OperationError("Unsupported operation")
 
     def _validate_url(self):
         if not self.get_argument("url"):
@@ -212,13 +238,6 @@ class ImageHandler(tornado.web.RequestHandler):
         hosts = self.settings.get("allowed_hosts", [])
         if hosts and urlparse(self.get_argument("url")).hostname not in hosts:
             raise errors.HostError("Invalid host")
-
-    def _validate_transform_arguments(self):
-        """ checks if at least one transformation argument is provided. """
-        if not [x for x in ["w", "h", "rotate"] if self.get_argument(x)]:
-            raise errors.ArgumentsError("Missing required arguments. "
-                                        "Resize: require `w` or/and `h`."
-                                        "Rotate: require `rotate`.")
 
 
 def main():

@@ -34,7 +34,8 @@ class _AppAsyncMixin(object):
     def fetch_error(self, code, *args, **kwargs):
         response = self.fetch(*args, **kwargs)
         self.assertEqual(response.code, code)
-        self.assertEqual(response.headers.get("Content-Type", None), "application/json")
+        self.assertEqual(response.headers.get("Content-Type", None),
+                         "application/json")
         return tornado.escape.json_decode(response.body)
 
     def fetch_success(self, *args, **kwargs):
@@ -56,15 +57,50 @@ class _AppAsyncMixin(object):
             for k in m.keys():
                 if k in case:
                     cases[i]["source_query_params"][m.get(k)] = case[k]
-            if case.get("format") in ["jpeg", "jpg"]:
-                cases[i]["content_type"] = "image/jpeg"
-            elif case.get("format") == "png":
-                cases[i]["content_type"] = "image/png"
-            elif case.get("format") == "webp":
-                cases[i]["content_type"] = "image/webp"
-            else:
-                cases[i]["content_type"] = None
+            cases[i]["content_type"] = self._format_to_content_type(
+                case.get("format"))
         return cases
+
+    def get_image_rotate_cases(self):
+        cases = image_test.get_image_rotate_cases()
+        m = dict(expand="expand", format="fmt", quality="q")
+        for i, case in enumerate(cases):
+            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            cases[i]["source_query_params"] = dict(
+                op="rotate",
+                url=self.get_url(path),
+                deg=case["degree"])
+            for k in m.keys():
+                if k in case:
+                    cases[i]["source_query_params"][m.get(k)] = case[k]
+            cases[i]["content_type"] = self._format_to_content_type(
+                case.get("format"))
+
+        return cases
+
+    def get_image_chained_cases(self):
+        cases = image_test.get_image_chained_cases()
+        for i, case in enumerate(cases):
+            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            cases[i]["source_query_params"] = dict(
+                op=",".join(case["operation"]),
+                url=self.get_url(path),
+                w=case["width"] or "",
+                h=case["height"] or "",
+                deg=case["degree"])
+            cases[i]["content_type"] = self._format_to_content_type(
+                case.get("format"))
+
+        return cases
+
+    def _format_to_content_type(self, fmt):
+        if fmt in ["jpeg", "jpg"]:
+            return "image/jpeg"
+        elif fmt == "png":
+            return "image/png"
+        elif fmt == "webp":
+            return "image/webp"
+        return None
 
 
 class _PilboxTestApplication(PilboxApplication):
@@ -98,11 +134,17 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), errors.UrlError.get_code())
 
-    def test_missing_arguments(self):
+    def test_invalid_operation(self):
+        qs = urlencode(dict(url="http://foo.co/x.jpg", op="a"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"),
+                         errors.OperationError.get_code())
+
+    def test_missing_dimensions(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"),
-                         errors.ArgumentsError.get_code())
+                         errors.DimensionsError.get_code())
 
     def test_invalid_width(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w="a", h=1))
@@ -116,10 +158,10 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         self.assertEqual(resp.get("error_code"),
                          errors.DimensionsError.get_code())
 
-    def test_invalid_angle(self):
-        qs = urlencode(dict(url="http://foo.co/x.jpg", rotate="a"))
+    def test_invalid_degree(self):
+        qs = urlencode(dict(url="http://foo.co/x.jpg", op="rotate", deg="a"))
         resp = self.fetch_error(400, "/?%s" % qs)
-        self.assertEqual(resp.get("error_code"), errors.AngleError.get_code())
+        self.assertEqual(resp.get("error_code"), errors.DegreeError.get_code())
 
     def test_invalid_mode(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, mode="foo"))
@@ -196,21 +238,41 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), errors.UrlError.get_code())
 
-    def test_valid(self):
+    def test_valid_noop(self):
+        url = self.get_url("/test/data/test1.jpg")
+        qs = urlencode(dict(url=url, op="noop"))
+        resp = self.fetch_success("/?%s" % qs)
+        expected_path = os.path.join(
+            os.path.dirname(__file__), "data", "test1.jpg")
+        msg = "/?%s does not match %s" % (qs, expected_path)
+        with open(expected_path, "rb") as expected:
+            self.assertEqual(resp.buffer.read(), expected.read(), msg)
+
+    def test_valid_resize(self):
         cases = self.get_image_resize_cases()
         for case in cases:
             if case.get("mode") == "crop" and case.get("position") == "face":
                 continue
-            self._assert_expected_resize(case)
+            self._assert_expected_case(case)
+
+    def test_valid_rotate(self):
+        cases = self.get_image_rotate_cases()
+        for case in cases:
+            self._assert_expected_case(case)
+
+    def test_valid_chained(self):
+        cases = self.get_image_chained_cases()
+        for case in cases:
+            self._assert_expected_case(case)
 
     @unittest.skipIf(cv is None, "OpenCV is not installed")
     def test_valid_face(self):
         cases = self.get_image_resize_cases()
         for case in cases:
             if case.get("mode") == "crop" and case.get("position") == "face":
-                self._assert_expected_resize(case)
+                self._assert_expected_case(case)
 
-    def _assert_expected_resize(self, case):
+    def _assert_expected_case(self, case):
         qs = urlencode(case["source_query_params"])
         resp = self.fetch_success("/?%s" % qs)
         msg = "/?%s does not match %s" \
