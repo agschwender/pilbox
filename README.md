@@ -87,7 +87,8 @@ Would be replaced with this image url
 
 This will request the image served at the supplied url and resize it to `300x300` using the `crop` mode. The below is the list of parameters that can be supplied to the service.
 
-### General Parameters
+General Parameters
+------------------
 
   * _url_: The url of the image to be resized
   * _op_: The operation to perform: noop, resize (default), rotate
@@ -95,7 +96,8 @@ This will request the image served at the supplied url and resize it to `300x300
     * _resize_: Resize the image
     * _rotate_: Rotate the image
 
-### Resize Parameters
+Resize Parameters
+-----------------
 
   * _w_: The desired width of the image
   * _h_: The desired height of the image
@@ -130,7 +132,8 @@ This will request the image served at the supplied url and resize it to `300x300
     * _x,y_: Custom center point position ratio, e.g. 0.0,0.75
   * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
 
-### Rotate Parameters
+Rotate Parameters
+-----------------
 
   * _deg_: The desired rotation angle degrees
   * _expand_: Expand the sizeto include the full rotated image
@@ -140,7 +143,8 @@ This will request the image served at the supplied url and resize it to `300x300
     * _webp_: Save as WebP
   * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
 
-### Security-related Parameters
+Security-related Parameters
+---------------------------
 
   * _client_: The client name
   * _sig_: The signature
