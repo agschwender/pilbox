@@ -93,7 +93,7 @@ General Parameters
   * _url_: The url of the image to be resized
   * _op_: The operation to perform: noop, resize (default), rotate
     * _noop_: No operation is performed, image is returned as it is received
-    * _region_: Select a sub-region of the image
+    * _region_: Select a sub-region from the image
     * _resize_: Resize the image
     * _rotate_: Rotate the image
 
@@ -141,7 +141,7 @@ Region Parameters
     * _png_: Save as PNG
     * _webp_: Save as WebP
   * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
-  * _rect_: The rectangle to select from the image: x,y,w,h; where x,y represent the top-left position of the rectangle and w,h is the rectangle width and height
+  * _rect_: The region as x,y,w,h; x,y: top-left position, w,h: width/height of region
 
 Rotate Parameters
 -----------------

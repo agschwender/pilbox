@@ -339,6 +339,7 @@ def main():
            metavar="|".join(Image.FILTERS), type=str)
     define("degree", help="the desired rotation degree", type=int)
     define("expand", help="expand image size to accomodate rotation", type=int)
+    define("rect", help="rectangle: x,y,w,h", type=str)
     define("format", help="default format to use when saving",
            metavar="|".join(Image.FORMATS), type=str)
     define("quality", help="default jpeg quality, 0-100", type=int)
@@ -347,15 +348,19 @@ def main():
     if not args:
         print("Missing image source url")
         sys.exit()
-    elif options.operation == "rotate":
-        if not options.degree:
+    elif options.operation == "region":
+        if not options.rect:
             tornado.options.print_help()
             sys.exit()
     elif options.operation == "resize":
         if not options.width and not options.height:
             tornado.options.print_help()
             sys.exit()
-    elif options.operation != "none":
+    elif options.operation == "rotate":
+        if not options.degree:
+            tornado.options.print_help()
+            sys.exit()
+    elif options.operation != "noop":
         tornado.options.print_help()
         sys.exit()
 
@@ -371,8 +376,9 @@ def main():
                      filter=options.filter, background=options.background,
                      position=options.position)
     elif options.operation == "rotate":
-        image.rotate(options.degree, expand=options.expand,
-                     filter=options.filter)
+        image.rotate(options.degree, expand=options.expand)
+    elif options.operation == "region":
+        image.region(options.rect.split(","))
 
     stream = image.save(format=options.format, quality=options.quality)
     sys.stdout.write(stream.read())
