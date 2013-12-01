@@ -156,7 +156,8 @@ class ImageTest(unittest.TestCase):
         Image.validate_rectangle("100,200,50,100")
 
     def test_invalid_rectangle(self):
-        invalid_rectangles = ["", None, "100,100,200", "100,200,300,400.5"]
+        invalid_rectangles = ["", None, "100,100,200", "100,200,300,400.5",
+                              "0,-1,100,100", "100,100,-100,-100"]
         for rect in invalid_rectangles:
             self.assertRaises(
                 errors.RectangleError, Image.validate_rectangle, rect)
