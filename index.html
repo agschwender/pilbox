@@ -140,6 +140,8 @@ Options:
 <li>
 <em>noop</em>: No operation is performed, image is returned as it is received</li>
 <li>
+<em>region</em>: Select a sub-region of the image</li>
+<li>
 <em>resize</em>: Resize the image</li>
 <li>
 <em>rotate</em>: Rotate the image</li>
@@ -234,6 +236,26 @@ Options:
 <li>
 <em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs.</li>
 </ul><h2>
+<a name="region-parameters" class="anchor" href="#region-parameters"><span class="octicon octicon-link"></span></a>Region Parameters</h2>
+
+<ul>
+<li>
+<em>fmt</em>: The output format to save as, defaults to the source format
+
+<ul>
+<li>
+<em>jpeg</em>: Save as JPEG</li>
+<li>
+<em>png</em>: Save as PNG</li>
+<li>
+<em>webp</em>: Save as WebP</li>
+</ul>
+</li>
+<li>
+<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs.</li>
+<li>
+<em>rect</em>: The rectangle to select from the image: x,y,w,h; where x,y represent the top-left position of the rectangle and w,h is the rectangle width and height</li>
+</ul><h2>
 <a name="rotate-parameters" class="anchor" href="#rotate-parameters"><span class="octicon octicon-link"></span></a>Rotate Parameters</h2>
 
 <ul>
@@ -267,7 +289,7 @@ Options:
 
 <p>For resizing, either the <code>w</code> or <code>h</code> parameter is required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>.  <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>.</p>
 
-<p>For rotating, <code>deg</code> is required. <code>expand</code> is optional and defaults to <code>0</code> (disabled). It is recommended that this feature not be used as it typically does not produce high quality images.</p>
+<p>For region sub-selection, <code>rect</code> is required. For rotating, <code>deg</code> is required. <code>expand</code> is optional and defaults to <code>0</code> (disabled). It is recommended that this feature not be used as it typically does not produce high quality images.</p>
 
 <p>Note, all built-in defaults can be overridden by setting them in the configuration file. See the <a href="#configuration">configuration section</a> for more details.</p>
 
@@ -429,6 +451,7 @@ quality = 75
 <li>0.8.5: Added format option and configuration overrides for mode and format</li>
 <li>0.8.6: Added custom position support</li>
 <li>0.9: Added rotate operation</li>
+<li>0.9.1: Added sub-region selection operation</li>
 </ul><h1>
 <a name="docker" class="anchor" href="#docker"><span class="octicon octicon-link"></span></a>Docker</h1>
 
