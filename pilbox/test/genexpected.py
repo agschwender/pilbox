@@ -64,6 +64,19 @@ def main():
                 expected.write(rv.read())
 
 
+    cases = image_test.get_image_region_cases()
+    for case in cases:
+        with open(case["source_path"], "rb") as f:
+
+            print "Generating %s" % case["expected_path"]
+            img = Image(f).region(case["rect"].split(","))
+            rv = img.save(
+                format=case.get("format"), quality=case.get("quality"))
+
+            with open(case["expected_path"], "wb") as expected:
+                expected.write(rv.read())
+
+
     cases = image_test.get_image_chained_cases()
     for case in cases:
         with open(case["source_path"], "rb") as f:
@@ -75,6 +88,8 @@ def main():
                     img.resize(case["width"], case["height"])
                 elif operation == "rotate":
                     img.rotate(case["degree"])
+                elif operation == "region":
+                    img.region(case["rect"].split(","))
 
             rv = img.save()
             with open(case["expected_path"], "wb") as expected:

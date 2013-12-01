@@ -78,6 +78,23 @@ class _AppAsyncMixin(object):
 
         return cases
 
+    def get_image_region_cases(self):
+        cases = image_test.get_image_region_cases()
+        m = dict(expand="expand", format="fmt", quality="q")
+        for i, case in enumerate(cases):
+            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            cases[i]["source_query_params"] = dict(
+                op="region",
+                url=self.get_url(path),
+                rect=case["rect"])
+            for k in m.keys():
+                if k in case:
+                    cases[i]["source_query_params"][m.get(k)] = case[k]
+            cases[i]["content_type"] = self._format_to_content_type(
+                case.get("format"))
+
+        return cases
+
     def get_image_chained_cases(self):
         cases = image_test.get_image_chained_cases()
         for i, case in enumerate(cases):
@@ -87,7 +104,8 @@ class _AppAsyncMixin(object):
                 url=self.get_url(path),
                 w=case["width"] or "",
                 h=case["height"] or "",
-                deg=case["degree"])
+                deg=case.get("degree") or "",
+                rect=case.get("rect") or "")
             cases[i]["content_type"] = self._format_to_content_type(
                 case.get("format"))
 
@@ -162,6 +180,12 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         qs = urlencode(dict(url="http://foo.co/x.jpg", op="rotate", deg="a"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), errors.DegreeError.get_code())
+
+    def test_invalid_rectangle(self):
+        qs = urlencode(dict(url="http://foo.co/x.jpg", op="region", rect="a"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"),
+                         errors.RectangleError.get_code())
 
     def test_invalid_mode(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, mode="foo"))
@@ -257,6 +281,11 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
 
     def test_valid_rotate(self):
         cases = self.get_image_rotate_cases()
+        for case in cases:
+            self._assert_expected_case(case)
+
+    def test_valid_region(self):
+        cases = self.get_image_region_cases()
         for case in cases:
             self._assert_expected_case(case)
 

@@ -93,6 +93,7 @@ General Parameters
   * _url_: The url of the image to be resized
   * _op_: The operation to perform: noop, resize (default), rotate
     * _noop_: No operation is performed, image is returned as it is received
+    * _region_: Select a sub-region of the image
     * _resize_: Resize the image
     * _rotate_: Rotate the image
 
@@ -132,6 +133,16 @@ Resize Parameters
     * _x,y_: Custom center point position ratio, e.g. 0.0,0.75
   * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
 
+Region Parameters
+-----------------
+
+  * _fmt_: The output format to save as, defaults to the source format
+    * _jpeg_: Save as JPEG
+    * _png_: Save as PNG
+    * _webp_: Save as WebP
+  * _q_: The quality (1-100) used to save the image, only relevant to JPEGs.
+  * _rect_: The rectangle to select from the image: x,y,w,h; where x,y represent the top-left position of the rectangle and w,h is the rectangle width and height
+
 Rotate Parameters
 -----------------
 
@@ -153,7 +164,7 @@ The `url` parameter is always required as it dictates the image that will be man
 
 For resizing, either the `w` or `h` parameter is required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. `mode` is optional and defaults to `crop`. `filter` is optional and defaults to `antialias`.  `bg` is optional and defaults to `fff`. `pos` is optional and defaults to `center`.
 
-For rotating, `deg` is required. `expand` is optional and defaults to `0` (disabled). It is recommended that this feature not be used as it typically does not produce high quality images.
+For region sub-selection, `rect` is required. For rotating, `deg` is required. `expand` is optional and defaults to `0` (disabled). It is recommended that this feature not be used as it typically does not produce high quality images.
 
 Note, all built-in defaults can be overridden by setting them in the configuration file. See the [configuration section](#configuration) for more details.
 
@@ -309,6 +320,7 @@ Changelog
   * 0.8.5: Added format option and configuration overrides for mode and format
   * 0.8.6: Added custom position support
   * 0.9: Added rotate operation
+  * 0.9.1: Added sub-region selection operation
 
 Docker
 ======

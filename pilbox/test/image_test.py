@@ -48,7 +48,7 @@ def get_image_rotate_cases():
     """Returns a list of test cases of the form:
     [dict(source_path, expected_path, degree, expand, ...), ...]
     """
-    criteria_combinations = _make_rotate_combinations(
+    criteria_combinations = _make_combinations(
         [dict(values=[[90, 180, 315], [1, 0]],
               fields=["degree", "expand"])])
 
@@ -59,15 +59,40 @@ def get_image_rotate_cases():
     return list(filter(bool, cases))
 
 
+def get_image_region_cases():
+    """Returns a list of test cases of the form:
+    [dict(source_path, expected_path, rect, ...), ...]
+    """
+    criteria_combinations = _make_combinations(
+        [dict(values=[["150,150,100,100", "200,175,50,50"]],
+              fields=["rect"])])
+
+    cases = []
+    for criteria in criteria_combinations:
+        cases.append(_criteria_to_region_case("test1.jpg", criteria))
+
+    return list(filter(bool, cases))
+
+
 def get_image_chained_cases():
     """Returns a list of test cases of the form:
-    [dict(source_path, expected_path, degree, expand, ...), ...]
+    [dict(source_path, expected_path, operation, size, ...), ...]
     """
-    criteria_combinations = _make_chained_combinations(
+    criteria_combinations = _make_combinations(
         [dict(values=[[("resize", "rotate"), ("rotate", "resize")],
                       [(150, 75), (75, 150)],
                       [90]],
-              fields=["operation", "size", "degree"])])
+              fields=["operation", "size", "degree"]),
+         dict(values=[[("resize", "region", "rotate")],
+                     [(150, 75), (75, 150)],
+                     ["5,5,65,65"],
+                     [90]],
+              fields=["operation", "size", "rect", "degree"]),
+         dict(values=[[("region", "resize", "rotate")],
+                     [(150, 75), (75, 150)],
+                     ["50,50,150,150"],
+                     [90]],
+              fields=["operation", "size", "rect", "degree"])])
 
     cases = []
     for criteria in criteria_combinations:
@@ -87,6 +112,10 @@ class ImageTest(unittest.TestCase):
     def test_rotate(self):
         for case in get_image_rotate_cases():
             self._assert_expected_rotate(case)
+
+    def test_region(self):
+        for case in get_image_region_cases():
+            self._assert_expected_region(case)
 
     def test_chained(self):
         for case in get_image_chained_cases():
@@ -121,6 +150,25 @@ class ImageTest(unittest.TestCase):
             errors.DimensionsError, Image.validate_dimensions, "a", 100)
         self.assertRaises(
             errors.DimensionsError, Image.validate_dimensions, 100, "a")
+
+    def test_valid_rectangle(self):
+        Image.validate_rectangle("100,100,200,200")
+        Image.validate_rectangle("100,200,50,100")
+
+    def test_invalid_rectangle(self):
+        invalid_rectangles = ["", None, "100,100,200", "100,200,300,400.5"]
+        for rect in invalid_rectangles:
+            self.assertRaises(
+                errors.RectangleError, Image.validate_rectangle, rect)
+
+    def test_out_of_bounds_rectangle(self):
+        path = os.path.join(os.path.dirname(__file__), "data", "test1.jpg")
+        invalid_rectangles = ["0,0,10000,10000", "10000,10000,0,0"]
+        for rect in invalid_rectangles:
+            with open(path, "rb") as f:
+                img = Image(f)
+                self.assertRaises(
+                    errors.RectangleError, img.region, rect.split(","))
 
     def test_valid_default_options(self):
         Image.validate_options(dict())
@@ -208,7 +256,6 @@ class ImageTest(unittest.TestCase):
 
     def _assert_expected_resize(self, case):
         with open(case["source_path"], "rb") as f:
-
             img = Image(f).resize(
                 case["width"], case["height"], mode=case["mode"],
                 background=case.get("background"), filter=case.get("filter"),
@@ -235,6 +282,19 @@ class ImageTest(unittest.TestCase):
                     % (case["source_path"], case["expected_path"])
                 self.assertEqual(rv.read(), expected.read(), msg)
 
+
+    def _assert_expected_region(self, case):
+        with open(case["source_path"], "rb") as f:
+            img = Image(f).region(case["rect"].split(","))
+            rv = img.save(
+                format=case.get("format"), quality=case.get("quality"))
+
+            with open(case["expected_path"], "rb") as expected:
+                msg = "%s does not match %s" \
+                    % (case["source_path"], case["expected_path"])
+                self.assertEqual(rv.read(), expected.read(), msg)
+
+
     def _assert_expected_chained(self, case):
         with open(case["source_path"], "rb") as f:
 
@@ -244,6 +304,8 @@ class ImageTest(unittest.TestCase):
                     img.resize(case["width"], case["height"])
                 elif operation == "rotate":
                     img.rotate(case["degree"])
+                elif operation == "region":
+                    img.region(case["rect"].split(","))
 
             rv = img.save()
 
@@ -254,7 +316,7 @@ class ImageTest(unittest.TestCase):
 
 
 def _get_simple_criteria_combinations():
-    return _make_resize_combinations(
+    return _make_combinations(
         [dict(values=[Image.MODES, [(400, 300), (300, 300), (100, 200)]],
               fields=["mode", "size"]),
          dict(values=[["crop"], [(200, 100)], ["center", "face"]],
@@ -269,7 +331,7 @@ def _get_example_criteria_combinations():
 
 
 def _get_advanced_criteria_combinations():
-    return _make_resize_combinations(
+    return _make_combinations(
         [dict(values=[["fill"], [(125, 75)], ["F00", "cccccc"]],
               fields=["mode", "size", "background"]),
          dict(values=[["crop"], [(125, 75)], Image.POSITIONS],
@@ -287,39 +349,20 @@ def _get_advanced_criteria_combinations():
 
 
 def _get_transparent_criteria_combinations():
-    return _make_resize_combinations(
+    return _make_combinations(
         [dict(values=[["fill"], [(75, 125)], ["1ccc", "a0cccccc"]],
               fields=["mode", "size", "background"])])
 
 
-def _make_resize_combinations(choices):
+def _make_combinations(choices):
     combos = []
     for choice in choices:
         for a in list(itertools.product(*choice["values"])):
-            combo = dict(zip( choice["fields"], a))
-            combo["width"] = combo["size"][0]
-            combo["height"] = combo["size"][1]
-            del combo["size"]
-            combos.append(combo)
-    return combos
-
-
-def _make_rotate_combinations(choices):
-    combos = []
-    for choice in choices:
-        for a in list(itertools.product(*choice["values"])):
-            combos.append(dict(zip( choice["fields"], a)))
-    return combos
-
-
-def _make_chained_combinations(choices):
-    combos = []
-    for choice in choices:
-        for a in list(itertools.product(*choice["values"])):
-            combo = dict(zip( choice["fields"], a))
-            combo["width"] = combo["size"][0]
-            combo["height"] = combo["size"][1]
-            del combo["size"]
+            combo = dict(zip(choice["fields"], a))
+            if "size" in combo:
+                combo["width"] = combo["size"][0]
+                combo["height"] = combo["size"][1]
+                del combo["size"]
             combos.append(combo)
     return combos
 
@@ -358,20 +401,36 @@ def _criteria_to_rotate_case(filename, criteria):
     return case
 
 
+def _criteria_to_region_case(filename, criteria):
+    m = re.match(r"^([^\.]+)\.([^\.]+)$", filename)
+    if not m:
+        return None
+    case = dict(source_path=os.path.join(DATADIR, filename))
+    case.update(criteria)
+    fields = ["rect"]
+    opts = filter(bool, [criteria.get(x) for x in fields])
+    expected = "%s-region%s.%s" \
+        % (m.group(1),
+           ("-%s" % "-".join([str(x) for x in opts])) if opts else "",
+           criteria.get("format") or m.group(2))
+    case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
+    return case
+
+
 def _criteria_to_chained_case(filename, criteria):
     m = re.match(r"^([^\.]+)\.([^\.]+)$", filename)
     if not m:
         return None
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
-    fields = ["operation", "size", "degree"]
+    fields = ["degree", "rect"]
     opts = filter(bool, [criteria.get(x) for x in fields])
-    expected = "%s-chained-%s-%sx%s-%s.%s" \
+    expected = "%s-chained-%s-%sx%s%s.%s" \
         % (m.group(1),
            ",".join(criteria.get("operation", [])),
            criteria.get("width") or "",
            criteria.get("height") or "",
-           criteria.get("degree") or "",
+           ("-%s" % "-".join([str(x) for x in opts])) if opts else "",
            m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case

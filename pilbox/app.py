@@ -90,7 +90,7 @@ class PilboxApplication(tornado.web.Application):
 
 class ImageHandler(tornado.web.RequestHandler):
     FORWARD_HEADERS = ['Cache-Control', 'Expires', 'Last-Modified']
-    OPERATIONS = ["resize", "rotate", "noop"]
+    OPERATIONS = ["region", "resize", "rotate", "noop"]
 
     _FORMAT_TO_MIME = {
         "jpeg": "image/jpeg",
@@ -136,17 +136,23 @@ class ImageHandler(tornado.web.RequestHandler):
             super(ImageHandler, self).write_error(status_code, **kwargs)
 
     def _process_response(self, resp):
-        if "noop" in self._get_operations():
+        ops = self._get_operations()
+        if "noop" in ops:
             return resp.buffer
 
         image = Image(resp.buffer)
-        for operation in self._get_operations():
+        for operation in ops:
             if operation == "resize":
                 self._image_resize(image)
             elif operation == "rotate":
                 self._image_rotate(image)
+            elif operation == "region":
+                self._image_region(image)
 
         return self._image_save(image)
+
+    def _image_region(self, image):
+        image.region(self.get_argument("rect").split(","))
 
     def _image_resize(self, image):
         opts = self._get_resize_options()
@@ -202,13 +208,16 @@ class ImageHandler(tornado.web.RequestHandler):
         self._validate_host()
 
         opts = self._get_save_options()
-        if "resize" in self._get_operations():
+        ops = self._get_operations()
+        if "resize" in ops:
             Image.validate_dimensions(
                 self.get_argument("w"), self.get_argument("h"))
             opts.update(self._get_resize_options())
-        if "rotate" in self._get_operations():
+        if "rotate" in ops:
             Image.validate_degree(self.get_argument("deg"))
             opts.update(self._get_rotate_options())
+        if "region" in ops:
+            Image.validate_rectangle(self.get_argument("rect"))
 
         Image.validate_options(opts)
 

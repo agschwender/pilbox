@@ -99,6 +99,19 @@ class Image(object):
             raise errors.DegreeError("Invalid degree: %s" % deg)
 
     @staticmethod
+    def validate_rectangle(rect):
+        if not rect:
+            raise errors.RectangleError("Missing rectangle")
+        rect = rect.split(",")
+        if len(rect) != 4:
+            raise errors.RectangleError("Invalid rectangle")
+        for a in rect:
+            if not Image._isint(a):
+                raise errors.RectangleError("Invalid rectangle")
+            elif int(a) < 0:
+                raise errors.RectangleError("Region out-of-bounds")
+
+    @staticmethod
     def validate_options(opts):
         opts = Image._normalize_options(opts)
         if opts["mode"] not in Image.MODES:
@@ -119,6 +132,17 @@ class Image(object):
                 or int(opts["quality"]) > 100 or int(opts["quality"]) < 0:
             raise errors.QualityError(
                 "Invalid quality: %s", str(opts["quality"]))
+
+    def region(self, rect):
+        """ Selects a sub-region of the image using the supplied rectangle,
+            x, y, width, height.
+        """
+        box = (int(rect[0]), int(rect[1]), int(rect[0]) + int(rect[2]),
+               int(rect[1]) + int(rect[3]))
+        if box[2] > self.img.size[0] or box[3] > self.img.size[1]:
+            raise errors.RectangleError('Region out-of-bounds')
+        self.img = self.img.crop(box)
+        return self
 
     def resize(self, width, height, **kwargs):
         """Resizes the image to the supplied width/height. Returns the
