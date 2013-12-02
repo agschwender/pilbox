@@ -473,6 +473,7 @@ Changelog
 -  0.9: Added rotate operation
 -  0.9.1: Added sub-region selection operation
 -  0.9.4: Added Pilbox as a PyPI package
+-  0.9.10: Converted README to reStructuredText
 
 Docker
 ======
