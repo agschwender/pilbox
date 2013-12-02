@@ -3,6 +3,11 @@ import os.path
 from setuptools import setup, Command
 
 
+long_description = ''
+with open('README.rst') as f:
+    long_description = f.read()
+
+
 class PilboxTest(Command):
     user_options=[]
     def initialize_options(self):
