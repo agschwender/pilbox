@@ -323,13 +323,12 @@ SaltStack
 SaltStack state for pilbox.
 Replace Ansible provisioning with salt privisioning in Vagrantfile::
 
-    $ config.vm.synced_folder "provisioning/salt/roots/", "/srv/salt"
-    $ config.vm.synced_folder "provisioning/files/", "/srv/salt/files"
-    $ config.vm.provision :salt do |salt|
-    $ salt.minion_config = "provisioning/salt/minion"
-    $ salt.run_highstate = true
-
-    $ end
+    config.vm.synced_folder "provisioning/salt/roots/", "/srv/salt"
+    config.vm.synced_folder "provisioning/files/", "/srv/salt/files"
+    config.vm.provision :salt do |salt|
+      salt.minion_config = "provisioning/salt/minion"
+      salt.run_highstate = true
+    end
 
 TODO
 ====
