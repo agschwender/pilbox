@@ -1,5 +1,15 @@
-Pilbox `|Build Status| <https://travis-ci.org/agschwender/pilbox>`_ `|Coverage Status| <https://coveralls.io/r/agschwender/pilbox>`_
-====================================================================================================================================
+Pilbox
+======
+
+.. image:: https://pypip.in/v/pilbox/badge.png
+        :target: https://crate.io/packages/pilbox
+
+.. image:: https://travis-ci.org/agschwender/pilbox.png
+    :target: https://travis-ci.org/agschwender/pilbox
+
+.. image:: https://coveralls.io/repos/agschwender/pilbox/badge.png
+    :target: https://coveralls.io/r/agschwender/pilbox
+
 
 Pilbox is an image resizing application server built on Python's
 `Tornado web framework <http://www.tornadoweb.org/en/stable/>`_ using
@@ -485,8 +495,3 @@ TODO
 
 -  How to reconcile unavailable color profiles?
 -  Add backends (S3, file system, etc...) if necessary
-
-.. |Build Status| image:: https://travis-ci.org/agschwender/pilbox.png
-.. |Coverage
-Status| image:: https://coveralls.io/repos/agschwender/pilbox/badge.png
-.. |Downloads| image:: https://pypip.in/d/pilbox/badge.png

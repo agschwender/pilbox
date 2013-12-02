@@ -22,7 +22,7 @@ class PilboxTest(Command):
 
 
 setup(name='pilbox',
-      version='0.9.4',
+      version='0.9.5',
       description='Pilbox is an image resizing application server built on the Tornado web framework using the Pillow Imaging Library',
       classifiers=[
         'License :: OSI Approved :: Apache Software License',
