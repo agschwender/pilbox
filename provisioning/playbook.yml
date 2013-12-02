@@ -45,13 +45,14 @@
         - liblcms1-dev
 
     - name: install pip packages
-      pip: name={{ item.name }} version={{ item.version }}
+      pip: name={{ item.name }} version={{ item.version }} use_mirrors=yes
       with_items:
-        - { name: 'Pillow', version: '2.1.0' }
-        - { name: 'tornado', version: '3.1' }
+        - { name: 'Pillow', version: '2.2.1' }
+        - { name: 'tornado', version: '3.1.1' }
         - { name: 'coverage', version: '3.6' }
         - { name: 'pep8', version: '1.4.6' }
         - { name: 'pyflakes', version: '0.7.3' }
+        - { name: 'pyandoc', version: '0.0.1' }
 
 
 - hosts: app:!web

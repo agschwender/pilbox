@@ -1,8 +1,10 @@
 # http://travis-ci.org/#!/agschwender/pilbox
 language: python
 python:
+  - 2.6
   - 2.7
   - 3.2
+  - 3.3
 env:
   - PYTHONPATH=$PYTHONPATH:$PWD
 virtualenv:
@@ -12,7 +14,7 @@ before_install:
   - sudo apt-get install libwebp-dev liblcms1-dev
   - sudo apt-get install python-numpy python-opencv
 install:
-  - pip install --use-mirrors tornado==3.1 Pillow==2.1.0 coveralls
+  - pip install --use-mirrors tornado==3.1.1 Pillow==2.2.1 coveralls
   - pip install --use-mirrors pep8==1.4.6 pyflakes==0.7.3
 before_script:
   - pep8 --exclude=test pilbox

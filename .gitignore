@@ -1,6 +1,13 @@
+# Vagrant files
 .vagrant
+vagrant_ansible_inventory_default
+
+# Python
 *.pyc
+/*.egg-info
+/dist/
+
+# Coverage,
 .coverage
 htmlcov
 build
-vagrant_ansible_inventory_default

@@ -69,7 +69,7 @@ class Image(object):
     _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
                      format=None, mode="crop", position="center", quality=90)
     _CLASSIFIER_PATH = os.path.join(
-        os.path.dirname(__file__), "..", "config", "frontalface.xml")
+        os.path.dirname(__file__), "frontalface.xml")
 
     def __init__(self, stream):
         self.stream = stream

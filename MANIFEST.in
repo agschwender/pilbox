@@ -1,0 +1,3 @@
+include pilbox/frontalface.xml
+include README.md
+recursive-exclude pilbox/test *.*

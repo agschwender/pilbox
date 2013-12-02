@@ -1,0 +1,25 @@
+  * 0.1: Image resizing fit
+  * 0.1.1: Image cropping
+  * 0.1.2: Image scaling
+  * 0.2: Configuration integration
+  * 0.3: Signature generation
+  * 0.3.1: Signature command-line tool
+  * 0.4: Image resize command-line tool
+  * 0.5: Facial recognition cropping
+  * 0.6: Fill resizing mode
+  * 0.7: Resize using crop position
+  * 0.7.1: Resize using a single dimension, maintaining aspect ratio
+  * 0.7.2: Added filter and quality options
+  * 0.7.3: Support python 3
+  * 0.7.4: Fixed cli for image generation
+  * 0.7.5: Write output in 16K blocks
+  * 0.8: Added support for ARGB (alpha-channel)
+  * 0.8.1: Increased max clients and write block sizes
+  * 0.8.2: Added configuration for max clients and timeout
+  * 0.8.3: Only allow http and https protocols
+  * 0.8.4: Added support for WebP
+  * 0.8.5: Added format option and configuration overrides for mode and format
+  * 0.8.6: Added custom position support
+  * 0.9: Added rotate operation
+  * 0.9.1: Added sub-region selection operation
+  * 0.9.4: Added Pilbox as a PyPI package
