@@ -321,6 +321,7 @@ Changelog
   * 0.8.6: Added custom position support
   * 0.9: Added rotate operation
   * 0.9.1: Added sub-region selection operation
+  * 0.9.4: Added Pilbox as a PyPI package
 
 Docker
 ======
