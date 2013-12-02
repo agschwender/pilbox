@@ -2,7 +2,7 @@ Pilbox
 ======
 
 .. image:: https://pypip.in/v/pilbox/badge.png
-        :target: https://crate.io/packages/pilbox
+    :target: https://crate.io/packages/pilbox
 
 .. image:: https://travis-ci.org/agschwender/pilbox.png
     :target: https://travis-ci.org/agschwender/pilbox
@@ -24,8 +24,7 @@ Setup
 Dependencies
 ------------
 
--  = `Python 2.7 <http://www.python.org/download/>`_
-
+-  >= `Python 2.7 <http://www.python.org/download/>`_
 -  `Pillow 2.1.0 <https://pypi.python.org/pypi/Pillow/2.1.0>`_
 -  `Tornado 3.1 <https://pypi.python.org/pypi/tornado/3.1>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
@@ -237,7 +236,7 @@ ensure security, all requests also support, ``client`` and ``sig``.
 ``client`` is required only if the ``client_name`` is defined within the
 configuration file. Likewise, ``sig`` is required only if the
 ``client_key`` is defined within the configuration file. See the
-`signing section <#signing>`_ for details on how to generate the
+`Signing`_ section for details on how to generate the
 signature.
 
 For resizing, either the ``w`` or ``h`` parameter is required. If only
@@ -253,7 +252,7 @@ recommended that this feature not be used as it typically does not
 produce high quality images.
 
 Note, all built-in defaults can be overridden by setting them in the
-configuration file. See the `configuration section <#configuration>`_
+configuration file. See the `Configuration`_ section
 for more details.
 
 Examples
@@ -271,11 +270,10 @@ when no portion of the image can be lost and it is acceptable that the
 image not be exactly the supplied dimensions, but merely fit within the
 dimensions.
 
-.. figure:: pilbox/test/data/expected/example-500x400-clip.jpg
-   :align: center
-   :alt: Clipped image
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-clip.jpg
+     :align: center
+     :alt: Clipped image
 
-   Clipped image
 Crop
 ----
 
@@ -284,11 +282,11 @@ box. It is then centered and the excess is cut from the image. Cropping
 is useful when the position of the subject is known and the image must
 be exactly the supplied size.
 
-.. figure:: pilbox/test/data/expected/example-500x400-crop.jpg
-   :align: center
-   :alt: Cropped image
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-crop.jpg
+     :align: center
+     :alt: Cropped image
 
-   Cropped image
+
 Fill
 ----
 
@@ -298,11 +296,11 @@ space is filled with the supplied background color. Filling is useful
 when no portion of the image can be lost and it must be exactly the
 supplied size.
 
-.. figure:: pilbox/test/data/expected/example-500x400-fill-ccc.jpg
-   :align: center
-   :alt: Filled image
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-fill-ccc.jpg
+    :align: center
+    :alt: Filled image
 
-   Filled image
+
 Scale
 -----
 
@@ -311,11 +309,11 @@ stretched to fill the excess space. Scaling is often not useful in
 production environments as it generally produces poor quality images.
 This mode is largely included for completeness.
 
-.. figure:: pilbox/test/data/expected/example-500x400-scale.jpg
-   :align: center
-   :alt: Scale image
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-scale.jpg
+    :align: center
+    :alt: Scale image
 
-   Scale image
+
 Testing
 =======
 
@@ -357,7 +355,7 @@ parameter to the query string; e.g.
 ``x=1&y=2&z=3&sig=c9516346abf62876b6345817dba2f9a0c797ef26``. Note, the
 application does not include the leading question mark when verifying
 the supplied signature. To verify your signature implementation, see the
-``pilbox.signature`` command described in the `tools section <#tools>`_.
+``pilbox.signature`` command described in the `Tools`_ section.
 
 Configuration
 =============

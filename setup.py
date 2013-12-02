@@ -3,9 +3,8 @@ import os.path
 from setuptools import setup, Command
 
 
-long_description = ''
 with open('README.rst') as f:
-    long_description = f.read()
+    readme = f.read()
 
 
 class PilboxTest(Command):
@@ -22,8 +21,9 @@ class PilboxTest(Command):
 
 
 setup(name='pilbox',
-      version='0.9.5',
+      version='0.9.10',
       description='Pilbox is an image resizing application server built on the Tornado web framework using the Pillow Imaging Library',
+      long_description=readme,
       classifiers=[
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2',
