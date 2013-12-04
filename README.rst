@@ -2,7 +2,7 @@ Pilbox
 ======
 
 .. image:: https://pypip.in/v/pilbox/badge.png
-    :target: https://crate.io/packages/pilbox
+    :target: https://pypi.python.org/pypi/pilbox
 
 .. image:: https://travis-ci.org/agschwender/pilbox.png
     :target: https://travis-ci.org/agschwender/pilbox
@@ -10,11 +10,14 @@ Pilbox
 .. image:: https://coveralls.io/repos/agschwender/pilbox/badge.png
     :target: https://coveralls.io/r/agschwender/pilbox
 
+.. image:: https://pypip.in/d/pilbox/badge.png
+    :target: https://pypi.python.org/pypi/pilbox
+
 
 Pilbox is an image resizing application server built on Python's
 `Tornado web framework <http://www.tornadoweb.org/en/stable/>`_ using
 the `Python Imaging Library
-(Pillow) <https://pypi.python.org/pypi/Pillow/2.1.0>`_. It is not
+(Pillow) <https://pypi.python.org/pypi/Pillow/>`_. It is not
 intended to be the primary source of images, but instead acts as a proxy
 which requests images and resizes them as desired.
 
@@ -25,14 +28,32 @@ Dependencies
 ------------
 
 -  >= `Python 2.7 <http://www.python.org/download/>`_
--  `Pillow 2.1.0 <https://pypi.python.org/pypi/Pillow/2.1.0>`_
--  `Tornado 3.1 <https://pypi.python.org/pypi/tornado/3.1>`_
+-  `Pillow 2.2.1 <https://pypi.python.org/pypi/Pillow/2.2.1>`_
+-  `Tornado 3.1.1 <https://pypi.python.org/pypi/tornado/3.1.1>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
 -  Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev,
    zlib1g-dev
 
-Vagrant
+Install
 -------
+
+Pilbox can be installed with pip
+
+::
+
+    $ pip install pilbox
+
+Or easy_install
+
+::
+
+    $ easy_install pilbox
+
+Or from source
+
+::
+
+    $ git clone https://github.com/agschwender/pilbox.git
 
 Packaged with Pilbox is a `Vagrant <http://www.vagrantup.com/>`_
 configuration file which installs all necessary dependencies on a
@@ -54,11 +75,16 @@ To access the virtual machine itself, simply...
 
     $ vagrant ssh
 
+When running via Vagrant, the application is automatically started on
+port 8888 on 192.168.100.100, i.e.
+
+::
+
+    http://192.168.100.100:8888/
+
+
 Running
 =======
-
-Manual
-------
 
 To run the application, issue the following command
 
@@ -97,15 +123,6 @@ To see a list of all available options, run
       --quality                  default jpeg quality, 0-100
       --timeout                  timeout of requests in seconds (default 10)
 
-Vagrant
--------
-
-When running via Vagrant, the application is automatically started on
-port 8888 on 192.168.100.100, i.e.
-
-::
-
-    http://192.168.100.100:8888/
 
 Calling
 =======
@@ -474,20 +491,7 @@ Changelog
 -  0.9.1: Added sub-region selection operation
 -  0.9.4: Added Pilbox as a PyPI package
 -  0.9.10: Converted README to reStructuredText
-
-Docker
-======
-
-Experimental support for `Docker <http://www.docker.io/>`_. To build a
-docker container and provision it, issue the following:
-
-::
-
-    $ docker build .
-    $ docker run -d -p 2222:22 -v `pwd`:/pilbox -t <imageid> ssh
-    $ ansible-playbook -i provisioning/docker provisioning/playbook.yml
-    $ docker stop $(docker ps -a -q)
-    $ docker run -i -p :80 -p :8080 -p :8888 -v `pwd`:/pilbox -t <imageid> web
+-  0.9.11: Added Sphinx docs
 
 TODO
 ====
