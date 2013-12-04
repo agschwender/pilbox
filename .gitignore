@@ -10,4 +10,4 @@ vagrant_ansible_inventory_default
 # Coverage,
 .coverage
 htmlcov
-build
+/build
