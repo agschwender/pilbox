@@ -24,4 +24,4 @@
   * 0.9.1: Added sub-region selection operation
   * 0.9.4: Added Pilbox as a PyPI package
   * 0.9.10: Converted README to reStructuredText
-  * 0.9.13: Added Sphinx docs
+  * 0.9.14: Added Sphinx docs
