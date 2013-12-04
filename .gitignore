@@ -7,7 +7,9 @@ vagrant_ansible_inventory_default
 /*.egg-info
 /dist/
 
-# Coverage,
+# Coverage
 .coverage
 htmlcov
-/build
+
+# Build directories
+build
