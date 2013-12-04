@@ -34,7 +34,7 @@
           <h1>
 <a name="pilbox" class="anchor" href="#pilbox"><span class="octicon octicon-link"></span></a>Pilbox</h1>
 
-<p><a href="https://crate.io/packages/pilbox/"><img src="https://pypip.in/v/pilbox/badge.png" alt="PyPi version"></a> <a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a> <a href="https://coveralls.io/r/agschwender/pilbox"><img src="https://coveralls.io/repos/agschwender/pilbox/badge.png" alt="Coverage Status"></a></p>
+<p><a href="https://pypi.python.org/pypi/pilbox"><img src="https://pypip.in/v/pilbox/badge.png" alt="PyPi version"></a> <a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a> <a href="https://coveralls.io/r/agschwender/pilbox"><img src="https://coveralls.io/repos/agschwender/pilbox/badge.png" alt="Coverage Status"></a> <a href="https://pypi.python.org/pypi/pilbox"><img src="https://pypip.in/d/pilbox/badge.png" alt="Downloads"></a></p>
 
 <p>Pilbox is an image resizing application server built on Python's <a href="http://www.tornadoweb.org/en/stable/">Tornado web framework</a> using the <a href="https://pypi.python.org/pypi/Pillow/2.1.0">Python Imaging Library (Pillow)</a>. It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.</p>
 
@@ -47,13 +47,28 @@
 <ul>
 <li>&gt;= <a href="http://www.python.org/download/">Python 2.7</a>
 </li>
-<li><a href="https://pypi.python.org/pypi/Pillow/2.1.0">Pillow 2.1.0</a></li>
-<li><a href="https://pypi.python.org/pypi/tornado/3.1">Tornado 3.1</a></li>
+<li><a href="https://pypi.python.org/pypi/Pillow/2.2.1">Pillow 2.2.1</a></li>
+<li><a href="https://pypi.python.org/pypi/tornado/3.1.1">Tornado 3.1.1</a></li>
 <li>
 <a href="http://opencv.org/">OpenCV 2.x</a> (optional)</li>
 <li>Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev, zlib1g-dev</li>
 </ul><h2>
-<a name="vagrant" class="anchor" href="#vagrant"><span class="octicon octicon-link"></span></a>Vagrant</h2>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<p>Pilbox can be installed with pip</p>
+
+<pre><code>$ pip install pilbox
+</code></pre>
+
+<p>Or easy_install</p>
+
+<pre><code>$ easy_install pilbox
+</code></pre>
+
+<p>Or from source</p>
+
+<pre><code>$ git clone https://github.com/agschwender/pilbox.git
+</code></pre>
 
 <p>Packaged with Pilbox is a <a href="http://www.vagrantup.com/">Vagrant</a> configuration file which installs all necessary dependencies on a virtual box using <a href="http://www.ansibleworks.com/">Ansible</a>. See the <a href="http://docs.vagrantup.com/v2/installation/">Vagrant documentation</a> and the <a href="http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible">Ansible documentation</a> for installation instructions. Once installed, the following will start and provision a virtual machine.</p>
 
@@ -66,11 +81,13 @@ $ vagrant provision
 <pre><code>$ vagrant ssh
 </code></pre>
 
+<p>When running via Vagrant, the application is automatically started on port 8888 on 192.168.100.100, i.e.</p>
+
+<pre><code>http://192.168.100.100:8888/
+</code></pre>
+
 <h1>
 <a name="running" class="anchor" href="#running"><span class="octicon octicon-link"></span></a>Running</h1>
-
-<h2>
-<a name="manual" class="anchor" href="#manual"><span class="octicon octicon-link"></span></a>Manual</h2>
 
 <p>To run the application, issue the following command</p>
 
@@ -103,14 +120,6 @@ Options:
   --position                 default cropping position
   --quality                  default jpeg quality, 0-100
   --timeout                  timeout of requests in seconds (default 10)
-</code></pre>
-
-<h2>
-<a name="vagrant-1" class="anchor" href="#vagrant-1"><span class="octicon octicon-link"></span></a>Vagrant</h2>
-
-<p>When running via Vagrant, the application is automatically started on port 8888 on 192.168.100.100, i.e.</p>
-
-<pre><code>http://192.168.100.100:8888/
 </code></pre>
 
 <h1>
@@ -455,19 +464,8 @@ quality = 75
 <li>0.9.1: Added sub-region selection operation</li>
 <li>0.9.4: Added Pilbox as a PyPI package</li>
 <li>0.9.10: Converted README to reStructuredText</li>
+<li>0.9.14: Added Sphinx docs</li>
 </ul><h1>
-<a name="docker" class="anchor" href="#docker"><span class="octicon octicon-link"></span></a>Docker</h1>
-
-<p>Experimental support for <a href="http://www.docker.io/">Docker</a>. To build a docker container and provision it, issue the following:</p>
-
-<pre><code>$ docker build .
-$ docker run -d -p 2222:22 -v `pwd`:/pilbox -t &lt;imageid&gt; ssh
-$ ansible-playbook -i provisioning/docker provisioning/playbook.yml
-$ docker stop $(docker ps -a -q)
-$ docker run -i -p :80 -p :8080 -p :8888 -v `pwd`:/pilbox -t &lt;imageid&gt; web
-</code></pre>
-
-<h1>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
