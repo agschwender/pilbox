@@ -33,9 +33,9 @@ from pilbox.image import Image
 from pilbox.signature import verify_signature
 
 try:
-    from urlparse import urlparse
+    from urlparse import urlparse, urljoin
 except ImportError:
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, urljoin
 
 
 # general settings
@@ -43,6 +43,7 @@ define("config", help="path to configuration file",
        callback=lambda path: parse_config_file(path, final=False))
 define("debug", default=False, help="run in debug mode", type=bool)
 define("port", default=8888, help="run on the given port", type=int)
+define("implicit_host", help="Implicit hostname to use if a request uses a path without a host", type=str)
 
 # security related settings
 define("client_name", help="client name")
@@ -68,7 +69,16 @@ logger = logging.getLogger("tornado.application")
 class PilboxApplication(tornado.web.Application):
 
     def __init__(self, **kwargs):
+        implicit_host = options.implicit_host
+
+        if implicit_host and (not implicit_host.startswith("http:") and not implicit_host.startswith("https:")):
+            if implicit_host.startswith("//"):
+                implicit_host = "http:%s" % implicit_host
+            else:
+                implicit_host = "http://%s" % implicit_host
+
         settings = dict(debug=options.debug,
+                        implicit_host=implicit_host,
                         client_name=options.client_name,
                         client_key=options.client_key,
                         allowed_hosts=options.allowed_hosts,
@@ -100,6 +110,14 @@ class ImageHandler(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def get(self):
+        # Add the implicit host if one is specified and the input URL doesn't
+        # include a host
+        implicit_host = self.settings.get("implicit_host", None)
+        if implicit_host and urlparse(self.get_argument("url")).hostname == None:
+            print "***", self.request.arguments["url"]
+            patched_url = urljoin(implicit_host, self.get_argument("url"))
+            self.request.arguments["url"] = [patched_url]
+
         self._validate_request()
 
         client = tornado.httpclient.AsyncHTTPClient(
