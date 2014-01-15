@@ -13,3 +13,9 @@ htmlcov
 
 # Build directories
 build
+
+# Virtualenv
+/.Python
+/bin
+/include
+/lib
