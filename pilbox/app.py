@@ -44,8 +44,8 @@ define("config", help="path to configuration file",
 define("debug", default=False, help="run in debug mode", type=bool)
 define("port", default=8888, help="run on the given port", type=int)
 
-define("implicit_host",
-       help="Implicit hostname to use if a request uses a path without a host",
+define("implicit_base_url",
+       help="Implicit base URL to use if a request uses a path without hostname",
        type=str)
 
 # security related settings
@@ -72,18 +72,8 @@ logger = logging.getLogger("tornado.application")
 class PilboxApplication(tornado.web.Application):
 
     def __init__(self, **kwargs):
-        implicit_host = options.implicit_host
-
-        if (implicit_host
-                and not implicit_host.startswith("http:")
-                and not implicit_host.startswith("https:")):
-            if implicit_host.startswith("//"):
-                implicit_host = "http:%s" % implicit_host
-            else:
-                implicit_host = "http://%s" % implicit_host
-
         settings = dict(debug=options.debug,
-                        implicit_host=implicit_host,
+                        implicit_base_url=options.implicit_base_url,
                         client_name=options.client_name,
                         client_key=options.client_key,
                         allowed_hosts=options.allowed_hosts,
@@ -115,12 +105,12 @@ class ImageHandler(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def get(self):
-        # Add the implicit host if one is specified and the input URL doesn't
-        # include a host
-        implicit_host = self.settings.get("implicit_host", None)
-        if (implicit_host
+        # Add the implicit base URL if one is specified and the input URL
+        # doesn't include a host
+        implicit_base_url = self.settings.get("implicit_base_url", None)
+        if (implicit_base_url
                 and urlparse(self.get_argument("url")).hostname is None):
-            patched_url = urljoin(implicit_host, self.get_argument("url"))
+            patched_url = urljoin(implicit_base_url, self.get_argument("url"))
             self.request.arguments["url"] = [patched_url]
 
         self._validate_request()
