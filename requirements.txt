@@ -1,2 +1,0 @@
-tornado==3.1
-pillow==2.1.0
