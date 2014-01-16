@@ -45,7 +45,7 @@ define("debug", default=False, help="run in debug mode", type=bool)
 define("port", default=8888, help="run on the given port", type=int)
 
 define("implicit_base_url",
-       help="Implicit base URL to use if a request uses a path without hostname",
+       help="Implicit base URL to use if a request uses a relative path",
        type=str)
 
 # security related settings
