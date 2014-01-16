@@ -43,7 +43,10 @@ define("config", help="path to configuration file",
        callback=lambda path: parse_config_file(path, final=False))
 define("debug", default=False, help="run in debug mode", type=bool)
 define("port", default=8888, help="run on the given port", type=int)
-define("implicit_host", help="Implicit hostname to use if a request uses a path without a host", type=str)
+
+define("implicit_host",
+       help="Implicit hostname to use if a request uses a path without a host",
+       type=str)
 
 # security related settings
 define("client_name", help="client name")
@@ -71,7 +74,9 @@ class PilboxApplication(tornado.web.Application):
     def __init__(self, **kwargs):
         implicit_host = options.implicit_host
 
-        if implicit_host and (not implicit_host.startswith("http:") and not implicit_host.startswith("https:")):
+        if (implicit_host
+                and not implicit_host.startswith("http:")
+                and not implicit_host.startswith("https:")):
             if implicit_host.startswith("//"):
                 implicit_host = "http:%s" % implicit_host
             else:
@@ -113,7 +118,8 @@ class ImageHandler(tornado.web.RequestHandler):
         # Add the implicit host if one is specified and the input URL doesn't
         # include a host
         implicit_host = self.settings.get("implicit_host", None)
-        if implicit_host and urlparse(self.get_argument("url")).hostname == None:
+        if (implicit_host
+                and urlparse(self.get_argument("url")).hostname is None):
             patched_url = urljoin(implicit_host, self.get_argument("url"))
             self.request.arguments["url"] = [patched_url]
 
