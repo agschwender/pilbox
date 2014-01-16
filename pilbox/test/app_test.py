@@ -313,6 +313,37 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
             self.assertEqual(resp.buffer.read(), expected.read(), msg)
 
 
+class AppImplicitBaseUrlTest(AsyncHTTPTestCase, _AppAsyncMixin):
+    def get_app(self):
+        return _PilboxTestApplication(
+            implicit_base_url=self.get_url("/"))
+
+    def test_missing_url(self):
+        qs = urlencode(dict(w=1, h=1))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), errors.UrlError.get_code())
+
+    def test_url(self):
+        url = self.get_url("/test/data/test1.jpg")
+        qs = urlencode(dict(url=url, op="noop"))
+        resp = self.fetch_success("/?%s" % qs)
+        expected_path = os.path.join(
+            os.path.dirname(__file__), "data", "test1.jpg")
+        msg = "/?%s does not match %s" % (qs, expected_path)
+        with open(expected_path, "rb") as expected:
+            self.assertEqual(resp.buffer.read(), expected.read(), msg)
+
+    def test_path(self):
+        url_path = "/test/data/test1.jpg"
+        url = self.get_url(url_path)
+        qs = urlencode(dict(url=url_path, op="noop"))
+        resp = self.fetch_success("/?%s" % qs)
+        expected_path = os.path.join(
+            os.path.dirname(__file__), "data", "test1.jpg")
+        msg = "/?%s does not match %s" % (qs, expected_path)
+        with open(expected_path, "rb") as expected:
+            self.assertEqual(resp.buffer.read(), expected.read(), msg)
+
 class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
     KEY = "abcdef"
     NAME = "abc"
