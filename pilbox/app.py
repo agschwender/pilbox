@@ -105,21 +105,22 @@ class ImageHandler(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def get(self):
+        self._validate_request()
+
         # Add the implicit base URL if one is specified and the input URL
         # doesn't include a host
         implicit_base_url = self.settings.get("implicit_base_url", None)
         if (implicit_base_url
                 and urlparse(self.get_argument("url")).hostname is None):
-            patched_url = urljoin(implicit_base_url, self.get_argument("url"))
-            self.request.arguments["url"] = [patched_url]
-
-        self._validate_request()
+            url = urljoin(implicit_base_url, self.get_argument("url"))
+        else:
+            url = self.get_argument("url")
 
         client = tornado.httpclient.AsyncHTTPClient(
             max_clients=self.settings.get("max_requests"))
         try:
             resp = yield client.fetch(
-                self.get_argument("url"),
+                url,
                 request_timeout=self.settings.get("timeout"))
         except (socket.gaierror, tornado.httpclient.HTTPError) as e:
             logger.warn("Fetch error for %s: %s"
@@ -242,8 +243,9 @@ class ImageHandler(tornado.web.RequestHandler):
     def _validate_url(self):
         if not self.get_argument("url"):
             raise errors.UrlError("Missing url")
-        elif not self.get_argument("url").startswith("http://") \
-                and not self.get_argument("url").startswith("https://"):
+        elif (not self.settings.get("implicit_base_url")
+                and not self.get_argument("url").startswith("http://")
+                and not self.get_argument("url").startswith("https://")):
             raise errors.UrlError("Unsupported protocol")
 
     def _validate_client(self):
