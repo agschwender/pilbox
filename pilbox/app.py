@@ -114,7 +114,6 @@ class ImageHandler(tornado.web.RequestHandler):
         # include a host
         implicit_host = self.settings.get("implicit_host", None)
         if implicit_host and urlparse(self.get_argument("url")).hostname == None:
-            print "***", self.request.arguments["url"]
             patched_url = urljoin(implicit_host, self.get_argument("url"))
             self.request.arguments["url"] = [patched_url]
 
