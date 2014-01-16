@@ -335,7 +335,6 @@ class AppImplicitBaseUrlTest(AsyncHTTPTestCase, _AppAsyncMixin):
 
     def test_path(self):
         url_path = "/test/data/test1.jpg"
-        url = self.get_url(url_path)
         qs = urlencode(dict(url=url_path, op="noop"))
         resp = self.fetch_success("/?%s" % qs)
         expected_path = os.path.join(
