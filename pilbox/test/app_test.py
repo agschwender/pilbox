@@ -145,7 +145,7 @@ class _DelayedHandler(tornado.web.RequestHandler):
 
 class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
     def get_app(self):
-        return _PilboxTestApplication()
+        return _PilboxTestApplication(timeout=10.0)
 
     def test_missing_url(self):
         qs = urlencode(dict(w=1, h=1))
@@ -321,7 +321,8 @@ class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
         return _PilboxTestApplication(
             client_name=self.NAME,
             client_key=self.KEY,
-            allowed_hosts=["foo.co", "bar.io", "localhost"])
+            allowed_hosts=["foo.co", "bar.io", "localhost"],
+            timeout=10.0)
 
     def test_missing_client_name(self):
         params = dict(url="http://foo.co/x.jpg", w=1, h=1)
