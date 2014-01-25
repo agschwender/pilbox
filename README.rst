@@ -117,6 +117,7 @@ To see a list of all available options, run
       --expand                   default to expand when rotating
       --filter                   default filter to use when resizing
       --help                     show this help information
+      --implicit_base_url        prepend protocol/host to url paths
       --max_requests             max concurrent requests (default 40)
       --port                     run on the given port (default 8888)
       --position                 default cropping position
@@ -492,6 +493,7 @@ Changelog
 -  0.9.4: Added Pilbox as a PyPI package
 -  0.9.10: Converted README to reStructuredText
 -  0.9.14: Added Sphinx docs
+-  0.9.15: Added implicit base url to configuration
 
 TODO
 ====
