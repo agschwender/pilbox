@@ -343,6 +343,13 @@ class AppImplicitBaseUrlTest(AsyncHTTPTestCase, _AppAsyncMixin):
         with open(expected_path, "rb") as expected:
             self.assertEqual(resp.buffer.read(), expected.read(), msg)
 
+    def test_invalid_protocol(self):
+        path = os.path.join(os.path.dirname(__file__), "data", "test1.jpg")
+        qs = urlencode(dict(url="file://%s" % path, w=1, h=1))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"), errors.UrlError.get_code())
+
+
 class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
     KEY = "abcdef"
     NAME = "abc"
