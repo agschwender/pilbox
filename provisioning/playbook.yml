@@ -38,21 +38,19 @@
         - python-pip
         - python-numpy
         - python-opencv
-        - python-virtualenv
         - libjpeg-dev
         - libfreetype6-dev
         - zlib1g-dev
         - libwebp-dev
-        - liblcms1-dev
+        - liblcms2-dev
 
     - name: install pip packages
       pip: >
         name={{ item.name }}
         version={{ item.version }}
         use_mirrors=yes
-        virtualenv=/var/www/pilbox/.virtualenv
       with_items:
-        - { name: 'Pillow', version: '2.3.1' }
+        - { name: 'Pillow', version: '2.4.0' }
         - { name: 'tornado', version: '3.2.1' }
         - { name: 'coverage', version: '3.6' }
         - { name: 'pep8', version: '1.4.6' }

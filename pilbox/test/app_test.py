@@ -239,7 +239,7 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         self.assertEqual(resp.get("error_code"), errors.QualityError.get_code())
 
     def test_unsupported_image_format(self):
-        path = "/test/data/test-bad-format.gif"
+        path = "/test/data/test-bad-format.ico"
         qs = urlencode(dict(url=self.get_url(path), w=1, h=1))
         resp = self.fetch_error(415, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"),

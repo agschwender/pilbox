@@ -28,11 +28,11 @@ Dependencies
 ------------
 
 -  >= `Python 2.7 <http://www.python.org/download/>`_
--  `Pillow 2.3.1 <https://pypi.python.org/pypi/Pillow/2.3.1>`_
+-  `Pillow 2.4.0 <https://pypi.python.org/pypi/Pillow/2.4.0>`_
 -  `Tornado 3.2.1 <https://pypi.python.org/pypi/tornado/3.2.1>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
 -  Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev,
-   zlib1g-dev
+   zlib1g-dev, liblcms2-dev
 
 Install
 -------
@@ -496,6 +496,7 @@ Changelog
 -  0.9.14: Added Sphinx docs
 -  0.9.15: Added implicit base url to configuration
 -  0.9.16: Added validate cert to configuration
+-  0.9.17: Added support for GIF format
 
 TODO
 ====

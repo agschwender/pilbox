@@ -53,6 +53,7 @@ _filters_to_pil = {
     }
 
 _formats_to_pil = {
+    "gif": "GIF",
     "jpg": "JPEG",
     "jpeg": "JPEG",
     "png": "PNG",

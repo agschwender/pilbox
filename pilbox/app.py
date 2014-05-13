@@ -97,6 +97,7 @@ class ImageHandler(tornado.web.RequestHandler):
     OPERATIONS = ["region", "resize", "rotate", "noop"]
 
     _FORMAT_TO_MIME = {
+        "gif": "image/gif",
         "jpeg": "image/jpeg",
         "jpg": "image/jpeg",
         "png": "image/png",

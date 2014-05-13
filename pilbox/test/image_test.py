@@ -180,7 +180,7 @@ class ImageTest(unittest.TestCase):
         Image.validate_options(opts)
 
     def test_bad_image_format(self):
-        path = os.path.join(DATADIR, "test-bad-format.gif")
+        path = os.path.join(DATADIR, "test-bad-format.ico")
         with open(path, "rb") as f:
             self.assertRaises(errors.ImageFormatError, Image, f)
 
