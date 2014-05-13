@@ -123,6 +123,7 @@ To see a list of all available options, run
       --position                 default cropping position
       --quality                  default jpeg quality, 0-100
       --timeout                  timeout of requests in seconds (default 10)
+      --validate_cert            validate certificates (default True)
 
 
 Calling
@@ -494,6 +495,7 @@ Changelog
 -  0.9.10: Converted README to reStructuredText
 -  0.9.14: Added Sphinx docs
 -  0.9.15: Added implicit base url to configuration
+-  0.9.16: Added validate cert to configuration
 
 TODO
 ====

@@ -53,6 +53,7 @@ define("allowed_hosts", help="list of valid hosts", default=[], multiple=True)
 define("max_requests", help="max concurrent requests", type=int, default=40)
 define("timeout", help="request timeout in seconds", type=float, default=10)
 define("implicit_base_url", help="prepend protocol/host to url paths")
+define("validate_cert", help="validate certificates", type=bool, default=True)
 
 # default image option settings
 define("background", help="default hexadecimal bg color (RGB or ARGB)")
@@ -82,7 +83,8 @@ class PilboxApplication(tornado.web.Application):
                         quality=options.quality,
                         max_requests=options.max_requests,
                         timeout=options.timeout,
-                        implicit_base_url=options.implicit_base_url)
+                        implicit_base_url=options.implicit_base_url,
+                        validate_cert=options.validate_cert)
         settings.update(kwargs)
         tornado.web.Application.__init__(self, self.get_handlers(), **settings)
 
@@ -110,7 +112,8 @@ class ImageHandler(tornado.web.RequestHandler):
             url = urljoin(self.settings.get("implicit_base_url"), url)
 
         client = tornado.httpclient.AsyncHTTPClient(
-            max_clients=self.settings.get("max_requests"))
+            max_clients=self.settings.get("max_requests"),
+            validate_cert=self.settings.get("validate_cert"))
         try:
             resp = yield client.fetch(
                 url, request_timeout=self.settings.get("timeout"))
