@@ -26,6 +26,7 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "provisioning/playbook.yml"
     ansible.inventory_path = "provisioning/vagrant"
     ansible.verbose = true
+    ansible.limit = 'all'
   end
 
 end

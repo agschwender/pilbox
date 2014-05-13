@@ -28,8 +28,8 @@ Dependencies
 ------------
 
 -  >= `Python 2.7 <http://www.python.org/download/>`_
--  `Pillow 2.2.1 <https://pypi.python.org/pypi/Pillow/2.2.1>`_
--  `Tornado 3.1.1 <https://pypi.python.org/pypi/tornado/3.1.1>`_
+-  `Pillow 2.3.1 <https://pypi.python.org/pypi/Pillow/2.3.1>`_
+-  `Tornado 3.2.1 <https://pypi.python.org/pypi/tornado/3.2.1>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
 -  Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev,
    zlib1g-dev

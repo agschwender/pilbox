@@ -3,11 +3,11 @@
 set -e
 
 # Must be a valid filename
-DIR=/vagrant
+DIR=/var/www/pilbox
 NAME=pilbox
 PIDFILE=/var/run/$NAME.pid
 DAEMON=/usr/bin/env
-DAEMON_OPTS="python -m pilbox.app --debug"
+DAEMON_OPTS=".virtualenv/bin/python -m pilbox.app --debug"
 
 export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
 
