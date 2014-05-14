@@ -49,13 +49,14 @@ Versions:
   * 0.9.15: Added implicit base url
   * 0.9.16: Added validate cert to configuration
   * 0.9.17: Added support for GIF format
+  * 0.9.18: Fix for travis builds on python 2.6 and 3.3
 """
 
 # human-readable version number
-version = "0.9.17"
+version = "0.9.18"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (0, 9, 17, 0)
+version_info = (0, 9, 18, 0)

@@ -497,6 +497,7 @@ Changelog
 -  0.9.15: Added implicit base url to configuration
 -  0.9.16: Added validate cert to configuration
 -  0.9.17: Added support for GIF format
+-  0.9.18: Fix for travis builds on python 2.6 and 3.3
 
 TODO
 ====
