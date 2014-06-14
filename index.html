@@ -246,7 +246,9 @@ Options:
 </ul>
 </li>
 <li>
-<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs.</li>
+<em>opt</em>: The output should be optimized, only relevant to JPEGs and PNGs</li>
+<li>
+<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
 </ul><h2>
 <a name="region-parameters" class="anchor" href="#region-parameters"><span class="octicon octicon-link"></span></a>Region Parameters</h2>
 
@@ -264,7 +266,9 @@ Options:
 </ul>
 </li>
 <li>
-<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs.</li>
+<em>opt</em>: The output should be optimized, only relevant to JPEGs and PNGs</li>
+<li>
+<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
 <li>
 <em>rect</em>: The region as x,y,w,h; x,y: top-left position, w,h: width/height of region</li>
 </ul><h2>
@@ -288,7 +292,9 @@ Options:
 </ul>
 </li>
 <li>
-<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs.</li>
+<em>opt</em>: The output should be optimized, only relevant to JPEGs and PNGs</li>
+<li>
+<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
 </ul><h2>
 <a name="security-related-parameters" class="anchor" href="#security-related-parameters"><span class="octicon octicon-link"></span></a>Security-related Parameters</h2>
 
@@ -297,7 +303,7 @@ Options:
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code> parameter is always required as it dictates the image that will be manipulated. <code>op</code> is optional and defaults to <code>resize</code>. It also supports a comma separated list of operations, where each operation is applied in the order that it appears in the list. Depending on the operation, additional parameters are required.  All image manipulation requests accept <code>fmt</code> and <code>q</code>. <code>fmt</code> is optional and defaults to the source image format. <code>q</code> is optional and defaults to <code>90</code>. To ensure security, all requests also support, <code>client</code> and <code>sig</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+</ul><p>The <code>url</code> parameter is always required as it dictates the image that will be manipulated. <code>op</code> is optional and defaults to <code>resize</code>. It also supports a comma separated list of operations, where each operation is applied in the order that it appears in the list. Depending on the operation, additional parameters are required.  All image manipulation requests accept <code>fmt</code>, <code>opt</code> and <code>q</code>. <code>fmt</code> is optional and defaults to the source image format. <code>opt</code> is optional and defaults to <code>0</code>.  <code>q</code> is optional and defaults to <code>90</code>. To ensure security, all requests also support, <code>client</code> and <code>sig</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
 
 <p>For resizing, either the <code>w</code> or <code>h</code> parameter is required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>.  <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>.</p>
 
@@ -400,6 +406,7 @@ expand = False
 
 # Set default saving options
 format = None
+optimize = 1
 quality = 90
 </code></pre>
 
@@ -472,6 +479,7 @@ quality = 75
 <li>0.9.17: Added support for GIF format</li>
 <li>0.9.18: Fix for travis builds on python 2.6 and 3.3</li>
 <li>0.9.19: Validate cert fix</li>
+<li>0.9.20: Added optimize option</li>
 </ul><h1>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
