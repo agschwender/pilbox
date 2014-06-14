@@ -68,7 +68,8 @@ class Image(object):
     POSITIONS = _positions_to_ratios.keys()
 
     _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
-                     format=None, mode="crop", position="center", quality=90)
+                     format=None, mode="crop", optimize=False,
+                     position="center", quality=90)
     _CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "frontalface.xml")
 
@@ -129,6 +130,9 @@ class Image(object):
                 or len(opts["background"]) not in [3, 4, 6, 8]:
             raise errors.BackgroundError(
                 "Invalid background: %s" % opts["background"])
+        elif opts["optimize"] and not Image._isint(opts["optimize"]):
+            raise errors.OptimizeError(
+                "Invalid optimize: %s", str(opts["optimize"]))
         elif not Image._isint(opts["quality"]) \
                 or int(opts["quality"]) > 100 or int(opts["quality"]) < 0:
             raise errors.QualityError(
@@ -183,6 +187,7 @@ class Image(object):
         following optional keyword arguments:
 
         format - The format to save as: see Image.FORMATS
+        optimize - The image file size should be optimized
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
         opts = Image._normalize_options(kwargs)
@@ -191,7 +196,10 @@ class Image(object):
             fmt = opts["pil"]["format"]
         else:
             fmt = self._orig_format
-        self.img.save(outfile, fmt, quality=int(opts["quality"]))
+        save_kwargs = dict(quality=int(opts["quality"]))
+        if int(opts["optimize"]):
+            save_kwargs["optimize"] = True
+        self.img.save(outfile, fmt, **save_kwargs)
         outfile.seek(0)
 
         return outfile
@@ -299,7 +307,8 @@ class Image(object):
     @staticmethod
     def _isint(v, base=10):
         try:
-            int(str(v), base)
+            if type(v) is not bool:
+                int(str(v), base)
         except ValueError:
             return False
         return True
@@ -343,6 +352,7 @@ def main():
     define("rect", help="rectangle: x,y,w,h", type=str)
     define("format", help="default format to use when saving",
            metavar="|".join(Image.FORMATS), type=str)
+    define("optimize", help="default to optimize when saving", type=int)
     define("quality", help="default jpeg quality, 0-100", type=int)
 
     args = parse_command_line()
@@ -381,7 +391,9 @@ def main():
     elif options.operation == "region":
         image.region(options.rect.split(","))
 
-    stream = image.save(format=options.format, quality=options.quality)
+    stream = image.save(format=options.format,
+                        optimize=options.optimize,
+                        quality=options.quality)
     sys.stdout.write(stream.read())
     stream.close()
 

@@ -175,8 +175,8 @@ class ImageTest(unittest.TestCase):
         Image.validate_options(dict())
 
     def test_valid_default_options_with_empty_values(self):
-        opts = dict(mode=None, filter=None, background=None, position=None,
-                    quality=None)
+        opts = dict(mode=None, filter=None, background=None, optimize=None,
+                    position=None, quality=None)
         Image.validate_options(opts)
 
     def test_bad_image_format(self):
@@ -235,6 +235,10 @@ class ImageTest(unittest.TestCase):
         self.assertRaises(
             errors.QualityError, Image.validate_options, dict(quality=-1))
 
+    def test_bad_optimize_invalid_bool(self):
+        self.assertRaises(
+            errors.OptimizeError, Image.validate_options, dict(optimize="b"))
+
     def test_color_hex_to_dec_tuple(self):
         tests  = [["fff", (255, 255, 255)],
                   ["ccc", (204, 204, 204)],
@@ -262,7 +266,9 @@ class ImageTest(unittest.TestCase):
                 background=case.get("background"), filter=case.get("filter"),
                 position=case.get("position"))
             rv = img.save(
-                format=case.get("format"), quality=case.get("quality"))
+                format=case.get("format"),
+                optimize=case.get("optimize"),
+                quality=case.get("quality"))
 
             with open(case["expected_path"], "rb") as expected:
                 msg = "%s does not match %s" \
@@ -276,7 +282,9 @@ class ImageTest(unittest.TestCase):
                 case["degree"], expand=case.get("expand"),
                 filter=case.get("filter"))
             rv = img.save(
-                format=case.get("format"), quality=case.get("quality"))
+                format=case.get("format"),
+                optimize=case.get("optimize"),
+                quality=case.get("quality"))
 
             with open(case["expected_path"], "rb") as expected:
                 msg = "%s does not match %s" \
@@ -288,7 +296,9 @@ class ImageTest(unittest.TestCase):
         with open(case["source_path"], "rb") as f:
             img = Image(f).region(case["rect"].split(","))
             rv = img.save(
-                format=case.get("format"), quality=case.get("quality"))
+                format=case.get("format"),
+                optimize=case.get("optimize"),
+                quality=case.get("quality"))
 
             with open(case["expected_path"], "rb") as expected:
                 msg = "%s does not match %s" \
@@ -343,6 +353,8 @@ def _get_advanced_criteria_combinations():
               fields=["mode", "size", "filter"]),
          dict(values=[["crop"], [(125, 75)], [50, 75, 90]],
               fields=["mode", "size", "quality"]),
+         dict(values=[["crop"], [(125, 75)], [1, 0]],
+              fields=["mode", "size", "optimize"]),
          dict(values=[Image.MODES, [(125, None), (None, 125)]],
               fields=["mode", "size"]),
          dict(values=[["crop"], [(125, 75)], Image.FORMATS],
@@ -374,7 +386,8 @@ def _criteria_to_resize_case(filename, criteria):
         return None
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
-    fields = ["mode", "filter", "quality", "background", "position"]
+    fields = ["mode", "filter", "quality", "background",
+              "position", "optimize"]
     opts = filter(bool, [criteria.get(x) for x in fields])
     expected = "%s-%sx%s%s.%s" \
         % (m.group(1),
@@ -392,7 +405,7 @@ def _criteria_to_rotate_case(filename, criteria):
         return None
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
-    fields = ["degree", "quality", "expand"]
+    fields = ["degree", "expand"]
     opts = filter(bool, [criteria.get(x) for x in fields])
     expected = "%s-rotate%s.%s" \
         % (m.group(1),

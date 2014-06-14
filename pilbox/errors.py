@@ -96,6 +96,12 @@ class RectangleError(BadRequestError):
         return 11
 
 
+class OptimizeError(BadRequestError):
+    @staticmethod
+    def get_code():
+        return 12
+
+
 class FetchError(PilboxError):
     def __init__(self, msg=None, *args, **kwargs):
         super(FetchError, self).__init__(404, msg, *args, **kwargs)

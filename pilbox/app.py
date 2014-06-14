@@ -41,8 +41,8 @@ except ImportError:
 # general settings
 define("config", help="path to configuration file",
        callback=lambda path: parse_config_file(path, final=False))
-define("debug", default=False, help="run in debug mode", type=bool)
-define("port", default=8888, help="run on the given port", type=int)
+define("debug", help="run in debug mode", type=bool, default=False)
+define("port", help="run on the given port", type=int, default=8888)
 
 # security related settings
 define("client_name", help="client name")
@@ -61,6 +61,7 @@ define("expand", help="default to expand when rotating", type=int)
 define("filter", help="default filter to use when resizing")
 define("format", help="default format to use when outputting")
 define("mode", help="default mode to use when resizing")
+define("optimize", help="default to optimize when saving", type=int)
 define("position", help="default cropping position")
 define("quality", help="default jpeg quality, 0-100", type=int)
 
@@ -80,6 +81,7 @@ class PilboxApplication(tornado.web.Application):
                         format=options.format,
                         mode=options.mode,
                         position=options.position,
+                        optimize=options.optimize,
                         quality=options.quality,
                         max_requests=options.max_requests,
                         timeout=options.timeout,
@@ -202,6 +204,7 @@ class ImageHandler(tornado.web.RequestHandler):
     def _get_save_options(self):
         return self._get_options(
             dict(format=self.get_argument("fmt"),
+                 optimize=self.get_argument("opt"),
                  quality=self.get_argument("q")))
 
     def _get_options(self, opts):

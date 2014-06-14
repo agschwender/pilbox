@@ -46,7 +46,7 @@ class _AppAsyncMixin(object):
     def get_image_resize_cases(self):
         cases = image_test.get_image_resize_cases()
         m = dict(background="bg", filter="filter", format="fmt",
-                 position="pos", quality="q")
+                 optimize="opt", position="pos", quality="q")
         for i, case in enumerate(cases):
             path = "/test/data/%s" % os.path.basename(case["source_path"])
             cases[i]["source_query_params"] = dict(
@@ -63,7 +63,7 @@ class _AppAsyncMixin(object):
 
     def get_image_rotate_cases(self):
         cases = image_test.get_image_rotate_cases()
-        m = dict(expand="expand", format="fmt", quality="q")
+        m = dict(expand="expand", format="fmt", optimize="opt", quality="q")
         for i, case in enumerate(cases):
             path = "/test/data/%s" % os.path.basename(case["source_path"])
             cases[i]["source_query_params"] = dict(
@@ -80,7 +80,7 @@ class _AppAsyncMixin(object):
 
     def get_image_region_cases(self):
         cases = image_test.get_image_region_cases()
-        m = dict(expand="expand", format="fmt", quality="q")
+        m = dict(expand="expand", format="fmt", optimize="opt", quality="q")
         for i, case in enumerate(cases):
             path = "/test/data/%s" % os.path.basename(case["source_path"])
             cases[i]["source_query_params"] = dict(
@@ -227,6 +227,12 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, fmt="foo"))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), errors.FormatError.get_code())
+
+    def test_invalid_optimize(self):
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, opt="a"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"),
+                         errors.OptimizeError.get_code())
 
     def test_invalid_integer_quality(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=1, q="a"))

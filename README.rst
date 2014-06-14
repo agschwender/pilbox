@@ -188,6 +188,7 @@ Resize Parameters
 
 -  *fmt*: The output format to save as, defaults to the source format
 
+   -  *gif*: Save as GIF
    -  *jpeg*: Save as JPEG
    -  *png*: Save as PNG
    -  *webp*: Save as WebP
@@ -207,20 +208,21 @@ Resize Parameters
       position(s)
    -  *x,y*: Custom center point position ratio, e.g. 0.0,0.75
 
--  *q*: The quality (1-100) used to save the image, only relevant to
-   JPEGs.
+-  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
+-  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
 
 Region Parameters
 -----------------
 
 -  *fmt*: The output format to save as, defaults to the source format
 
+   -  *gif*: Save as GIF
    -  *jpeg*: Save as JPEG
    -  *png*: Save as PNG
    -  *webp*: Save as WebP
 
--  *q*: The quality (1-100) used to save the image, only relevant to
-   JPEGs.
+-  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
+-  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
 -  *rect*: The region as x,y,w,h; x,y: top-left position, w,h:
    width/height of region
 
@@ -228,15 +230,16 @@ Rotate Parameters
 -----------------
 
 -  *deg*: The desired rotation angle degrees
--  *expand*: Expand the sizeto include the full rotated image
+-  *expand*: Expand the size to include the full rotated image
 -  *fmt*: The output format to save as, defaults to the source format
 
+   -  *gif*: Save as GIF
    -  *jpeg*: Save as JPEG
    -  *png*: Save as PNG
    -  *webp*: Save as WebP
 
--  *q*: The quality (1-100) used to save the image, only relevant to
-   JPEGs.
+-  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
+-  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
 
 Security-related Parameters
 ---------------------------
@@ -249,14 +252,13 @@ will be manipulated. ``op`` is optional and defaults to ``resize``. It
 also supports a comma separated list of operations, where each operation
 is applied in the order that it appears in the list. Depending on the
 operation, additional parameters are required. All image manipulation
-requests accept ``fmt`` and ``q``. ``fmt`` is optional and defaults to
-the source image format. ``q`` is optional and defaults to ``90``. To
-ensure security, all requests also support, ``client`` and ``sig``.
-``client`` is required only if the ``client_name`` is defined within the
-configuration file. Likewise, ``sig`` is required only if the
-``client_key`` is defined within the configuration file. See the
-`Signing`_ section for details on how to generate the
-signature.
+requests accept ``fmt``, ``opt`` and ``q``. ``fmt`` is optional and defaults to
+the source image format. ``opt`` is optional and defaults to ``0``. ``q`` is
+optional and defaults to ``90``. To ensure security, all requests also support,
+``client`` and ``sig``. ``client`` is required only if the ``client_name`` is
+defined within the configuration file. Likewise, ``sig`` is required only if
+the ``client_key`` is defined within the configuration file. See the
+`Signing`_ section for details on how to generate the signature.
 
 For resizing, either the ``w`` or ``h`` parameter is required. If only
 one dimension is specified, the application will determine the other
@@ -414,6 +416,7 @@ below is an example configuration.
 
     # Set default saving options
     format = None
+    optimize = 1
     quality = 90
 
 Tools
@@ -498,6 +501,7 @@ Changelog
 -  0.9.16: Added validate cert to configuration
 -  0.9.17: Added support for GIF format
 -  0.9.18: Fix for travis builds on python 2.6 and 3.3
+-  0.9.19: Added optimize option
 
 TODO
 ====

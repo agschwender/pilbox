@@ -44,7 +44,9 @@ def main():
                 background=case.get("background"), filter=case.get("filter"),
                 position=case.get("position"))
             rv = img.save(
-                format=case.get("format"), quality=case.get("quality"))
+                format=case.get("format"),
+                optimize=case.get("optimize"),
+                quality=case.get("quality"))
 
             with open(case["expected_path"], "wb") as expected:
                 expected.write(rv.read())
@@ -58,7 +60,9 @@ def main():
                 case["degree"], expand=case.get("expand"),
                 filter=case.get("filter"))
             rv = img.save(
-                format=case.get("format"), quality=case.get("quality"))
+                format=case.get("format"),
+                optimize=case.get("optimize"),
+                quality=case.get("quality"))
 
             with open(case["expected_path"], "wb") as expected:
                 expected.write(rv.read())
@@ -71,7 +75,9 @@ def main():
             print "Generating %s" % case["expected_path"]
             img = Image(f).region(case["rect"].split(","))
             rv = img.save(
-                format=case.get("format"), quality=case.get("quality"))
+                format=case.get("format"),
+                optimize=case.get("optimize"),
+                quality=case.get("quality"))
 
             with open(case["expected_path"], "wb") as expected:
                 expected.write(rv.read())
