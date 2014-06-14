@@ -115,11 +115,12 @@ class ImageHandler(tornado.web.RequestHandler):
             url = urljoin(self.settings.get("implicit_base_url"), url)
 
         client = tornado.httpclient.AsyncHTTPClient(
-            max_clients=self.settings.get("max_requests"),
-            validate_cert=self.settings.get("validate_cert"))
+            max_clients=self.settings.get("max_requests"))
         try:
             resp = yield client.fetch(
-                url, request_timeout=self.settings.get("timeout"))
+                url,
+                request_timeout=self.settings.get("timeout"),
+                validate_cert=self.settings.get("validate_cert"))
         except (socket.gaierror, tornado.httpclient.HTTPError) as e:
             logger.warn("Fetch error for %s: %s"
                         % (self.get_argument("url"), str(e)))
