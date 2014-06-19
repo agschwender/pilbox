@@ -8,6 +8,7 @@ python:
 env:
   - PYTHONPATH=$PYTHONPATH:$PWD
 before_install:
+  - sudo apt-get update
   - sudo apt-get install libjpeg8-dev libfreetype6-dev zlib1g-dev
   - sudo apt-get install libwebp-dev liblcms2-dev
   - sudo apt-get install python-numpy python-opencv
