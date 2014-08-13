@@ -503,6 +503,7 @@ Changelog
 -  0.9.18: Fix for travis builds on python 2.6 and 3.3
 -  0.9.19: Validate cert fix
 -  0.9.20: Added optimize option
+-  0.9.21: Added console script entry point
 
 TODO
 ====

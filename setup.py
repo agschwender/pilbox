@@ -21,7 +21,7 @@ class PilboxTest(Command):
 
 
 setup(name='pilbox',
-      version='0.9.20',
+      version='0.9.21',
       description='Pilbox is an image resizing application server built on the Tornado web framework using the Pillow Imaging Library',
       long_description=readme,
       classifiers=[
@@ -48,5 +48,6 @@ setup(name='pilbox',
         'sphinx-me==0.2.1',
         ],
       zip_safe=True,
-      cmdclass={'test': PilboxTest}
+      cmdclass={'test': PilboxTest},
+      entry_points = {'console_scripts': ['pilbox = pilbox.app:main']}
       )
