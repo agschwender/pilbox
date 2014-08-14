@@ -105,8 +105,15 @@ class ImageHandler(tornado.web.RequestHandler):
         "png": "image/png",
         "webp": "image/webp"}
 
+    def prepare(self):
+        self.args = self.request.arguments.copy()
+
     @tornado.gen.coroutine
     def get(self):
+        yield self.process_image()
+
+    @tornado.gen.coroutine
+    def process_image(self):
         self._validate_request()
 
         url = self.get_argument("url")
@@ -135,7 +142,7 @@ class ImageHandler(tornado.web.RequestHandler):
         self.finish()
 
     def get_argument(self, name, default=None):
-        return super(ImageHandler, self).get_argument(name, default)
+        return super(ImageHandler, self)._get_argument(name, default, self.args)
 
     def write_error(self, status_code, **kwargs):
         err = kwargs["exc_info"][1] if "exc_info" in kwargs else None
