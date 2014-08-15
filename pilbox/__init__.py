@@ -52,13 +52,14 @@ Versions:
   * 0.9.18: Fix for travis builds on python 2.6 and 3.3
   * 0.9.19: Validate cert fix
   * 0.9.20: Added optimize option
+  * 0.9.21: Added console script entry point
 """
 
 # human-readable version number
-version = "0.9.20"
+version = "0.9.21"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (0, 9, 20, 0)
+version_info = (0, 9, 21, 0)
