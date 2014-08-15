@@ -105,9 +105,6 @@ class ImageHandler(tornado.web.RequestHandler):
         "png": "image/png",
         "webp": "image/webp"}
 
-    def prepare(self):
-        self.args = self.request.arguments.copy()
-
     @tornado.gen.coroutine
     def get(self):
         self.validate_request()
@@ -115,7 +112,7 @@ class ImageHandler(tornado.web.RequestHandler):
         self.render_image(resp)
 
     def get_argument(self, name, default=None):
-        return super(ImageHandler, self)._get_argument(name, default, self.args)
+        return super(ImageHandler, self).get_argument(name, default)
 
     def validate_request(self):
         self._validate_operation()
