@@ -422,5 +422,5 @@ class AppSlowTest(AsyncHTTPTestCase, _AppAsyncMixin):
     def test_timeout(self):
         url = self.get_url("/test/data/test-delayed.jpg?delay=1.0")
         qs = urlencode(dict(url=url, w=1, h=1))
-        resp = self.fetch_error(404, "/?%s" %qs)
+        resp = self.fetch_error(404, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), errors.FetchError.get_code())

@@ -110,12 +110,36 @@ class ImageHandler(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def get(self):
-        yield self.process_image()
+        self.validate_request()
+        resp = yield self.fetch_image()
+        self.render_image(resp)
+
+    def get_argument(self, name, default=None):
+        return super(ImageHandler, self)._get_argument(name, default, self.args)
+
+    def validate_request(self):
+        self._validate_operation()
+        self._validate_url()
+        self._validate_signature()
+        self._validate_client()
+        self._validate_host()
+
+        opts = self._get_save_options()
+        ops = self._get_operations()
+        if "resize" in ops:
+            Image.validate_dimensions(
+                self.get_argument("w"), self.get_argument("h"))
+            opts.update(self._get_resize_options())
+        if "rotate" in ops:
+            Image.validate_degree(self.get_argument("deg"))
+            opts.update(self._get_rotate_options())
+        if "region" in ops:
+            Image.validate_rectangle(self.get_argument("rect"))
+
+        Image.validate_options(opts)
 
     @tornado.gen.coroutine
-    def process_image(self):
-        self._validate_request()
-
+    def fetch_image(self):
         url = self.get_argument("url")
         if self.settings.get("implicit_base_url") \
                 and urlparse(url).hostname is None:
@@ -128,21 +152,18 @@ class ImageHandler(tornado.web.RequestHandler):
                 url,
                 request_timeout=self.settings.get("timeout"),
                 validate_cert=self.settings.get("validate_cert"))
+            raise tornado.gen.Return(resp)
         except (socket.gaierror, tornado.httpclient.HTTPError) as e:
             logger.warn("Fetch error for %s: %s"
                         % (self.get_argument("url"), str(e)))
             raise errors.FetchError()
 
+    def render_image(self, resp):
         outfile = self._process_response(resp)
         self._forward_headers(resp.headers)
         for block in iter(lambda: outfile.read(65536), b""):
             self.write(block)
         outfile.close()
-
-        self.finish()
-
-    def get_argument(self, name, default=None):
-        return super(ImageHandler, self)._get_argument(name, default, self.args)
 
     def write_error(self, status_code, **kwargs):
         err = kwargs["exc_info"][1] if "exc_info" in kwargs else None
@@ -220,27 +241,6 @@ class ImageHandler(tornado.web.RequestHandler):
             if v is None:
                 opts[k] = self.settings.get(k, None)
         return opts
-
-    def _validate_request(self):
-        self._validate_operation()
-        self._validate_url()
-        self._validate_signature()
-        self._validate_client()
-        self._validate_host()
-
-        opts = self._get_save_options()
-        ops = self._get_operations()
-        if "resize" in ops:
-            Image.validate_dimensions(
-                self.get_argument("w"), self.get_argument("h"))
-            opts.update(self._get_resize_options())
-        if "rotate" in ops:
-            Image.validate_degree(self.get_argument("deg"))
-            opts.update(self._get_rotate_options())
-        if "region" in ops:
-            Image.validate_rectangle(self.get_argument("rect"))
-
-        Image.validate_options(opts)
 
     def _validate_operation(self):
         operations = set(self._get_operations())
