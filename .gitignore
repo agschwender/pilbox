@@ -19,6 +19,3 @@ build
 /bin
 /include
 /lib
-
-# PyCharm
-.idea

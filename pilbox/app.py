@@ -270,11 +270,12 @@ class ImageHandler(tornado.web.RequestHandler):
             raise errors.HostError("Invalid host")
 
 
-def main(app=PilboxApplication()):
+def main(app=None):
     tornado.options.parse_command_line()
     if options.debug:
         logger.setLevel(logging.DEBUG)
-    server = tornado.httpserver.HTTPServer(app)
+    server = tornado.httpserver.HTTPServer(
+        app if app else PilboxApplication())
     logger.info("Starting server...")
     try:
         server.bind(options.port)
