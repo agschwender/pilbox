@@ -135,7 +135,6 @@ class _PilboxTestApplication(PilboxApplication):
 class _DelayedHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
-    @tornado.gen.engine
     def get(self):
         delay = time.time() + float(self.get_argument("delay", 0.0))
         yield tornado.gen.Task(
