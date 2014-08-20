@@ -53,13 +53,14 @@ Versions:
   * 0.9.19: Validate cert fix
   * 0.9.20: Added optimize option
   * 0.9.21: Added console script entry point
+  * 1.0.0: Modified for easier library usage
 """
 
 # human-readable version number
-version = "0.9.21"
+version = "1.0.0"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (0, 9, 21, 0)
+version_info = (1, 0, 0, 0)

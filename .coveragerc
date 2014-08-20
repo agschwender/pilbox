@@ -6,6 +6,6 @@ omit = pilbox/test/*
 [report]
 exclude_lines =
     pragma: no cover
-    def main..:
+    def main.app=None.:
     if __name__ == .__main__.:
     except ImportError:
