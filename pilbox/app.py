@@ -47,7 +47,8 @@ define("port", help="run on the given port", type=int, default=8888)
 # security related settings
 define("client_name", help="client name")
 define("client_key", help="client key")
-define("allowed_hosts", help="list of valid hosts", default=[], multiple=True)
+define("allowed_hosts", help="valid hosts", default=[], multiple=True)
+define("allowed_operations", help="valid ops", default=[], multiple=True)
 
 # request related settings
 define("max_requests", help="max concurrent requests", type=int, default=40)
@@ -61,6 +62,7 @@ define("expand", help="default to expand when rotating", type=int)
 define("filter", help="default filter to use when resizing")
 define("format", help="default format to use when outputting")
 define("mode", help="default mode to use when resizing")
+define("operation", help="default operation to perform")
 define("optimize", help="default to optimize when saving", type=int)
 define("position", help="default cropping position")
 define("quality", help="default jpeg quality, 0-100", type=int)
@@ -71,22 +73,26 @@ logger = logging.getLogger("tornado.application")
 class PilboxApplication(tornado.web.Application):
 
     def __init__(self, **kwargs):
-        settings = dict(debug=options.debug,
-                        client_name=options.client_name,
-                        client_key=options.client_key,
-                        allowed_hosts=options.allowed_hosts,
-                        background=options.background,
-                        expand=options.expand,
-                        filter=options.filter,
-                        format=options.format,
-                        mode=options.mode,
-                        position=options.position,
-                        optimize=options.optimize,
-                        quality=options.quality,
-                        max_requests=options.max_requests,
-                        timeout=options.timeout,
-                        implicit_base_url=options.implicit_base_url,
-                        validate_cert=options.validate_cert)
+        settings = dict(
+            debug=options.debug,
+            client_name=options.client_name,
+            client_key=options.client_key,
+            allowed_hosts=options.allowed_hosts,
+            allowed_operations=set(
+                options.allowed_operations or ImageHandler.OPERATIONS),
+            background=options.background,
+            expand=options.expand,
+            filter=options.filter,
+            format=options.format,
+            mode=options.mode,
+            operation=options.operation,
+            optimize=options.optimize,
+            position=options.position,
+            quality=options.quality,
+            max_requests=options.max_requests,
+            timeout=options.timeout,
+            implicit_base_url=options.implicit_base_url,
+            validate_cert=options.validate_cert)
         settings.update(kwargs)
         tornado.web.Application.__init__(self, self.get_handlers(), **settings)
 
@@ -214,7 +220,8 @@ class ImageHandler(tornado.web.RequestHandler):
                 self.set_header(k, headers[k])
 
     def _get_operations(self):
-        return self.get_argument("op", "resize").split(",")
+        return self.get_argument(
+            "op", self.settings.get("operation") or "resize").split(",")
 
     def _get_resize_options(self):
         return self._get_options(
@@ -241,7 +248,7 @@ class ImageHandler(tornado.web.RequestHandler):
 
     def _validate_operation(self):
         operations = set(self._get_operations())
-        if not operations.issubset(set(ImageHandler.OPERATIONS)):
+        if not operations.issubset(self.settings.get("allowed_operations")):
             raise errors.OperationError("Unsupported operation")
 
     def _validate_url(self):

@@ -7,5 +7,6 @@ omit = pilbox/test/*
 exclude_lines =
     pragma: no cover
     def main.app=None.:
+    def main..:
     if __name__ == .__main__.:
     except ImportError:

@@ -355,6 +355,42 @@ class AppImplicitBaseUrlTest(AsyncHTTPTestCase, _AppAsyncMixin):
         self.assertEqual(resp.get("error_code"), errors.UrlError.get_code())
 
 
+class AppAllowedOperationsTest(AsyncHTTPTestCase, _AppAsyncMixin):
+    def get_app(self):
+        return _PilboxTestApplication(allowed_operations=['noop'])
+
+    def test_invalid_operation(self):
+        qs = urlencode(dict(url="http://foo.co/x.jpg", op="resize"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"),
+                         errors.OperationError.get_code())
+
+    def test_valid_noop(self):
+        url = self.get_url("/test/data/test1.jpg")
+        qs = urlencode(dict(url=url, op="noop"))
+        resp = self.fetch_success("/?%s" % qs)
+        expected_path = os.path.join(
+            os.path.dirname(__file__), "data", "test1.jpg")
+        msg = "/?%s does not match %s" % (qs, expected_path)
+        with open(expected_path, "rb") as expected:
+            self.assertEqual(resp.buffer.read(), expected.read(), msg)
+
+
+class AppDefaultOperationTest(AsyncHTTPTestCase, _AppAsyncMixin):
+    def get_app(self):
+        return _PilboxTestApplication(operation='noop')
+
+    def test_valid_default_operation(self):
+        url = self.get_url("/test/data/test1.jpg")
+        qs = urlencode(dict(url=url))
+        resp = self.fetch_success("/?%s" % qs)
+        expected_path = os.path.join(
+            os.path.dirname(__file__), "data", "test1.jpg")
+        msg = "/?%s does not match %s" % (qs, expected_path)
+        with open(expected_path, "rb") as expected:
+            self.assertEqual(resp.buffer.read(), expected.read(), msg)
+
+
 class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
     KEY = "abcdef"
     NAME = "abc"

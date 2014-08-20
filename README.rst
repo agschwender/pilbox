@@ -505,6 +505,7 @@ Changelog
 -  0.9.20: Added optimize option
 -  0.9.21: Added console script entry point
 -  1.0.0: Modified for easier library usage
+-  1.0.1: Added allowed operations and default operation
 
 TODO
 ====
