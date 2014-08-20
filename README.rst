@@ -109,6 +109,7 @@ To see a list of all available options, run
     Options:
 
       --allowed_hosts            list of allowed hosts (default [])
+      --allowed_operations       list of allowed operations (default [])
       --background               default hexadecimal bg color (RGB or ARGB)
       --client_key               client key
       --client_name              client name
@@ -119,6 +120,8 @@ To see a list of all available options, run
       --help                     show this help information
       --implicit_base_url        prepend protocol/host to url paths
       --max_requests             max concurrent requests (default 40)
+      --operation                default operation to perform
+      --optimize                 default to optimize when saving
       --port                     run on the given port (default 8888)
       --position                 default cropping position
       --quality                  default jpeg quality, 0-100
@@ -465,6 +468,45 @@ following to the configuration.
     # Set default resizing options
     filter = "bicubic"
     quality = 75
+
+Extension
+=========
+
+While it is generally recommended to use Pilbox as a standalone server, it can also be used as a library. To extend from it and build a custom image processing server, use the following example.
+
+::
+
+    #!/usr/bin/env python
+
+    import tornado.gen
+
+    from pilbox.app import PilboxApplication, ImageHandler, main
+
+
+    class CustomApplication(PilboxApplication):
+        def get_handlers(self):
+            return [(r"/(\d+)x(\d+)/(.+)", CustomImageHandler)]
+
+
+    class CustomImageHandler(ImageHandler):
+        def prepare(self):
+            self.args = self.request.arguments.copy()
+
+        @tornado.gen.coroutine
+        def get(self, w, h, url):
+            self.args.update(dict(w=w, h=h, url=url))
+
+            self.validate_request()
+            resp = yield self.fetch_image()
+            self.render_image(resp)
+
+        def get_argument(self, name, default=None):
+            return self.args.get(name, default)
+
+
+    if __name__ == "__main__":
+        main(app=CustomApplication())
+
 
 Changelog
 =========
