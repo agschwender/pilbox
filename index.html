@@ -107,16 +107,20 @@ Usage: pilbox/app.py [OPTIONS]
 Options:
 
   --allowed_hosts            list of allowed hosts (default [])
+  --allowed_operations       list of allowed operations (default [])
   --background               default hexadecimal bg color (RGB or ARGB)
   --client_key               client key
   --client_name              client name
   --config                   path to configuration file
+  --content_type_from_image  override content type using image mime type
   --debug                    run in debug mode (default False)
   --expand                   default to expand when rotating
   --filter                   default filter to use when resizing
   --help                     show this help information
   --implicit_base_url        prepend protocol/host to url paths
   --max_requests             max concurrent requests (default 40)
+  --operation                default operation to perform
+  --optimize                 default to optimize when saving
   --port                     run on the given port (default 8888)
   --position                 default cropping position
   --quality                  default jpeg quality, 0-100
@@ -444,6 +448,43 @@ quality = 75
 </code></pre>
 
 <h1>
+<a name="extension" class="anchor" href="#extension"><span class="octicon octicon-link"></span></a>Extension</h1>
+
+<p>While it is generally recommended to use Pilbox as a standalone server, it can also be used as a library. To extend from it and build a custom image processing server, use the following example.</p>
+
+<pre><code>#!/usr/bin/env python
+
+import tornado.gen
+
+from pilbox.app import PilboxApplication, ImageHandler, main
+
+
+class CustomApplication(PilboxApplication):
+    def get_handlers(self):
+        return [(r"/(\d+)x(\d+)/(.+)", CustomImageHandler)]
+
+
+class CustomImageHandler(ImageHandler):
+    def prepare(self):
+        self.args = self.request.arguments.copy()
+
+    @tornado.gen.coroutine
+    def get(self, w, h, url):
+        self.args.update(dict(w=w, h=h, url=url))
+
+        self.validate_request()
+        resp = yield self.fetch_image()
+        self.render_image(resp)
+
+    def get_argument(self, name, default=None):
+        return self.args.get(name, default)
+
+
+if __name__ == "__main__":
+    main(app=CustomApplication())
+</code></pre>
+
+<h1>
 <a name="changelog" class="anchor" href="#changelog"><span class="octicon octicon-link"></span></a>Changelog</h1>
 
 <ul>
@@ -481,6 +522,9 @@ quality = 75
 <li>0.9.19: Validate cert fix</li>
 <li>0.9.20: Added optimize option</li>
 <li>0.9.21: Added console script entry point</li>
+<li>1.0.0: Modified for easier library usage</li>
+<li>1.0.1: Added allowed operations and default operation</li>
+<li>1.0.2: Modified to allow override of http content type</li>
 </ul><h1>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
