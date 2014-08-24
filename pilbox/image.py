@@ -76,7 +76,11 @@ class Image(object):
     def __init__(self, stream):
         self.stream = stream
 
-        self.img = PIL.Image.open(self.stream)
+        try:
+            self.img = PIL.Image.open(self.stream)
+        except IOError:
+            raise errors.ImageFormatError("File is not an image")
+
         if self.img.format.lower() not in self.FORMATS:
             raise errors.ImageFormatError(
                 "Unknown format: %s" % self.img.format)

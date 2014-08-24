@@ -179,6 +179,10 @@ class ImageTest(unittest.TestCase):
                     position=None, quality=None)
         Image.validate_options(opts)
 
+    def test_nonimage_file(self):
+        with open(__file__, "rb") as f:
+            self.assertRaises(errors.ImageFormatError, Image, f)
+
     def test_bad_image_format(self):
         path = os.path.join(DATADIR, "test-bad-format.ico")
         with open(path, "rb") as f:
