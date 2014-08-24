@@ -118,6 +118,8 @@ class _AppAsyncMixin(object):
             return "image/png"
         elif fmt == "webp":
             return "image/webp"
+        elif fmt == "gif":
+            return "image/gif"
         return None
 
 
@@ -256,6 +258,12 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         resp = self.fetch_error(415, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"),
                          errors.ImageFormatError.get_code())
+
+    def test_retain_incorrect_format(self):
+        url = self.get_url("/test/data/test-incorrect-format.png")
+        qs = urlencode(dict(url=url, w=1, h=1))
+        resp = self.fetch_success("/?%s" % qs)
+        self.assertEqual(resp.headers.get("Content-Type", None), "image/png")
 
     def test_not_found(self):
         path = "/test/data/test-not-found.jpg"
@@ -396,6 +404,23 @@ class AppDefaultOperationTest(AsyncHTTPTestCase, _AppAsyncMixin):
         msg = "/?%s does not match %s" % (qs, expected_path)
         with open(expected_path, "rb") as expected:
             self.assertEqual(resp.buffer.read(), expected.read(), msg)
+
+
+class AppOverrideContentTypeTest(AsyncHTTPTestCase, _AppAsyncMixin):
+    def get_app(self):
+        return _PilboxTestApplication(content_type_from_image=True)
+
+    def test_override_unknown_format(self):
+        url = self.get_url("/test/data/test-unknown-format")
+        qs = urlencode(dict(url=url, w=1, h=1))
+        resp = self.fetch_success("/?%s" % qs)
+        self.assertEqual(resp.headers.get("Content-Type", None), "image/jpeg")
+
+    def test_override_incorrect_format(self):
+        url = self.get_url("/test/data/test-incorrect-format.png")
+        qs = urlencode(dict(url=url, w=1, h=1))
+        resp = self.fetch_success("/?%s" % qs)
+        self.assertEqual(resp.headers.get("Content-Type", None), "image/jpeg")
 
 
 class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):

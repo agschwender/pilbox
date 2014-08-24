@@ -17,6 +17,7 @@
 from __future__ import absolute_import, division, with_statement
 
 import logging
+import os.path
 import socket
 
 import tornado.escape
@@ -56,6 +57,11 @@ define("timeout", help="request timeout in seconds", type=float, default=10)
 define("implicit_base_url", help="prepend protocol/host to url paths")
 define("validate_cert", help="validate certificates", type=bool, default=True)
 
+# header related settings
+define("content_type_from_image",
+       help="override content type using image mime type",
+       type=bool)
+
 # default image option settings
 define("background", help="default hexadecimal bg color (RGB or ARGB)")
 define("expand", help="default to expand when rotating", type=int)
@@ -92,7 +98,8 @@ class PilboxApplication(tornado.web.Application):
             max_requests=options.max_requests,
             timeout=options.timeout,
             implicit_base_url=options.implicit_base_url,
-            validate_cert=options.validate_cert)
+            validate_cert=options.validate_cert,
+            content_type_from_image=options.content_type_from_image)
         settings.update(kwargs)
         tornado.web.Application.__init__(self, self.get_handlers(), **settings)
 
@@ -101,7 +108,7 @@ class PilboxApplication(tornado.web.Application):
 
 
 class ImageHandler(tornado.web.RequestHandler):
-    FORWARD_HEADERS = ['Cache-Control', 'Expires', 'Last-Modified']
+    FORWARD_HEADERS = ["Cache-Control", "Expires", "Last-Modified"]
     OPERATIONS = ["region", "resize", "rotate", "noop"]
 
     _FORMAT_TO_MIME = {
@@ -162,8 +169,8 @@ class ImageHandler(tornado.web.RequestHandler):
             raise errors.FetchError()
 
     def render_image(self, resp):
-        outfile = self._process_response(resp)
-        self._forward_headers(resp.headers)
+        outfile, outfile_format = self._process_response(resp)
+        self._set_headers(resp.headers, outfile_format)
         for block in iter(lambda: outfile.read(65536), b""):
             self.write(block)
         outfile.close()
@@ -171,7 +178,7 @@ class ImageHandler(tornado.web.RequestHandler):
     def write_error(self, status_code, **kwargs):
         err = kwargs["exc_info"][1] if "exc_info" in kwargs else None
         if isinstance(err, errors.PilboxError):
-            self.set_header('Content-Type', 'application/json')
+            self.set_header("Content-Type", "application/json")
             resp = dict(status_code=status_code,
                         error_code=err.get_code(),
                         error=err.log_message)
@@ -182,7 +189,7 @@ class ImageHandler(tornado.web.RequestHandler):
     def _process_response(self, resp):
         ops = self._get_operations()
         if "noop" in ops:
-            return resp.buffer
+            return (resp.buffer, None)
 
         image = Image(resp.buffer)
         for operation in ops:
@@ -193,7 +200,7 @@ class ImageHandler(tornado.web.RequestHandler):
             elif operation == "region":
                 self._image_region(image)
 
-        return self._image_save(image)
+        return (self._image_save(image), image.img.format)
 
     def _image_region(self, image):
         image.region(self.get_argument("rect").split(","))
@@ -210,11 +217,15 @@ class ImageHandler(tornado.web.RequestHandler):
         opts = self._get_save_options()
         return image.save(**opts)
 
-    def _forward_headers(self, headers):
-        mime = self._FORMAT_TO_MIME.get(
-            self.get_argument("fmt", self.settings.get("format")),
-            headers['Content-Type'])
-        self.set_header('Content-Type', mime)
+    def _set_headers(self, headers, file_format):
+        if file_format and any((self.get_argument("fmt"),
+                                self.settings.get("format"),
+                                self.settings.get("content_type_from_image"))):
+            self.set_header(
+                "Content-Type", self._FORMAT_TO_MIME.get(file_format.lower()))
+        else:
+            self.set_header("Content-Type", headers["Content-Type"])
+
         for k in ImageHandler.FORWARD_HEADERS:
             if k in headers and headers[k]:
                 self.set_header(k, headers[k])

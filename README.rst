@@ -114,6 +114,7 @@ To see a list of all available options, run
       --client_key               client key
       --client_name              client name
       --config                   path to configuration file
+      --content_type_from_image  override content type using image mime type
       --debug                    run in debug mode (default False)
       --expand                   default to expand when rotating
       --filter                   default filter to use when resizing
@@ -548,6 +549,7 @@ Changelog
 -  0.9.21: Added console script entry point
 -  1.0.0: Modified for easier library usage
 -  1.0.1: Added allowed operations and default operation
+-  1.0.2: Modified to allow override of http content type
 
 TODO
 ====

@@ -204,6 +204,7 @@ class Image(object):
         if int(opts["optimize"]):
             save_kwargs["optimize"] = True
         self.img.save(outfile, fmt, **save_kwargs)
+        self.img.format = fmt
         outfile.seek(0)
 
         return outfile
