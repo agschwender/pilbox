@@ -17,7 +17,6 @@
 from __future__ import absolute_import, division, with_statement
 
 import logging
-import os.path
 import socket
 
 import tornado.escape
