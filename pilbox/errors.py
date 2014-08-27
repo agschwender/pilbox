@@ -143,3 +143,9 @@ class ImageFormatError(UnsupportedError):
     @staticmethod
     def get_code():
         return 201
+
+
+class ImageSaveError(UnsupportedError):
+    @staticmethod
+    def get_code():
+        return 202

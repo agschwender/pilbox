@@ -203,7 +203,10 @@ class Image(object):
         save_kwargs = dict(quality=int(opts["quality"]))
         if int(opts["optimize"]):
             save_kwargs["optimize"] = True
-        self.img.save(outfile, fmt, **save_kwargs)
+        try:
+            self.img.save(outfile, fmt, **save_kwargs)
+        except IOError as e:
+            raise errors.ImageSaveError(str(e))
         self.img.format = fmt
         outfile.seek(0)
 
