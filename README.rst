@@ -550,6 +550,7 @@ Changelog
 -  1.0.0: Modified for easier library usage
 -  1.0.1: Added allowed operations and default operation
 -  1.0.2: Modified to allow override of http content type
+-  1.0.3: Safely catch image save errors
 
 TODO
 ====

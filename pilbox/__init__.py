@@ -56,13 +56,14 @@ Versions:
   * 1.0.0: Modified for easier library usage
   * 1.0.1: Added allowed operations and default operation
   * 1.0.2: Modified to allow override of http content type
+  * 1.0.3: Safely catch image save errors
 """
 
 # human-readable version number
-version = "1.0.2"
+version = "1.0.3"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 0, 2, 0)
+version_info = (1, 0, 3, 0)
