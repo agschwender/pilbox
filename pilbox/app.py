@@ -248,7 +248,8 @@ class ImageHandler(tornado.web.RequestHandler):
         return self._get_options(
             dict(format=self.get_argument("fmt"),
                  optimize=self.get_argument("opt"),
-                 quality=self.get_argument("q")))
+                 quality=self.get_argument("q"),
+                 progressive=self.get_argument("prog")))
 
     def _get_options(self, opts):
         for k, v in opts.items():

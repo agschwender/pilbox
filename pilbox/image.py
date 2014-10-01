@@ -69,7 +69,7 @@ class Image(object):
 
     _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
                      format=None, mode="crop", optimize=False,
-                     position="center", quality=90)
+                     position="center", quality=90, progressive=False)
     _CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "frontalface.xml")
 
@@ -141,6 +141,10 @@ class Image(object):
                 or int(opts["quality"]) > 100 or int(opts["quality"]) < 0:
             raise errors.QualityError(
                 "Invalid quality: %s", str(opts["quality"]))
+        elif not Image._isint(opts["progressive"]) \
+                or int(opts["progressive"]) > 1 or int(opts["progressive"]) < 0:
+            raise errors.QualityError(
+                "Invalid progressive mode: %s", str(opts["progressive"]))
 
     def region(self, rect):
         """ Selects a sub-region of the image using the supplied rectangle,
@@ -203,6 +207,8 @@ class Image(object):
         save_kwargs = dict(quality=int(opts["quality"]))
         if int(opts["optimize"]):
             save_kwargs["optimize"] = True
+        if int(opts["progressive"]):
+            save_kwargs["progressive"] = True
         try:
             self.img.save(outfile, fmt, **save_kwargs)
         except IOError as e:
