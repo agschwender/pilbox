@@ -123,6 +123,7 @@ To see a list of all available options, run
       --max_requests             max concurrent requests (default 40)
       --operation                default operation to perform
       --optimize                 default to optimize when saving
+      --prog                     progressive image saving (default 0 - disabled, 1 - enabled)
       --port                     run on the given port (default 8888)
       --position                 default cropping position
       --quality                  default jpeg quality, 0-100
@@ -214,6 +215,7 @@ Resize Parameters
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
+-  *prog:* Progressive image saving.
 
 Region Parameters
 -----------------
