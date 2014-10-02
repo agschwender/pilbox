@@ -142,7 +142,7 @@ class Image(object):
             raise errors.QualityError(
                 "Invalid quality: %s", str(opts["quality"]))
         elif not Image._isint(opts["progressive"]) \
-                or int(opts["progressive"]) > 1 or int(opts["progressive"]) < 0:
+                or int(opts["progressive"]) < 0:
             raise errors.QualityError(
                 "Invalid progressive mode: %s", str(opts["progressive"]))
 
@@ -368,7 +368,9 @@ def main():
            metavar="|".join(Image.FORMATS), type=str)
     define("optimize", help="default to optimize when saving", type=int)
     define("quality", help="default jpeg quality, 0-100", type=int)
-    define("prog", help="progressive image saving, default 0 - disabled, 1 - enabled", type=int, default=0)
+    define("prog", help="progressive image saving, "
+                        "default 0 - disabled, 1 - enabled",
+           type=int, default=0)
 
     args = parse_command_line()
     if not args:
