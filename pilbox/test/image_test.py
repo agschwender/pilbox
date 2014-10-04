@@ -402,8 +402,8 @@ def _criteria_to_resize_case(filename, criteria):
     case.update(criteria)
     fields = ["mode", "filter", "quality", "background",
               "position", "optimize", "progressive"]
-    opts = dict((x, criteria.get(x)) for x in fields if criteria.get(x))
-    opts_desc = "-".join(["%s=%s" % (k, str(x)) for k, x in opts.items()])
+    opts_desc = "-".join(["%s=%s" % (x, str(criteria.get(x)))
+                          for x in fields if criteria.get(x)])
     expected = "%s-%sx%s%s.%s" \
         % (m.group(1),
            criteria.get("width") or "",
@@ -421,11 +421,11 @@ def _criteria_to_rotate_case(filename, criteria):
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
     fields = ["degree", "expand"]
-    opts = dict((x, criteria.get(x)) for x in fields if criteria.get(x))
-    opts_desc = "-".join(["%s=%s" % (k, str(x)) for k, x in opts.items()])
+    opts_desc = "-".join(["%s=%s" % (x, str(criteria.get(x)))
+                          for x in fields if criteria.get(x)])
     expected = "%s-rotate%s.%s" \
         % (m.group(1),
-           ("-%s" % opts_desc) if opts else "",
+           ("-%s" % opts_desc) if opts_desc else "",
            criteria.get("format") or m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case
@@ -438,11 +438,11 @@ def _criteria_to_region_case(filename, criteria):
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
     fields = ["rect"]
-    opts = dict((x, criteria.get(x)) for x in fields if criteria.get(x))
-    opts_desc = "-".join(["%s=%s" % (k, str(x)) for k, x in opts.items()])
+    opts_desc = "-".join(["%s=%s" % (x, str(criteria.get(x)))
+                          for x in fields if criteria.get(x)])
     expected = "%s-region%s.%s" \
         % (m.group(1),
-           ("-%s" % opts_desc) if opts else "",
+           ("-%s" % opts_desc) if opts_desc else "",
            criteria.get("format") or m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case
@@ -455,14 +455,14 @@ def _criteria_to_chained_case(filename, criteria):
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
     fields = ["degree", "rect"]
-    opts = dict((x, criteria.get(x)) for x in fields if criteria.get(x))
-    opts_desc = "-".join(["%s=%s" % (k, str(x)) for k, x in opts.items()])
+    opts_desc = "-".join(["%s=%s" % (x, str(criteria.get(x)))
+                          for x in fields if criteria.get(x)])
     expected = "%s-chained-%s-%sx%s%s.%s" \
         % (m.group(1),
            ",".join(criteria.get("operation", [])),
            criteria.get("width") or "",
            criteria.get("height") or "",
-           ("-%s" % opts_desc) if opts else "",
+           ("-%s" % opts_desc) if opts_desc else "",
            m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case
