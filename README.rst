@@ -214,6 +214,7 @@ Resize Parameters
    -  *x,y*: Custom center point position ratio, e.g. 0.0,0.75
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
+-  *prog*: Enable progressive output, only relevant to JPEGs
 -  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
 -  *prog:* Progressive image saving.
 
@@ -228,6 +229,7 @@ Region Parameters
    -  *webp*: Save as WebP
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
+-  *prog*: Enable progressive output, only relevant to JPEGs
 -  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
 -  *rect*: The region as x,y,w,h; x,y: top-left position, w,h:
    width/height of region
@@ -245,6 +247,7 @@ Rotate Parameters
    -  *webp*: Save as WebP
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
+-  *prog*: Enable progressive output, only relevant to JPEGs
 -  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
 
 Security-related Parameters
