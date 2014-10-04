@@ -115,7 +115,7 @@ To see a list of all available options, run
       --client_name              client name
       --config                   path to configuration file
       --content_type_from_image  override content type using image mime type
-      --debug                    run in debug mode (default False)
+      --debug                    run in debug mode
       --expand                   default to expand when rotating
       --filter                   default filter to use when resizing
       --help                     show this help information
@@ -123,9 +123,9 @@ To see a list of all available options, run
       --max_requests             max concurrent requests (default 40)
       --operation                default operation to perform
       --optimize                 default to optimize when saving
-      --prog                     progressive image saving (default 0 - disabled, 1 - enabled)
       --port                     run on the given port (default 8888)
       --position                 default cropping position
+      --progressive              default to progressive when saving
       --quality                  default jpeg quality, 0-100
       --timeout                  timeout of requests in seconds (default 10)
       --validate_cert            validate certificates (default True)
@@ -553,6 +553,7 @@ Changelog
 -  1.0.1: Added allowed operations and default operation
 -  1.0.2: Modified to allow override of http content type
 -  1.0.3: Safely catch image save errors
+-  1.0.4: Added progressive option
 
 TODO
 ====

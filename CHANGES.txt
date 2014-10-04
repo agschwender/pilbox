@@ -36,3 +36,4 @@
   * 1.0.1: Added allowed operations and default operation
   * 1.0.2: Modified to allow override of http content type
   * 1.0.3: Safely catch image save errors
+  * 1.0.4: Added progressive option
