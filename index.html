@@ -123,6 +123,7 @@ Options:
   --optimize                 default to optimize when saving
   --port                     run on the given port (default 8888)
   --position                 default cropping position
+  --progressive              default to progressive when saving
   --quality                  default jpeg quality, 0-100
   --timeout                  timeout of requests in seconds (default 10)
   --validate_cert            validate certificates (default True)
@@ -252,6 +253,8 @@ Options:
 <li>
 <em>opt</em>: The output should be optimized, only relevant to JPEGs and PNGs</li>
 <li>
+<em>prog</em>: Enable progressive output, only relevant to JPEGs</li>
+<li>
 <em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
 </ul><h2>
 <a name="region-parameters" class="anchor" href="#region-parameters"><span class="octicon octicon-link"></span></a>Region Parameters</h2>
@@ -271,6 +274,8 @@ Options:
 </li>
 <li>
 <em>opt</em>: The output should be optimized, only relevant to JPEGs and PNGs</li>
+<li>
+<em>prog</em>: Enable progressive output, only relevant to JPEGs</li>
 <li>
 <em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
 <li>
@@ -297,6 +302,8 @@ Options:
 </li>
 <li>
 <em>opt</em>: The output should be optimized, only relevant to JPEGs and PNGs</li>
+<li>
+<em>prog</em>: Enable progressive output, only relevant to JPEGs</li>
 <li>
 <em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
 </ul><h2>
@@ -525,6 +532,8 @@ if __name__ == "__main__":
 <li>1.0.0: Modified for easier library usage</li>
 <li>1.0.1: Added allowed operations and default operation</li>
 <li>1.0.2: Modified to allow override of http content type</li>
+<li>1.0.3: Safely catch image save errors</li>
+<li>1.0.4: Added progressive option</li>
 </ul><h1>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
