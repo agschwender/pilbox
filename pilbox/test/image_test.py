@@ -176,7 +176,7 @@ class ImageTest(unittest.TestCase):
 
     def test_valid_default_options_with_empty_values(self):
         opts = dict(mode=None, filter=None, background=None, optimize=None,
-                    position=None, quality=None)
+                    position=None, quality=None, progressive=None)
         Image.validate_options(opts)
 
     def test_nonimage_file(self):
@@ -243,6 +243,11 @@ class ImageTest(unittest.TestCase):
         self.assertRaises(
             errors.OptimizeError, Image.validate_options, dict(optimize="b"))
 
+    def test_bad_progressive_invalid_bool(self):
+        self.assertRaises(errors.ProgressiveError,
+                          Image.validate_options,
+                          dict(progressive="b"))
+
     def test_color_hex_to_dec_tuple(self):
         tests  = [["fff", (255, 255, 255)],
                   ["ccc", (204, 204, 204)],
@@ -272,6 +277,7 @@ class ImageTest(unittest.TestCase):
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
+                progressive=case.get("progressive"),
                 quality=case.get("quality"))
 
             with open(case["expected_path"], "rb") as expected:
@@ -288,6 +294,7 @@ class ImageTest(unittest.TestCase):
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
+                progressive=case.get("progressive"),
                 quality=case.get("quality"))
 
             with open(case["expected_path"], "rb") as expected:
@@ -302,6 +309,7 @@ class ImageTest(unittest.TestCase):
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
+                progressive=case.get("progressive"),
                 quality=case.get("quality"))
 
             with open(case["expected_path"], "rb") as expected:
@@ -359,6 +367,8 @@ def _get_advanced_criteria_combinations():
               fields=["mode", "size", "quality"]),
          dict(values=[["crop"], [(125, 75)], [1, 0]],
               fields=["mode", "size", "optimize"]),
+         dict(values=[["crop"], [(125, 75)], [1, 0]],
+              fields=["mode", "size", "progressive"]),
          dict(values=[Image.MODES, [(125, None), (None, 125)]],
               fields=["mode", "size"]),
          dict(values=[["crop"], [(125, 75)], Image.FORMATS],
@@ -391,13 +401,14 @@ def _criteria_to_resize_case(filename, criteria):
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
     fields = ["mode", "filter", "quality", "background",
-              "position", "optimize"]
-    opts = filter(bool, [criteria.get(x) for x in fields])
+              "position", "optimize", "progressive"]
+    opts = dict((x, criteria.get(x)) for x in fields if criteria.get(x))
+    opts_desc = "-".join(["%s=%s" % (k, str(x)) for k, x in opts.items()])
     expected = "%s-%sx%s%s.%s" \
         % (m.group(1),
            criteria.get("width") or "",
            criteria.get("height") or "",
-           ("-%s" % "-".join([str(x) for x in opts])) if opts else "",
+           ("-%s" % opts_desc) if opts_desc else "",
            criteria.get("format") or m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case
@@ -410,10 +421,11 @@ def _criteria_to_rotate_case(filename, criteria):
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
     fields = ["degree", "expand"]
-    opts = filter(bool, [criteria.get(x) for x in fields])
+    opts = dict((x, criteria.get(x)) for x in fields if criteria.get(x))
+    opts_desc = "-".join(["%s=%s" % (k, str(x)) for k, x in opts.items()])
     expected = "%s-rotate%s.%s" \
         % (m.group(1),
-           ("-%s" % "-".join([str(x) for x in opts])) if opts else "",
+           ("-%s" % opts_desc) if opts else "",
            criteria.get("format") or m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case
@@ -426,10 +438,11 @@ def _criteria_to_region_case(filename, criteria):
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
     fields = ["rect"]
-    opts = filter(bool, [criteria.get(x) for x in fields])
+    opts = dict((x, criteria.get(x)) for x in fields if criteria.get(x))
+    opts_desc = "-".join(["%s=%s" % (k, str(x)) for k, x in opts.items()])
     expected = "%s-region%s.%s" \
         % (m.group(1),
-           ("-%s" % "-".join([str(x) for x in opts])) if opts else "",
+           ("-%s" % opts_desc) if opts else "",
            criteria.get("format") or m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case
@@ -442,13 +455,14 @@ def _criteria_to_chained_case(filename, criteria):
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
     fields = ["degree", "rect"]
-    opts = filter(bool, [criteria.get(x) for x in fields])
+    opts = dict((x, criteria.get(x)) for x in fields if criteria.get(x))
+    opts_desc = "-".join(["%s=%s" % (k, str(x)) for k, x in opts.items()])
     expected = "%s-chained-%s-%sx%s%s.%s" \
         % (m.group(1),
            ",".join(criteria.get("operation", [])),
            criteria.get("width") or "",
            criteria.get("height") or "",
-           ("-%s" % "-".join([str(x) for x in opts])) if opts else "",
+           ("-%s" % opts_desc) if opts else "",
            m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case

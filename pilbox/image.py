@@ -141,10 +141,9 @@ class Image(object):
                 or int(opts["quality"]) > 100 or int(opts["quality"]) < 0:
             raise errors.QualityError(
                 "Invalid quality: %s", str(opts["quality"]))
-        elif not Image._isint(opts["progressive"]) \
-                or int(opts["progressive"]) < 0:
-            raise errors.QualityError(
-                "Invalid progressive mode: %s", str(opts["progressive"]))
+        elif opts["progressive"] and not Image._isint(opts["progressive"]):
+            raise errors.ProgressiveError(
+                "Invalid progressive: %s", str(opts["progressive"]))
 
     def region(self, rect):
         """ Selects a sub-region of the image using the supplied rectangle,
@@ -368,9 +367,7 @@ def main():
            metavar="|".join(Image.FORMATS), type=str)
     define("optimize", help="default to optimize when saving", type=int)
     define("quality", help="default jpeg quality, 0-100", type=int)
-    define("prog", help="progressive image saving, "
-                        "default 0 - disabled, 1 - enabled",
-           type=int, default=0)
+    define("progressive", help="default to progressive when saving", type=int)
 
     args = parse_command_line()
     if not args:
@@ -411,7 +408,7 @@ def main():
     stream = image.save(format=options.format,
                         optimize=options.optimize,
                         quality=options.quality,
-                        progressive=options.prog)
+                        progressive=options.progressive)
     sys.stdout.write(stream.read())
     stream.close()
 
