@@ -46,6 +46,7 @@ def main():
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
+                progressive=case.get("progressive"),
                 quality=case.get("quality"))
 
             with open(case["expected_path"], "wb") as expected:
@@ -62,11 +63,11 @@ def main():
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
+                progressive=case.get("progressive"),
                 quality=case.get("quality"))
 
             with open(case["expected_path"], "wb") as expected:
                 expected.write(rv.read())
-
 
     cases = image_test.get_image_region_cases()
     for case in cases:
@@ -77,11 +78,11 @@ def main():
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
+                progressive=case.get("progressive"),
                 quality=case.get("quality"))
 
             with open(case["expected_path"], "wb") as expected:
                 expected.write(rv.read())
-
 
     cases = image_test.get_image_chained_cases()
     for case in cases:

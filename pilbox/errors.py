@@ -102,6 +102,12 @@ class OptimizeError(BadRequestError):
         return 12
 
 
+class ProgressiveError(BadRequestError):
+    @staticmethod
+    def get_code():
+        return 13
+
+
 class FetchError(PilboxError):
     def __init__(self, msg=None, *args, **kwargs):
         super(FetchError, self).__init__(404, msg, *args, **kwargs)

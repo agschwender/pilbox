@@ -70,6 +70,7 @@ define("mode", help="default mode to use when resizing")
 define("operation", help="default operation to perform")
 define("optimize", help="default to optimize when saving", type=int)
 define("position", help="default cropping position")
+define("progressive", help="default to progressive when saving", type=int)
 define("quality", help="default jpeg quality, 0-100", type=int)
 
 logger = logging.getLogger("tornado.application")
@@ -93,6 +94,7 @@ class PilboxApplication(tornado.web.Application):
             operation=options.operation,
             optimize=options.optimize,
             position=options.position,
+            progressive=options.progressive,
             quality=options.quality,
             max_requests=options.max_requests,
             timeout=options.timeout,
@@ -248,7 +250,8 @@ class ImageHandler(tornado.web.RequestHandler):
         return self._get_options(
             dict(format=self.get_argument("fmt"),
                  optimize=self.get_argument("opt"),
-                 quality=self.get_argument("q")))
+                 quality=self.get_argument("q"),
+                 progressive=self.get_argument("prog")))
 
     def _get_options(self, opts):
         for k, v in opts.items():
