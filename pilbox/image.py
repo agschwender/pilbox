@@ -195,6 +195,7 @@ class Image(object):
 
         format - The format to save as: see Image.FORMATS
         optimize - The image file size should be optimized
+        progressive - The output should be progressive JPEG
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
         opts = Image._normalize_options(kwargs)

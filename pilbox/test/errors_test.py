@@ -10,9 +10,9 @@ class ErrorsTest(unittest.TestCase):
     def test_unique_error_codes(self):
         errors = [SignatureError, ClientError, HostError, BackgroundError,
                   DimensionsError, FilterError, FormatError, ModeError,
-                  OptimizeError, PositionError, QualityError, UrlError,
-                  ImageFormatError, FetchError, DegreeError, OperationError,
-                  RectangleError]
+                  OptimizeError, PositionError, ProgressiveError, QualityError,
+                  UrlError, ImageFormatError, ImageSaveError, FetchError,
+                  DegreeError, OperationError, RectangleError]
         codes = []
         for error in errors:
             code = str(error.get_code())

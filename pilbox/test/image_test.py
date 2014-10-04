@@ -268,6 +268,11 @@ class ImageTest(unittest.TestCase):
         for color in ["9", "99", "99999", "9999999", "999999999"]:
             self.assertRaises(AssertionError, color_hex_to_dec_tuple, color)
 
+    def test_save_failure(self):
+        img = Image(os.path.join(DATADIR, 'test5.gif'))
+        self.assertRaises(errors.ImageSaveError,
+                          lambda: img.save(format="webp"))
+
     def _assert_expected_resize(self, case):
         with open(case["source_path"], "rb") as f:
             img = Image(f).resize(
