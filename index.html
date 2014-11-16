@@ -32,17 +32,17 @@
 
         <section id="main_content">
           <h1>
-<a name="pilbox" class="anchor" href="#pilbox"><span class="octicon octicon-link"></span></a>Pilbox</h1>
+<a id="pilbox" class="anchor" href="#pilbox" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pilbox</h1>
 
 <p><a href="https://pypi.python.org/pypi/pilbox"><img src="https://pypip.in/v/pilbox/badge.png" alt="PyPi version"></a> <a href="https://travis-ci.org/agschwender/pilbox"><img src="https://travis-ci.org/agschwender/pilbox.png" alt="Build Status"></a> <a href="https://coveralls.io/r/agschwender/pilbox"><img src="https://coveralls.io/repos/agschwender/pilbox/badge.png" alt="Coverage Status"></a> <a href="https://pypi.python.org/pypi/pilbox"><img src="https://pypip.in/d/pilbox/badge.png" alt="Downloads"></a></p>
 
-<p>Pilbox is an image resizing application server built on Python's <a href="http://www.tornadoweb.org/en/stable/">Tornado web framework</a> using the <a href="https://pypi.python.org/pypi/Pillow/2.1.0">Python Imaging Library (Pillow)</a>. It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.</p>
+<p>Pilbox is an image processing application server built on Python's <a href="http://www.tornadoweb.org/en/stable/">Tornado web framework</a> using the <a href="https://pypi.python.org/pypi/Pillow/2.1.0">Python Imaging Library (Pillow)</a>. It is not intended to be the primary source of images, but instead acts as a proxy which requests images and resizes them as desired.</p>
 
 <h1>
-<a name="setup" class="anchor" href="#setup"><span class="octicon octicon-link"></span></a>Setup</h1>
+<a id="setup" class="anchor" href="#setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup</h1>
 
 <h2>
-<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependencies</h2>
 
 <ul>
 <li>&gt;= <a href="http://www.python.org/download/">Python 2.7</a>
@@ -51,9 +51,13 @@
 <li><a href="https://pypi.python.org/pypi/tornado/3.1.1">Tornado 3.1.1</a></li>
 <li>
 <a href="http://opencv.org/">OpenCV 2.x</a> (optional)</li>
+<li>
+<a href="http://pycurl.sourceforge.net/">PycURL 7.x</a> (optional; required for proxy requests)</li>
 <li>Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev, zlib1g-dev</li>
-</ul><h2>
-<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+</ul>
+
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
 
 <p>Pilbox can be installed with pip</p>
 
@@ -87,7 +91,7 @@ $ vagrant provision
 </code></pre>
 
 <h1>
-<a name="running" class="anchor" href="#running"><span class="octicon octicon-link"></span></a>Running</h1>
+<a id="running" class="anchor" href="#running" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running</h1>
 
 <p>To run the application, issue the following command</p>
 
@@ -124,28 +128,28 @@ Options:
   --port                     run on the given port (default 8888)
   --position                 default cropping position
   --progressive              default to progressive when saving
+  --proxy_host               proxy hostname
+  --proxy_port               proxy port
   --quality                  default jpeg quality, 0-100
   --timeout                  timeout of requests in seconds (default 10)
   --validate_cert            validate certificates (default True)
 </code></pre>
 
 <h1>
-<a name="calling" class="anchor" href="#calling"><span class="octicon octicon-link"></span></a>Calling</h1>
+<a id="calling" class="anchor" href="#calling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Calling</h1>
 
-<p>To use the image resizing service, include the application url as you would any other image. E.g. this image url</p>
+<p>To use the image processing service, include the application url as you would any other image. E.g. this image url</p>
 
-<div class="highlight highlight-html"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://i.imgur.com/zZ8XmBA.jpg"</span> <span class="nt">/&gt;</span>
-</pre></div>
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-eoa">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>http://i.imgur.com/zZ8XmBA.jpg<span class="pl-pds">"</span></span> /&gt;</pre></div>
 
 <p>Would be replaced with this image url</p>
 
-<div class="highlight highlight-html"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg&amp;w=300&amp;h=300&amp;mode=crop"</span> <span class="nt">/&gt;</span>
-</pre></div>
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-eoa">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg<span class="pl-ii">&amp;</span>w=300<span class="pl-ii">&amp;</span>h=300<span class="pl-ii">&amp;</span>mode=crop<span class="pl-pds">"</span></span> /&gt;</pre></div>
 
 <p>This will request the image served at the supplied url and resize it to <code>300x300</code> using the <code>crop</code> mode. The below is the list of parameters that can be supplied to the service.</p>
 
 <h2>
-<a name="general-parameters" class="anchor" href="#general-parameters"><span class="octicon octicon-link"></span></a>General Parameters</h2>
+<a id="general-parameters" class="anchor" href="#general-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>General Parameters</h2>
 
 <ul>
 <li>
@@ -164,8 +168,10 @@ Options:
 <em>rotate</em>: Rotate the image</li>
 </ul>
 </li>
-</ul><h2>
-<a name="resize-parameters" class="anchor" href="#resize-parameters"><span class="octicon octicon-link"></span></a>Resize Parameters</h2>
+</ul>
+
+<h2>
+<a id="resize-parameters" class="anchor" href="#resize-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Resize Parameters</h2>
 
 <ul>
 <li>
@@ -256,8 +262,10 @@ Options:
 <em>prog</em>: Enable progressive output, only relevant to JPEGs</li>
 <li>
 <em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
-</ul><h2>
-<a name="region-parameters" class="anchor" href="#region-parameters"><span class="octicon octicon-link"></span></a>Region Parameters</h2>
+</ul>
+
+<h2>
+<a id="region-parameters" class="anchor" href="#region-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Region Parameters</h2>
 
 <ul>
 <li>
@@ -280,8 +288,10 @@ Options:
 <em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
 <li>
 <em>rect</em>: The region as x,y,w,h; x,y: top-left position, w,h: width/height of region</li>
-</ul><h2>
-<a name="rotate-parameters" class="anchor" href="#rotate-parameters"><span class="octicon octicon-link"></span></a>Rotate Parameters</h2>
+</ul>
+
+<h2>
+<a id="rotate-parameters" class="anchor" href="#rotate-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rotate Parameters</h2>
 
 <ul>
 <li>
@@ -306,15 +316,19 @@ Options:
 <em>prog</em>: Enable progressive output, only relevant to JPEGs</li>
 <li>
 <em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
-</ul><h2>
-<a name="security-related-parameters" class="anchor" href="#security-related-parameters"><span class="octicon octicon-link"></span></a>Security-related Parameters</h2>
+</ul>
+
+<h2>
+<a id="security-related-parameters" class="anchor" href="#security-related-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Security-related Parameters</h2>
 
 <ul>
 <li>
 <em>client</em>: The client name</li>
 <li>
 <em>sig</em>: The signature</li>
-</ul><p>The <code>url</code> parameter is always required as it dictates the image that will be manipulated. <code>op</code> is optional and defaults to <code>resize</code>. It also supports a comma separated list of operations, where each operation is applied in the order that it appears in the list. Depending on the operation, additional parameters are required.  All image manipulation requests accept <code>fmt</code>, <code>opt</code> and <code>q</code>. <code>fmt</code> is optional and defaults to the source image format. <code>opt</code> is optional and defaults to <code>0</code>.  <code>q</code> is optional and defaults to <code>90</code>. To ensure security, all requests also support, <code>client</code> and <code>sig</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
+</ul>
+
+<p>The <code>url</code> parameter is always required as it dictates the image that will be manipulated. <code>op</code> is optional and defaults to <code>resize</code>. It also supports a comma separated list of operations, where each operation is applied in the order that it appears in the list. Depending on the operation, additional parameters are required.  All image manipulation requests accept <code>fmt</code>, <code>opt</code> and <code>q</code>. <code>fmt</code> is optional and defaults to the source image format. <code>opt</code> is optional and defaults to <code>0</code>.  <code>q</code> is optional and defaults to <code>90</code>. To ensure security, all requests also support, <code>client</code> and <code>sig</code>. <code>client</code> is required only if the <code>client_name</code> is defined within the configuration file. Likewise, <code>sig</code> is required only if the <code>client_key</code> is defined within the configuration file. See the <a href="#signing">signing section</a> for details on how to generate the signature.</p>
 
 <p>For resizing, either the <code>w</code> or <code>h</code> parameter is required. If only one dimension is specified, the application will determine the other dimension using the aspect ratio. <code>mode</code> is optional and defaults to <code>crop</code>. <code>filter</code> is optional and defaults to <code>antialias</code>.  <code>bg</code> is optional and defaults to <code>fff</code>. <code>pos</code> is optional and defaults to <code>center</code>.</p>
 
@@ -323,40 +337,40 @@ Options:
 <p>Note, all built-in defaults can be overridden by setting them in the configuration file. See the <a href="#configuration">configuration section</a> for more details.</p>
 
 <h1>
-<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h1>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h1>
 
 <p>The following images show the various resizing modes in action for an original image size of <code>640x428</code> that is being resized to <code>500x400</code>.</p>
 
 <h2>
-<a name="clip" class="anchor" href="#clip"><span class="octicon octicon-link"></span></a>Clip</h2>
+<a id="clip" class="anchor" href="#clip" aria-hidden="true"><span class="octicon octicon-link"></span></a>Clip</h2>
 
 <p>The image is resized to fit within a <code>500x400</code> box, maintaining aspect ratio and producing an image that is <code>500x334</code>. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.</p>
 
 <p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-clip.jpg" alt="Clipped image"></p>
 
 <h2>
-<a name="crop" class="anchor" href="#crop"><span class="octicon octicon-link"></span></a>Crop</h2>
+<a id="crop" class="anchor" href="#crop" aria-hidden="true"><span class="octicon octicon-link"></span></a>Crop</h2>
 
 <p>The image is resized so that one dimension fits within the <code>500x400</code> box. It is then centered and the excess is cut from the image. Cropping is useful when the position of the subject is known and the image must be exactly the supplied size.</p>
 
 <p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-crop.jpg" alt="Cropped image"></p>
 
 <h2>
-<a name="fill" class="anchor" href="#fill"><span class="octicon octicon-link"></span></a>Fill</h2>
+<a id="fill" class="anchor" href="#fill" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fill</h2>
 
 <p>Similar to clip, fill resizes the image to fit within a <code>500x400</code> box. Once clipped, the image is centered within the box and all left over space is filled with the supplied background color. Filling is useful when no portion of the image can be lost and it must be exactly the supplied size.</p>
 
 <p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-fill-ccc.jpg" alt="Filled image"></p>
 
 <h2>
-<a name="scale" class="anchor" href="#scale"><span class="octicon octicon-link"></span></a>Scale</h2>
+<a id="scale" class="anchor" href="#scale" aria-hidden="true"><span class="octicon octicon-link"></span></a>Scale</h2>
 
 <p>The image is clipped to fit within the <code>500x400</code> box and then stretched to fill the excess space. Scaling is often not useful in production environments as it generally produces poor quality images. This mode is largely included for completeness.</p>
 
 <p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-scale.jpg" alt="Scale image"></p>
 
 <h1>
-<a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h1>
+<a id="testing" class="anchor" href="#testing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Testing</h1>
 
 <p>To run all tests, issue the following command</p>
 
@@ -369,23 +383,22 @@ Options:
 </code></pre>
 
 <h1>
-<a name="signing" class="anchor" href="#signing"><span class="octicon octicon-link"></span></a>Signing</h1>
+<a id="signing" class="anchor" href="#signing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Signing</h1>
 
 <p>In order to secure requests so that unknown third parties cannot easily use the resize service, the application can require that requests provide a signature. To enable this feature, set the <code>client_key</code> option. The signature is a hexadecimal digest generated from the client key and the query string using the HMAC-SHA1 message authentication code (MAC) algorithm. The below python code provides an example implementation.</p>
 
-<div class="highlight highlight-python"><pre><span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">import</span> <span class="nn">hmac</span>
+<div class="highlight highlight-python"><pre><span class="pl-k">import</span> hashlib
+<span class="pl-k">import</span> hmac
 
-<span class="k">def</span> <span class="nf">derive_signature</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">qs</span><span class="p">):</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">)</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">qs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-</pre></div>
+<span class="pl-s">def</span> <span class="pl-enf">derive_signature</span>(<span class="pl-vpf">key</span>, <span class="pl-vpf">qs</span>):
+    m <span class="pl-ko">=</span> hmac.new(key, <span class="pl-c1">None</span>, hashlib.sha1)
+    m.update(qs)
+    <span class="pl-k">return</span> m.hexdigest()</pre></div>
 
 <p>The signature is passed to the application by appending the <code>sig</code> parameter to the query string; e.g. <code>x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a0c797ef26</code>. Note, the application does not include the leading question mark when verifying the supplied signature. To verify your signature implementation, see the <code>pilbox.signature</code> command described in the <a href="#tools">tools section</a>.</p>
 
 <h1>
-<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h1>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h1>
 
 <p>All options that can be supplied to the application via the command line, can also be specified in the configuration file. Configuration files are simply python files that define the options as variables. The below is an example configuration.</p>
 
@@ -422,7 +435,7 @@ quality = 90
 </code></pre>
 
 <h1>
-<a name="tools" class="anchor" href="#tools"><span class="octicon octicon-link"></span></a>Tools</h1>
+<a id="tools" class="anchor" href="#tools" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tools</h1>
 
 <p>To verify that your client application is generating correct signatures, use the signature command.</p>
 
@@ -443,7 +456,7 @@ Signed Query String: x=1&amp;y=2&amp;z=3&amp;sig=c9516346abf62876b6345817dba2f9a
 </code></pre>
 
 <h1>
-<a name="deploying" class="anchor" href="#deploying"><span class="octicon octicon-link"></span></a>Deploying</h1>
+<a id="deploying" class="anchor" href="#deploying" aria-hidden="true"><span class="octicon octicon-link"></span></a>Deploying</h1>
 
 <p>The application itself does not include any caching. It is recommended that the application run behind a CDN for larger applications or behind varnish for smaller ones.</p>
 
@@ -455,7 +468,7 @@ quality = 75
 </code></pre>
 
 <h1>
-<a name="extension" class="anchor" href="#extension"><span class="octicon octicon-link"></span></a>Extension</h1>
+<a id="extension" class="anchor" href="#extension" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extension</h1>
 
 <p>While it is generally recommended to use Pilbox as a standalone server, it can also be used as a library. To extend from it and build a custom image processing server, use the following example.</p>
 
@@ -492,7 +505,7 @@ if __name__ == "__main__":
 </code></pre>
 
 <h1>
-<a name="changelog" class="anchor" href="#changelog"><span class="octicon octicon-link"></span></a>Changelog</h1>
+<a id="changelog" class="anchor" href="#changelog" aria-hidden="true"><span class="octicon octicon-link"></span></a>Changelog</h1>
 
 <ul>
 <li>0.1: Image resizing fit</li>
@@ -534,8 +547,11 @@ if __name__ == "__main__":
 <li>1.0.2: Modified to allow override of http content type</li>
 <li>1.0.3: Safely catch image save errors</li>
 <li>1.0.4: Added progressive option</li>
-</ul><h1>
-<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
+<li>1.1.0: Proxy server support</li>
+</ul>
+
+<h1>
+<a id="todo" class="anchor" href="#todo" aria-hidden="true"><span class="octicon octicon-link"></span></a>TODO</h1>
 
 <ul>
 <li>How to reconcile unavailable color profiles?</li>
