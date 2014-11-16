@@ -175,8 +175,8 @@ class ImageHandler(tornado.web.RequestHandler):
                     url,
                     request_timeout=self.settings.get("timeout"),
                     validate_cert=self.settings.get("validate_cert"),
-                    proxy_host=self.settings.proxy_host,
-                    proxy_port=self.settings.proxy_port)
+                    proxy_host=self.settings.get("proxy_host"),
+                    proxy_port=self.settings.get("proxy_port"))
             else:
                 resp = yield client.fetch(
                     url,
