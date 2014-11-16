@@ -116,7 +116,7 @@ class PilboxApplication(tornado.web.Application):
         if settings.get("proxy_host") and pycurl is None:  # pragma: no cover
             raise Exception("PycURL is required for proxy requests")
 
-        if pycurl is not None:
+        if pycurl is not None:  # pragma: no cover
             tornado.httpclient.AsyncHTTPClient.configure(
                 "tornado.curl_httpclient.CurlAsyncHTTPClient")
 

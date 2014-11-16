@@ -497,22 +497,3 @@ class AppSlowTest(AsyncHTTPTestCase, _AppAsyncMixin):
         qs = urlencode(dict(url=url, w=1, h=1))
         resp = self.fetch_error(404, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), errors.FetchError.get_code())
-
-
-class AppProxyTest(AsyncHTTPTestCase, _AppAsyncMixin):
-    def get_app(self):
-        return _PilboxTestApplication(
-            proxy_host="localhost",
-            proxy_port=3128)
-
-    @unittest.skipIf(pycurl is None, "PycURL is not installed")
-    def test_valid(self):
-        cases = self.get_image_resize_cases()
-        for case in cases:
-            if case.get("mode") == "crop" and case.get("position") == "face":
-                continue
-            qs = urlencode(case["source_query_params"])
-            resp = self.fetch_success("/?%s" % qs)
-            msg = "/?%s does not match %s" % (qs, case["expected_path"])
-            with open(case["expected_path"], "rb") as expected:
-                self.assertEqual(resp.buffer.read(), expected.read(), msg)
