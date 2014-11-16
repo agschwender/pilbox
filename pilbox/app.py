@@ -103,7 +103,6 @@ class PilboxApplication(tornado.web.Application):
             implicit_base_url=options.implicit_base_url,
             validate_cert=options.validate_cert,
             content_type_from_image=options.content_type_from_image,
-            use_proxy=options.use_proxy,
             proxy_host=options.proxy_host,
             proxy_port=options.proxy_port)
 
