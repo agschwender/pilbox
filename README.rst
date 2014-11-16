@@ -14,7 +14,7 @@ Pilbox
     :target: https://pypi.python.org/pypi/pilbox
 
 
-Pilbox is an image resizing application server built on Python's
+Pilbox is an image processing application server built on Python's
 `Tornado web framework <http://www.tornadoweb.org/en/stable/>`_ using
 the `Python Imaging Library
 (Pillow) <https://pypi.python.org/pypi/Pillow/>`_. It is not
@@ -31,6 +31,7 @@ Dependencies
 -  `Pillow 2.4.0 <https://pypi.python.org/pypi/Pillow/2.4.0>`_
 -  `Tornado 3.2.1 <https://pypi.python.org/pypi/tornado/3.2.1>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
+-  `PycURL 7.x <http://pycurl.sourceforge.net/>`_ (optional; required for proxy requests)
 -  Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev,
    zlib1g-dev, liblcms2-dev
 
@@ -126,6 +127,8 @@ To see a list of all available options, run
       --port                     run on the given port (default 8888)
       --position                 default cropping position
       --progressive              default to progressive when saving
+      --proxy_host               proxy hostname
+      --proxy_port               proxy port
       --quality                  default jpeg quality, 0-100
       --timeout                  timeout of requests in seconds (default 10)
       --validate_cert            validate certificates (default True)
@@ -134,7 +137,7 @@ To see a list of all available options, run
 Calling
 =======
 
-To use the image resizing service, include the application url as you
+To use the image processing service, include the application url as you
 would any other image. E.g. this image url
 
 ::
@@ -155,7 +158,7 @@ General Parameters
 ------------------
 
 -  *url*: The url of the image to be resized
--  *op*: The operation to perform: noop, resize (default), rotate
+-  *op*: The operation to perform: noop, region, resize (default), rotate
 
    -  *noop*: No operation is performed, image is returned as it is
       received
