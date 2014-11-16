@@ -107,7 +107,7 @@ class PilboxApplication(tornado.web.Application):
             proxy_port=options.proxy_port)
 
         if options.proxy_host:
-            # Use the CURL client (which is more efficient and proxy-aware) 
+            # Use the CURL client (which is more efficient and proxy-aware)
             # when specifying a proxy
             tornado.httpclient.AsyncHTTPClient.configure(
                 "tornado.curl_httpclient.CurlAsyncHTTPClient")
