@@ -55,6 +55,8 @@ define("max_requests", help="max concurrent requests", type=int, default=40)
 define("timeout", help="request timeout in seconds", type=float, default=10)
 define("implicit_base_url", help="prepend protocol/host to url paths")
 define("validate_cert", help="validate certificates", type=bool, default=True)
+define("proxy_host", help="proxy hostname", default=None)
+define("proxy_port", help="proxy port", type=int, default=3128)
 
 # header related settings
 define("content_type_from_image",
@@ -100,7 +102,15 @@ class PilboxApplication(tornado.web.Application):
             timeout=options.timeout,
             implicit_base_url=options.implicit_base_url,
             validate_cert=options.validate_cert,
-            content_type_from_image=options.content_type_from_image)
+            content_type_from_image=options.content_type_from_image,
+            use_proxy=options.use_proxy,
+            proxy_host=options.proxy_host,
+            proxy_port=options.proxy_port)
+
+        if options.proxy_host:
+            # Use the CURL client (which is more efficient and proxy-aware) when specifying a proxy
+            tornado.httpclient.AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+            
         settings.update(kwargs)
         tornado.web.Application.__init__(self, self.get_handlers(), **settings)
 
@@ -159,10 +169,18 @@ class ImageHandler(tornado.web.RequestHandler):
         client = tornado.httpclient.AsyncHTTPClient(
             max_clients=self.settings.get("max_requests"))
         try:
-            resp = yield client.fetch(
-                url,
-                request_timeout=self.settings.get("timeout"),
-                validate_cert=self.settings.get("validate_cert"))
+            if self.settings.proxy_host:
+                resp = yield client.fetch(
+                    url,
+                    request_timeout=self.settings.get("timeout"),
+                    validate_cert=self.settings.get("validate_cert"),
+                    proxy_host=self.settings.proxy_host,
+                    proxy_port=self.settings.proxy_port)
+            else:
+                resp = yield client.fetch(
+                    url,
+                    request_timeout=self.settings.get("timeout"),
+                    validate_cert=self.settings.get("validate_cert"))
             raise tornado.gen.Return(resp)
         except (socket.gaierror, tornado.httpclient.HTTPError) as e:
             logger.warn("Fetch error for %s: %s"
