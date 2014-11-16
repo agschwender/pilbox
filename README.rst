@@ -557,6 +557,7 @@ Changelog
 -  1.0.2: Modified to allow override of http content type
 -  1.0.3: Safely catch image save errors
 -  1.0.4: Added progressive option
+-  1.1.0: Proxy server support
 
 TODO
 ====

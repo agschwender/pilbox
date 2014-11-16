@@ -11,7 +11,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install libjpeg8-dev libfreetype6-dev zlib1g-dev
   - sudo apt-get install libwebp-dev liblcms2-dev
-  - sudo apt-get install python-numpy python-opencv
+  - sudo apt-get install python-numpy python-opencv python-pycurl
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install --use-mirrors unittest2; fi
   - pip install --use-mirrors tornado==3.2.1 Pillow==2.4.0 coveralls

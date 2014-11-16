@@ -21,7 +21,7 @@ class PilboxTest(Command):
 
 
 setup(name='pilbox',
-      version='1.0.4',
+      version='1.1.0',
       description='Pilbox is an image resizing application server built on the Tornado web framework using the Pillow Imaging Library',
       long_description=readme,
       classifiers=[
@@ -47,6 +47,10 @@ setup(name='pilbox',
         'Pillow==2.4.0',
         'sphinx-me==0.2.1',
         ],
+      extras_require = {
+          'Proxy': ['pycurl'],
+          'Facial Recognition': ['cv']
+      },
       zip_safe=True,
       cmdclass={'test': PilboxTest},
       entry_points = {'console_scripts': ['pilbox = pilbox.app:main']}
