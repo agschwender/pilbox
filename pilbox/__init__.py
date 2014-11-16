@@ -58,13 +58,14 @@ Versions:
   * 1.0.2: Modified to allow override of http content type
   * 1.0.3: Safely catch image save errors
   * 1.0.4: Added progressive option
+  * 1.1.0: Proxy server support
 """
 
 # human-readable version number
-version = "1.0.4"
+version = "1.1.0"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 0, 4, 0)
+version_info = (1, 1, 0, 0)

@@ -38,6 +38,7 @@
         - python-pip
         - python-numpy
         - python-opencv
+        - python-pycurl
         - libjpeg-dev
         - libfreetype6-dev
         - zlib1g-dev
@@ -64,6 +65,9 @@
   sudo: True
 
   tasks:
+    - name: install squid for proxy testing
+      apt: name=squid
+
     - name: copy pilbox init script
       copy: src=files/etc/init.d/pilbox dest=/etc/init.d/pilbox mode=0755
       notify:

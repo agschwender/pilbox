@@ -37,6 +37,11 @@ try:
 except ImportError:
     from urllib.parse import urlparse, urljoin
 
+try:
+    import pycurl
+except ImportError:
+    pycurl = None
+
 
 # general settings
 define("config", help="path to configuration file",
@@ -55,6 +60,8 @@ define("max_requests", help="max concurrent requests", type=int, default=40)
 define("timeout", help="request timeout in seconds", type=float, default=10)
 define("implicit_base_url", help="prepend protocol/host to url paths")
 define("validate_cert", help="validate certificates", type=bool, default=True)
+define("proxy_host", help="proxy hostname")
+define("proxy_port", help="proxy port", type=int)
 
 # header related settings
 define("content_type_from_image",
@@ -100,8 +107,19 @@ class PilboxApplication(tornado.web.Application):
             timeout=options.timeout,
             implicit_base_url=options.implicit_base_url,
             validate_cert=options.validate_cert,
-            content_type_from_image=options.content_type_from_image)
+            content_type_from_image=options.content_type_from_image,
+            proxy_host=options.proxy_host,
+            proxy_port=options.proxy_port)
+
         settings.update(kwargs)
+
+        if settings.get("proxy_host") and pycurl is None:  # pragma: no cover
+            raise Exception("PycURL is required for proxy requests")
+
+        if pycurl is not None:
+            tornado.httpclient.AsyncHTTPClient.configure(
+                "tornado.curl_httpclient.CurlAsyncHTTPClient")
+
         tornado.web.Application.__init__(self, self.get_handlers(), **settings)
 
     def get_handlers(self):
@@ -162,7 +180,9 @@ class ImageHandler(tornado.web.RequestHandler):
             resp = yield client.fetch(
                 url,
                 request_timeout=self.settings.get("timeout"),
-                validate_cert=self.settings.get("validate_cert"))
+                validate_cert=self.settings.get("validate_cert"),
+                proxy_host=self.settings.get("proxy_host"),
+                proxy_port=self.settings.get("proxy_port"))
             raise tornado.gen.Return(resp)
         except (socket.gaierror, tornado.httpclient.HTTPError) as e:
             logger.warn("Fetch error for %s: %s"
