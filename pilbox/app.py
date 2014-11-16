@@ -170,7 +170,7 @@ class ImageHandler(tornado.web.RequestHandler):
         client = tornado.httpclient.AsyncHTTPClient(
             max_clients=self.settings.get("max_requests"))
         try:
-            if "proxy_host" in self.settings:
+            if self.settings.get("proxy_host"):
                 resp = yield client.fetch(
                     url,
                     request_timeout=self.settings.get("timeout"),
