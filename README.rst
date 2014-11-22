@@ -129,7 +129,7 @@ To see a list of all available options, run
       --progressive              default to progressive when saving
       --proxy_host               proxy hostname
       --proxy_port               proxy port
-      --quality                  default jpeg quality, 0-100
+      --quality                  default jpeg quality, 0-100 or keep
       --timeout                  timeout of requests in seconds (default 10)
       --validate_cert            validate certificates (default True)
 
@@ -218,7 +218,8 @@ Resize Parameters
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
+-  *q*: The quality, (1-100) or keep, used to save the image, only relevant
+   to JPEGs
 -  *prog:* Progressive image saving.
 
 Region Parameters
@@ -233,7 +234,8 @@ Region Parameters
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
+-  *q*: The quality, (1-100) or keep, used to save the image, only relevant
+   to JPEGs
 -  *rect*: The region as x,y,w,h; x,y: top-left position, w,h:
    width/height of region
 
@@ -255,7 +257,8 @@ Rotate Parameters
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality (1-100) used to save the image, only relevant to JPEGs
+-  *q*: The quality, (1-100) or keep, used to save the image, only relevant
+   to JPEGs
 
 Security-related Parameters
 ---------------------------
@@ -566,6 +569,7 @@ Changelog
 -  1.0.4: Added progressive option
 -  1.1.0: Proxy server support
 -  1.1.1: Added JPEG auto rotation based on EXIF orientation
+-  1.1.2: Added keep JPEG quality option and set JPEG subsampling to keep
 
 TODO
 ====

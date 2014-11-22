@@ -376,7 +376,7 @@ def _get_advanced_criteria_combinations():
               fields=["mode", "size", "position"]),
          dict(values=[["crop"], [(125, 75)], Image.FILTERS],
               fields=["mode", "size", "filter"]),
-         dict(values=[["crop"], [(125, 75)], [50, 75, 90]],
+         dict(values=[["crop"], [(125, 75)], [50, 75, 90, "keep"]],
               fields=["mode", "size", "quality"]),
          dict(values=[["crop"], [(125, 75)], [1, 0]],
               fields=["mode", "size", "optimize"]),

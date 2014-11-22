@@ -145,8 +145,10 @@ class Image(object):
         elif opts["optimize"] and not Image._isint(opts["optimize"]):
             raise errors.OptimizeError(
                 "Invalid optimize: %s", str(opts["optimize"]))
-        elif not Image._isint(opts["quality"]) \
-                or int(opts["quality"]) > 100 or int(opts["quality"]) < 0:
+        elif opts["quality"] != "keep" \
+                and (not Image._isint(opts["quality"])
+                     or int(opts["quality"]) > 100
+                     or int(opts["quality"]) < 0):
             raise errors.QualityError(
                 "Invalid quality: %s", str(opts["quality"]))
         elif opts["progressive"] and not Image._isint(opts["progressive"]):
@@ -220,11 +222,23 @@ class Image(object):
             fmt = opts["pil"]["format"]
         else:
             fmt = self._orig_format
-        save_kwargs = dict(quality=int(opts["quality"]))
+        save_kwargs = dict()
+
+        if Image._isint(opts["quality"]):
+            save_kwargs["quality"] = int(opts["quality"])
+
         if int(opts["optimize"]):
             save_kwargs["optimize"] = True
+
         if int(opts["progressive"]):
             save_kwargs["progressive"] = True
+
+        if self._orig_format == "JPEG":
+            self.img.format = self._orig_format
+            save_kwargs["subsampling"] = "keep"
+            if opts["quality"] == "keep":
+                save_kwargs["quality"] = "keep"
+
         try:
             self.img.save(outfile, fmt, **save_kwargs)
         except IOError as e:
@@ -383,7 +397,7 @@ def main():
     define("format", help="default format to use when saving",
            metavar="|".join(Image.FORMATS), type=str)
     define("optimize", help="default to optimize when saving", type=int)
-    define("quality", help="default jpeg quality, 0-100", type=int)
+    define("quality", help="default jpeg quality, 0-100 or keep")
     define("progressive", help="default to progressive when saving", type=int)
 
     args = parse_command_line()

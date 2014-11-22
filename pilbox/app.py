@@ -78,7 +78,7 @@ define("operation", help="default operation to perform")
 define("optimize", help="default to optimize when saving", type=int)
 define("position", help="default cropping position")
 define("progressive", help="default to progressive when saving", type=int)
-define("quality", help="default jpeg quality, 0-100", type=int)
+define("quality", help="default jpeg quality, 0-100 or keep")
 
 logger = logging.getLogger("tornado.application")
 
