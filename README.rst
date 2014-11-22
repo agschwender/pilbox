@@ -241,6 +241,10 @@ Rotate Parameters
 -----------------
 
 -  *deg*: The desired rotation angle degrees
+
+   - *0-359*: The number of degrees to rotate (clockwise)
+   - *auto*: Auto rotation based on EXIF orientation, only relevant to JPEGs
+
 -  *expand*: Expand the size to include the full rotated image
 -  *fmt*: The output format to save as, defaults to the source format
 
@@ -561,6 +565,7 @@ Changelog
 -  1.0.3: Safely catch image save errors
 -  1.0.4: Added progressive option
 -  1.1.0: Proxy server support
+-  1.1.1: Added JPEG auto rotation based on EXIF orientation
 
 TODO
 ====

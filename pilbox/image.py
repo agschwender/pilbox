@@ -45,6 +45,12 @@ _positions_to_ratios = {
     "bottom-right": (1.0, 1.0), "face": None
     }
 
+_orientation_to_rotation = {
+    3: 180,
+    6: 90,
+    8: 270
+    }
+
 _filters_to_pil = {
     "antialias": PIL.Image.ANTIALIAS,
     "bicubic": PIL.Image.BICUBIC,
@@ -99,6 +105,8 @@ class Image(object):
     def validate_degree(deg):
         if deg is None or deg == "":
             raise errors.DegreeError("Missing degree")
+        elif deg == "auto":
+            return
         elif not Image._isint(deg):
             raise errors.DegreeError("Invalid degree: %s" % deg)
         elif int(deg) < 0 or int(deg) >= 360:
@@ -185,6 +193,14 @@ class Image(object):
         expand - Expand the output image to fit rotation
         """
         opts = Image._normalize_options(kwargs)
+
+        if deg == "auto":
+            if self._orig_format == "JPEG":
+                exif = self.img._getexif() or dict
+                deg = _orientation_to_rotation.get(exif.get(274, 0), 0)
+            else:
+                deg = 0
+
         expand = False if int(deg) % 90 == 0 else bool(int(opts["expand"]))
         self.img = self.img.rotate(360 - int(deg), expand=expand)
         return self
