@@ -43,8 +43,8 @@ setup(name='pilbox',
         'pilbox': ['frontalface.xml'],
         },
       install_requires=[
-        'tornado==3.2.1',
-        'Pillow==2.4.0',
+        'tornado==4.0.2',
+        'Pillow==2.6.1',
         'sphinx-me==0.2.1',
         ],
       extras_require = {

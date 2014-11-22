@@ -28,8 +28,8 @@ Dependencies
 ------------
 
 -  >= `Python 2.7 <http://www.python.org/download/>`_
--  `Pillow 2.4.0 <https://pypi.python.org/pypi/Pillow/2.4.0>`_
--  `Tornado 3.2.1 <https://pypi.python.org/pypi/tornado/3.2.1>`_
+-  `Pillow 2.6.1 <https://pypi.python.org/pypi/Pillow/2.6.1>`_
+-  `Tornado 4.0.2 <https://pypi.python.org/pypi/tornado/4.0.2>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
 -  `PycURL 7.x <http://pycurl.sourceforge.net/>`_ (optional; required for proxy requests)
 -  Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev,
