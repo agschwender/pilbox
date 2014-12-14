@@ -130,7 +130,7 @@ Options:
   --progressive              default to progressive when saving
   --proxy_host               proxy hostname
   --proxy_port               proxy port
-  --quality                  default jpeg quality, 0-100
+  --quality                  default jpeg quality, 0-100 or keep
   --timeout                  timeout of requests in seconds (default 10)
   --validate_cert            validate certificates (default True)
 </code></pre>
@@ -140,11 +140,11 @@ Options:
 
 <p>To use the image processing service, include the application url as you would any other image. E.g. this image url</p>
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-eoa">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>http://i.imgur.com/zZ8XmBA.jpg<span class="pl-pds">"</span></span> /&gt;</pre></div>
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>http://i.imgur.com/zZ8XmBA.jpg<span class="pl-pds">"</span></span> /&gt;</pre></div>
 
 <p>Would be replaced with this image url</p>
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-eoa">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg<span class="pl-ii">&amp;</span>w=300<span class="pl-ii">&amp;</span>h=300<span class="pl-ii">&amp;</span>mode=crop<span class="pl-pds">"</span></span> /&gt;</pre></div>
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">img</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>http://localhost:8888/?url=http%3A%2F%2Fi.imgur.com%2FzZ8XmBA.jpg<span class="pl-ii">&amp;</span>w=300<span class="pl-ii">&amp;</span>h=300<span class="pl-ii">&amp;</span>mode=crop<span class="pl-pds">"</span></span> /&gt;</pre></div>
 
 <p>This will request the image served at the supplied url and resize it to <code>300x300</code> using the <code>crop</code> mode. The below is the list of parameters that can be supplied to the service.</p>
 
@@ -261,7 +261,7 @@ Options:
 <li>
 <em>prog</em>: Enable progressive output, only relevant to JPEGs</li>
 <li>
-<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
+<em>q</em>: The quality, (1-100) or keep, used to save the image, only relevant to JPEGs</li>
 </ul>
 
 <h2>
@@ -285,7 +285,7 @@ Options:
 <li>
 <em>prog</em>: Enable progressive output, only relevant to JPEGs</li>
 <li>
-<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
+<em>q</em>: The quality, (1-100) or keep, used to save the image, only relevant to JPEGs</li>
 <li>
 <em>rect</em>: The region as x,y,w,h; x,y: top-left position, w,h: width/height of region</li>
 </ul>
@@ -295,7 +295,13 @@ Options:
 
 <ul>
 <li>
-<em>deg</em>: The desired rotation angle degrees</li>
+<em>deg</em>: The desired rotation angle degrees
+
+<ul>
+<li>0-359: The number of degrees to rotate (clockwise)</li>
+<li>auto: Auto rotation based on EXIF orientation, only relevant to JPEGs</li>
+</ul>
+</li>
 <li>
 <em>expand</em>: Expand the sizeto include the full rotated image</li>
 <li>
@@ -315,7 +321,7 @@ Options:
 <li>
 <em>prog</em>: Enable progressive output, only relevant to JPEGs</li>
 <li>
-<em>q</em>: The quality (1-100) used to save the image, only relevant to JPEGs</li>
+<em>q</em>: The quality, (1-100) or keep, used to save the image, only relevant to JPEGs</li>
 </ul>
 
 <h2>
@@ -390,8 +396,8 @@ Options:
 <div class="highlight highlight-python"><pre><span class="pl-k">import</span> hashlib
 <span class="pl-k">import</span> hmac
 
-<span class="pl-s">def</span> <span class="pl-enf">derive_signature</span>(<span class="pl-vpf">key</span>, <span class="pl-vpf">qs</span>):
-    m <span class="pl-ko">=</span> hmac.new(key, <span class="pl-c1">None</span>, hashlib.sha1)
+<span class="pl-st">def</span> <span class="pl-en">derive_signature</span>(<span class="pl-vpf">key</span>, <span class="pl-vpf">qs</span>):
+    m <span class="pl-k">=</span> hmac.new(key, <span class="pl-c1">None</span>, hashlib.sha1)
     m.update(qs)
     <span class="pl-k">return</span> m.hexdigest()</pre></div>
 
@@ -548,6 +554,9 @@ if __name__ == "__main__":
 <li>1.0.3: Safely catch image save errors</li>
 <li>1.0.4: Added progressive option</li>
 <li>1.1.0: Proxy server support</li>
+<li>1.1.1: Added JPEG auto rotation based on EXIF orientation</li>
+<li>1.1.2: Added keep JPEG quality option and set JPEG subsampling to keep</li>
+<li>1.1.3: Fix auto rotation on JPEG with missing EXIF data</li>
 </ul>
 
 <h1>
