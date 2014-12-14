@@ -61,13 +61,14 @@ Versions:
   * 1.1.0: Proxy server support
   * 1.1.1: Added JPEG auto rotation based on EXIF orientation
   * 1.1.2: Added keep JPEG quality option and set JPEG subsampling to keep
+  * 1.1.3: Fix auto rotation on JPEG with missing EXIF data
 """
 
 # human-readable version number
-version = "1.1.2"
+version = "1.1.3"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 1, 2, 0)
+version_info = (1, 1, 3, 0)

@@ -62,6 +62,7 @@ def get_image_rotate_cases():
 
     for criteria in criteria_combinations:
         cases.append(_criteria_to_rotate_case("test-orientation.jpg", criteria))
+        cases.append(_criteria_to_rotate_case("test1.jpg", criteria))
         cases.append(_criteria_to_rotate_case("test2.png", criteria))
 
     return list(filter(bool, cases))

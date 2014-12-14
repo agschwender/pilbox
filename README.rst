@@ -570,6 +570,7 @@ Changelog
 -  1.1.0: Proxy server support
 -  1.1.1: Added JPEG auto rotation based on EXIF orientation
 -  1.1.2: Added keep JPEG quality option and set JPEG subsampling to keep
+-  1.1.3: Fix auto rotation on JPEG with missing EXIF data
 
 TODO
 ====
