@@ -60,14 +60,11 @@
         - { name: 'sphinx-me', version: '0.2.1' }
 
 
-- hosts: app:!web
+- hosts: app
   user: ansible
   sudo: True
 
   tasks:
-    - name: install squid for proxy testing
-      apt: name=squid
-
     - name: copy pilbox init script
       copy: src=files/etc/init.d/pilbox dest=/etc/init.d/pilbox mode=0755
       notify:
@@ -82,40 +79,3 @@
   handlers:
     - name: restart pilbox
       service: name=pilbox state=restarted
-
-
-- hosts: web
-  user: ansible
-  sudo: True
-
-  tasks:
-    - name: update apt
-      apt: update_cache=yes cache_valid_time=3600
-
-    - name: install apt packages
-      apt: name="{{ item }}"
-      with_items:
-        - build-essential
-        - nginx-light
-        - supervisor
-        - varnish
-
-    - file: path=/var/log/supervisor mode=0755 state=directory
-
-    - name: copy default varnish
-      copy: src=files/etc/default/varnish dest=/etc/default/varnish mode=0644
-
-    - name: copy varnish vcl
-      copy: src=files/etc/varnish/default.vcl dest=/etc/varnish/default.vcl mode=0644
-
-    - name: copy varnish executable
-      copy: src=files/usr/local/bin/varnish.sh dest=/usr/local/bin/varnish.sh mode=0755
-
-    - name: copy nginx configuration
-      copy: src=files/etc/nginx/nginx.conf dest=/etc/nginx/nginx.conf mode=0644
-
-    - name: copy supervisor configuration
-      copy: >
-        src=files/etc/supervisor/conf.d/supervisord.conf
-        dest=/etc/supervisor/conf.d/supervisord.conf
-        mode=0644
