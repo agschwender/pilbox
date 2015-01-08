@@ -14,11 +14,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
 import sys
 import textwrap
 
 from . import image_test
 from ..image import Image
+
+logging.basicConfig()
 
 
 def main():
