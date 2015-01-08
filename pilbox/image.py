@@ -198,8 +198,12 @@ class Image(object):
 
         if deg == "auto":
             if self._orig_format == "JPEG":
-                exif = self.img._getexif() or dict()
-                deg = _orientation_to_rotation.get(exif.get(274, 0), 0)
+                try:
+                    exif = self.img._getexif() or dict()
+                    deg = _orientation_to_rotation.get(exif.get(274, 0), 0)
+                except:
+                    logger.warn('unable to parse exif')
+                    deg = 0
             else:
                 deg = 0
 
