@@ -244,7 +244,7 @@ class ImageHandler(tornado.web.RequestHandler):
                                 self.settings.get("content_type_from_image"))):
             self.set_header(
                 "Content-Type", self._FORMAT_TO_MIME.get(file_format.lower()))
-        else:
+        elif "Content-Type" in headers:
             self.set_header("Content-Type", headers["Content-Type"])
 
         for k in ImageHandler.FORWARD_HEADERS:
