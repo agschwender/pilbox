@@ -496,7 +496,8 @@ While it is generally recommended to use Pilbox as a standalone server, it can a
 
     import tornado.gen
 
-    from pilbox.app import PilboxApplication, ImageHandler, main
+    from pilbox.app import PilboxApplication, ImageHandler, \
+        start_server, parse_command_line
 
 
     class CustomApplication(PilboxApplication):
@@ -521,7 +522,8 @@ While it is generally recommended to use Pilbox as a standalone server, it can a
 
 
     if __name__ == "__main__":
-        main(app=CustomApplication())
+        parse_command_line()
+        start_server(CustomApplication())
 
 
 Changelog
@@ -573,6 +575,7 @@ Changelog
 -  1.1.3: Fix auto rotation on JPEG with missing EXIF data
 -  1.1.4: Exception handling around invalid EXIF data
 -  1.1.5: Fix image requests without content types
+-  1.1.6: Support custom applications that need command line arguments
 
 TODO
 ====

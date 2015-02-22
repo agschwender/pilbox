@@ -310,12 +310,15 @@ class ImageHandler(tornado.web.RequestHandler):
             raise errors.HostError("Invalid host")
 
 
-def main(app_class=None):
+def parse_command_line():  # pragma: no cover
     tornado.options.parse_command_line()
+
+
+def start_server(app=None):  # pragma: no cover
     if options.debug:
         logger.setLevel(logging.DEBUG)
     server = tornado.httpserver.HTTPServer(
-        app_class() if app_class else PilboxApplication())
+        app if app else PilboxApplication())
     logger.info("Starting server...")
     try:
         server.bind(options.port)
@@ -323,6 +326,11 @@ def main(app_class=None):
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
         tornado.ioloop.IOLoop.instance().stop()
+
+
+def main(app=None):
+    parse_command_line()
+    start_server(app)
 
 
 if __name__ == "__main__":

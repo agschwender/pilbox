@@ -64,6 +64,7 @@ Versions:
   * 1.1.3: Fix auto rotation on JPEG with missing EXIF data
   * 1.1.4: Exception handling around invalid EXIF data
   * 1.1.5: Fix for images requests without content types
+  * 1.1.6: Support custom applications that need command line arguments
 """
 
 # human-readable version number
