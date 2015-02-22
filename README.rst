@@ -220,7 +220,6 @@ Resize Parameters
 -  *prog*: Enable progressive output, only relevant to JPEGs
 -  *q*: The quality, (1-100) or keep, used to save the image, only relevant
    to JPEGs
--  *prog:* Progressive image saving.
 
 Region Parameters
 -----------------
