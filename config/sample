@@ -26,4 +26,4 @@ filter = "bilinear"
 format = None
 mode = "crop"
 position = "top"
-quality = 90
+quality = "90"

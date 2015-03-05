@@ -435,7 +435,7 @@ below is an example configuration.
     # Set default saving options
     format = None
     optimize = 1
-    quality = 90
+    quality = "90"
 
 Tools
 =====
