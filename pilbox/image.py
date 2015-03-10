@@ -75,7 +75,7 @@ class Image(object):
 
     _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
                      format=None, mode="crop", optimize=False,
-                     position="center", quality=90, progressive=False)
+                     position="center", quality=90, progressive=False, orientation="default")
     _CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "frontalface.xml")
 
@@ -267,7 +267,11 @@ class Image(object):
             self.img, size, opts["pil"]["filter"], 0, pos)
 
     def _fill(self, size, opts):
-        self._clip(size, opts)
+        if (opts["pil"]["orientation"] == "horizontal" and self.img.size[1] < self.img.size[0]) or (opts["pil"]["orientation"] == "vertical" and self.img.size[0] < self.img.size[1]):
+          self._crop(size, opts)
+        else:
+          self._clip(size, opts)
+
         if self.img.size == size:
             return  # No need to fill
         x = max(int((size[0] - self.img.size[0]) / 2.0), 0)
@@ -334,7 +338,8 @@ class Image(object):
         opts["pil"] = dict(
             filter=_filters_to_pil.get(opts["filter"]),
             format=_formats_to_pil.get(opts["format"]),
-            position=Image._get_custom_position(opts["position"]))
+            position=Image._get_custom_position(opts["position"]),
+            orientation=opts["orientation"])
 
         if not opts["pil"]["position"]:
             opts["pil"]["position"] = _positions_to_ratios.get(
@@ -403,6 +408,7 @@ def main():
     define("optimize", help="default to optimize when saving", type=int)
     define("quality", help="default jpeg quality, 0-100 or keep")
     define("progressive", help="default to progressive when saving", type=int)
+    define("orientation", help="default orientation", type=str)
 
     args = parse_command_line()
     if not args:
