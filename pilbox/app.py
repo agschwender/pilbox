@@ -79,6 +79,7 @@ define("optimize", help="default to optimize when saving", type=int)
 define("position", help="default cropping position")
 define("progressive", help="default to progressive when saving", type=int)
 define("quality", help="default jpeg quality, 0-100 or keep")
+define("orientation", help="default target orientation")
 
 logger = logging.getLogger("tornado.application")
 
@@ -103,6 +104,7 @@ class PilboxApplication(tornado.web.Application):
             position=options.position,
             progressive=options.progressive,
             quality=options.quality,
+            orientation=options.orientation,
             max_requests=options.max_requests,
             timeout=options.timeout,
             implicit_base_url=options.implicit_base_url,
@@ -260,7 +262,8 @@ class ImageHandler(tornado.web.RequestHandler):
             dict(mode=self.get_argument("mode"),
                  filter=self.get_argument("filter"),
                  position=self.get_argument("pos"),
-                 background=self.get_argument("bg")))
+                 background=self.get_argument("bg"),
+                 orientation=self.get_argument("orientation")))
 
     def _get_rotate_options(self):
         return self._get_options(
