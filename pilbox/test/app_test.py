@@ -52,7 +52,7 @@ class _AppAsyncMixin(object):
         cases = image_test.get_image_resize_cases()
         m = dict(background="bg", filter="filter", format="fmt",
                  optimize="opt", position="pos", progressive="prog",
-                 quality="q")
+                 quality="q", retain="retain")
         for i, case in enumerate(cases):
             path = "/test/data/%s" % os.path.basename(case["source_path"])
             cases[i]["source_query_params"] = dict(

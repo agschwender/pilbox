@@ -44,3 +44,4 @@
   * 1.1.4: Exception handling around invalid EXIF data
   * 1.1.5: Fix image requests without content types
   * 1.1.6: Support custom applications that need command line arguments
+  * 1.1.7: Support adapt resize mode

@@ -288,7 +288,7 @@ class ImageTest(unittest.TestCase):
             img = Image(f).resize(
                 case["width"], case["height"], mode=case["mode"],
                 background=case.get("background"), filter=case.get("filter"),
-                position=case.get("position"))
+                position=case.get("position"), retain=case.get("retain"))
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
@@ -362,7 +362,10 @@ def _get_simple_criteria_combinations():
 
 
 def _get_example_criteria_combinations():
-    return [dict(mode="clip", width=500, height=400),
+    return [dict(mode="adapt", width=500, height=400, retain=80),
+            dict(mode="adapt", width=500, height=400, retain=99,
+                 background="ccc"),
+            dict(mode="clip", width=500, height=400),
             dict(mode="crop", width=500, height=400),
             dict(mode="fill", width=500, height=400, background="ccc"),
             dict(mode="scale", width=500, height=400)]
@@ -370,7 +373,9 @@ def _get_example_criteria_combinations():
 
 def _get_advanced_criteria_combinations():
     return _make_combinations(
-        [dict(values=[["fill"], [(125, 75)], ["F00", "cccccc"]],
+        [dict(values=[["adapt"], [(125, 75)], [99, 80, 60, 40]],
+              fields=["mode", "size", "retain"]),
+         dict(values=[["fill"], [(125, 75)], ["F00", "cccccc"]],
               fields=["mode", "size", "background"]),
          dict(values=[["crop"], [(125, 75)], Image.POSITIONS],
               fields=["mode", "size", "position"]),
@@ -416,7 +421,7 @@ def _criteria_to_resize_case(filename, criteria):
     case = dict(source_path=os.path.join(DATADIR, filename))
     case.update(criteria)
     fields = ["mode", "filter", "quality", "background",
-              "position", "optimize", "progressive"]
+              "position", "optimize", "progressive", "retain"]
     opts_desc = "-".join(["%s=%s" % (x, str(criteria.get(x)))
                           for x in fields if criteria.get(x)])
     expected = "%s-%sx%s%s.%s" \

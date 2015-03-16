@@ -108,6 +108,12 @@ class ProgressiveError(BadRequestError):
         return 13
 
 
+class RetainError(BadRequestError):
+    @staticmethod
+    def get_code():
+        return 14
+
+
 class FetchError(PilboxError):
     def __init__(self, msg=None, *args, **kwargs):
         super(FetchError, self).__init__(404, msg, *args, **kwargs)

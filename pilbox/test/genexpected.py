@@ -45,7 +45,7 @@ def main():
             img = Image(f).resize(
                 case["width"], case["height"], mode=case["mode"],
                 background=case.get("background"), filter=case.get("filter"),
-                position=case.get("position"))
+                position=case.get("position"), retain=case.get("retain"))
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),

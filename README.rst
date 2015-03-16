@@ -129,7 +129,7 @@ To see a list of all available options, run
       --progressive              default to progressive when saving
       --proxy_host               proxy hostname
       --proxy_port               proxy port
-      --quality                  default jpeg quality, 0-100 or keep
+      --quality                  default jpeg quality, 1-99 or keep
       --timeout                  timeout of requests in seconds (default 10)
       --validate_cert            validate certificates (default True)
 
@@ -171,8 +171,10 @@ Resize Parameters
 
 -  *w*: The desired width of the image
 -  *h*: The desired height of the image
--  *mode*: The resizing method: clip, crop (default), fill and scale
+-  *mode*: The resizing method: adapt, clip, crop (default), fill and scale
 
+   - *adapt*: Resize using crop if the resized image retains a supplied
+      percentage of the original image; otherwise fill
    -  *clip*: Resize to fit within the desired region, keeping aspect
       ratio
    -  *crop*: Resize so one dimension fits within region, center, cut
@@ -216,9 +218,12 @@ Resize Parameters
       position(s)
    -  *x,y*: Custom center point position ratio, e.g. 0.0,0.75
 
+- *retain*: The minimum percentage (1-99) of the original image that
+   must still be visible in the resized image in order to use crop mode
+
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality, (1-100) or keep, used to save the image, only relevant
+-  *q*: The quality, (1-99) or keep, used to save the image, only relevant
    to JPEGs
 
 Region Parameters
@@ -233,7 +238,7 @@ Region Parameters
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality, (1-100) or keep, used to save the image, only relevant
+-  *q*: The quality, (1-99) or keep, used to save the image, only relevant
    to JPEGs
 -  *rect*: The region as x,y,w,h; x,y: top-left position, w,h:
    width/height of region
@@ -256,7 +261,7 @@ Rotate Parameters
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality, (1-100) or keep, used to save the image, only relevant
+-  *q*: The quality, (1-99) or keep, used to save the image, only relevant
    to JPEGs
 
 Security-related Parameters
@@ -283,7 +288,7 @@ one dimension is specified, the application will determine the other
 dimension using the aspect ratio. ``mode`` is optional and defaults to
 ``crop``. ``filter`` is optional and defaults to ``antialias``. ``bg``
 is optional and defaults to ``fff``. ``pos`` is optional and defaults to
-``center``.
+``center``. ``retain`` is optional and defaults to ``75``.
 
 For region sub-selection, ``rect`` is required. For rotating, ``deg`` is
 required. ``expand`` is optional and defaults to ``0`` (disabled). It is
@@ -299,6 +304,26 @@ Examples
 
 The following images show the various resizing modes in action for an
 original image size of ``640x428`` that is being resized to ``500x400``.
+
+Adapt
+-----
+
+The adaptive resize mode combines both `crop`_ and `fill`_ resize modes
+to ensure that the image always matches the requested size and a minimum
+percentage of the image is always visible. Adaptive resizing will first
+calculate how much of the image will be retained if crop is used. Then,
+if that percentage is equal to or above the requested minimum retained
+percentage, crop mode will be used. If it is not, fill will be used. The
+first figure uses a ``retain`` value of ``80``, whereas the second
+requires a minimum of ``99`` to illustrate adaptive resizing behavior.
+
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=adapt-retain=80.jpg
+     :align: center
+     :alt: Adaptive cropped image
+
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=adapt-background=ccc-retain=99.jpg
+     :align: center
+     :alt: Adaptive filled image
 
 Clip
 ----
@@ -575,6 +600,7 @@ Changelog
 -  1.1.4: Exception handling around invalid EXIF data
 -  1.1.5: Fix image requests without content types
 -  1.1.6: Support custom applications that need command line arguments
+-  1.1.7: Support adapt resize mode
 
 TODO
 ====

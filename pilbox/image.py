@@ -70,12 +70,13 @@ _formats_to_pil = {
 class Image(object):
     FILTERS = _filters_to_pil.keys()
     FORMATS = _formats_to_pil.keys()
-    MODES = ["clip", "crop", "fill", "scale"]
+    MODES = ["adapt", "clip", "crop", "fill", "scale"]
     POSITIONS = _positions_to_ratios.keys()
 
     _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
                      format=None, mode="crop", optimize=False,
-                     position="center", quality=90, progressive=False, orientation="default")
+                     position="center", quality=90, progressive=False,
+                     retain=75)
     _CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "frontalface.xml")
 
@@ -154,6 +155,11 @@ class Image(object):
         elif opts["progressive"] and not Image._isint(opts["progressive"]):
             raise errors.ProgressiveError(
                 "Invalid progressive: %s", str(opts["progressive"]))
+        elif (not Image._isint(opts["retain"])
+              or int(opts["retain"]) > 100
+              or int(opts["retain"]) < 0):
+            raise errors.RetainError(
+                "Invalid retain: %s" % str(opts["retain"]))
 
     def region(self, rect):
         """ Selects a sub-region of the image using the supplied rectangle,
@@ -162,7 +168,7 @@ class Image(object):
         box = (int(rect[0]), int(rect[1]), int(rect[0]) + int(rect[2]),
                int(rect[1]) + int(rect[3]))
         if box[2] > self.img.size[0] or box[3] > self.img.size[1]:
-            raise errors.RectangleError('Region out-of-bounds')
+            raise errors.RectangleError("Region out-of-bounds")
         self.img = self.img.crop(box)
         return self
 
@@ -175,10 +181,14 @@ class Image(object):
         background - The hexadecimal background fill color, RGB or ARGB
         position - The position used to crop: see Image.POSITIONS for
                    pre-defined positions or a custom position ratio
+        retain - The minimum percentage of the original image to retain
+                 when cropping
         """
         opts = Image._normalize_options(kwargs)
         size = self._get_size(width, height)
-        if opts["mode"] == "clip":
+        if opts["mode"] == "adapt":
+            self._adapt(size, opts)
+        elif opts["mode"] == "clip":
             self._clip(size, opts)
         elif opts["mode"] == "fill":
             self._fill(size, opts)
@@ -252,6 +262,19 @@ class Image(object):
 
         return outfile
 
+    def _adapt(self, size, opts):
+        source_aspect_ratio = float(self.img.size[0]) / float(self.img.size[1])
+        aspect_ratio = float(size[0]) / float(size[1])
+        if source_aspect_ratio >= aspect_ratio:
+            retain = (aspect_ratio / source_aspect_ratio) * 100.0
+        else:
+            retain = (source_aspect_ratio / aspect_ratio) * 100.0
+
+        if float(opts["retain"]) <= retain:
+            self._crop(size, opts)
+        else:
+            self._fill(size, opts)
+
     def _clip(self, size, opts):
         self.img.thumbnail(size, opts["pil"]["filter"])
 
@@ -267,11 +290,7 @@ class Image(object):
             self.img, size, opts["pil"]["filter"], 0, pos)
 
     def _fill(self, size, opts):
-        if (opts["pil"]["orientation"] == "horizontal" and self.img.size[1] < self.img.size[0]) or (opts["pil"]["orientation"] == "vertical" and self.img.size[0] < self.img.size[1]):
-          self._crop(size, opts)
-        else:
-          self._clip(size, opts)
-
+        self._clip(size, opts)
         if self.img.size == size:
             return  # No need to fill
         x = max(int((size[0] - self.img.size[0]) / 2.0), 0)
@@ -338,8 +357,7 @@ class Image(object):
         opts["pil"] = dict(
             filter=_filters_to_pil.get(opts["filter"]),
             format=_formats_to_pil.get(opts["format"]),
-            position=Image._get_custom_position(opts["position"]),
-            orientation=opts["orientation"])
+            position=Image._get_custom_position(opts["position"]))
 
         if not opts["pil"]["position"]:
             opts["pil"]["position"] = _positions_to_ratios.get(
@@ -406,9 +424,9 @@ def main():
     define("format", help="default format to use when saving",
            metavar="|".join(Image.FORMATS), type=str)
     define("optimize", help="default to optimize when saving", type=int)
-    define("quality", help="default jpeg quality, 0-100 or keep")
     define("progressive", help="default to progressive when saving", type=int)
-    define("orientation", help="default orientation", type=str)
+    define("quality", help="default jpeg quality, 1-99 or keep")
+    define("retain", help="default adaptive retain percent, 1-99", type=int)
 
     args = parse_command_line()
     if not args:
@@ -440,7 +458,7 @@ def main():
     if options.operation == "resize":
         image.resize(options.width, options.height, mode=options.mode,
                      filter=options.filter, background=options.background,
-                     position=options.position)
+                     position=options.position, retain=options.retain)
     elif options.operation == "rotate":
         image.rotate(options.degree, expand=options.expand)
     elif options.operation == "region":

@@ -65,13 +65,14 @@ Versions:
   * 1.1.4: Exception handling around invalid EXIF data
   * 1.1.5: Fix for images requests without content types
   * 1.1.6: Support custom applications that need command line arguments
+  * 1.1.7: Support adapt resize mode
 """
 
 # human-readable version number
-version = "1.1.5"
+version = "1.1.7"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 1, 5, 0)
+version_info = (1, 1, 7, 0)
