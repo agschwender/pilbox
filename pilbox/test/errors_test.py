@@ -12,7 +12,7 @@ class ErrorsTest(unittest.TestCase):
                   DimensionsError, FilterError, FormatError, ModeError,
                   OptimizeError, PositionError, ProgressiveError, QualityError,
                   UrlError, ImageFormatError, ImageSaveError, FetchError,
-                  DegreeError, OperationError, RectangleError]
+                  DegreeError, OperationError, RectangleError, RetainError]
         codes = []
         for error in errors:
             code = str(error.get_code())

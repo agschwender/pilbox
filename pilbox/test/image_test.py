@@ -258,6 +258,12 @@ class ImageTest(unittest.TestCase):
                           Image.validate_options,
                           dict(progressive="b"))
 
+    def test_bad_retain_invalid_range(self):
+        self.assertRaises(
+            errors.RetainError, Image.validate_options, dict(retain=101))
+        self.assertRaises(
+            errors.RetainError, Image.validate_options, dict(retain=-1))
+
     def test_color_hex_to_dec_tuple(self):
         tests  = [["fff", (255, 255, 255)],
                   ["ccc", (204, 204, 204)],
