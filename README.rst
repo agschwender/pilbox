@@ -130,6 +130,7 @@ To see a list of all available options, run
       --proxy_host               proxy hostname
       --proxy_port               proxy port
       --quality                  default jpeg quality, 1-99 or keep
+      --retain                   default adaptive retain percent, 1-99
       --timeout                  timeout of requests in seconds (default 10)
       --validate_cert            validate certificates (default True)
 
@@ -173,7 +174,7 @@ Resize Parameters
 -  *h*: The desired height of the image
 -  *mode*: The resizing method: adapt, clip, crop (default), fill and scale
 
-   - *adapt*: Resize using crop if the resized image retains a supplied
+   -  *adapt*: Resize using crop if the resized image retains a supplied
       percentage of the original image; otherwise fill
    -  *clip*: Resize to fit within the desired region, keeping aspect
       ratio
@@ -218,7 +219,7 @@ Resize Parameters
       position(s)
    -  *x,y*: Custom center point position ratio, e.g. 0.0,0.75
 
-- *retain*: The minimum percentage (1-99) of the original image that
+-  *retain*: The minimum percentage (1-99) of the original image that
    must still be visible in the resized image in order to use crop mode
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
@@ -314,12 +315,15 @@ percentage of the image is always visible. Adaptive resizing will first
 calculate how much of the image will be retained if crop is used. Then,
 if that percentage is equal to or above the requested minimum retained
 percentage, crop mode will be used. If it is not, fill will be used. The
-first figure uses a ``retain`` value of ``80``, whereas the second
-requires a minimum of ``99`` to illustrate adaptive resizing behavior.
+first figure uses a ``retain`` value of ``80`` to illustrate the
+adaptive crop behavior.
 
 .. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=adapt-retain=80.jpg
      :align: center
      :alt: Adaptive cropped image
+
+Whereas the second figure requires a minimum of ``99`` to illustrate the
+adaptive fill behavior
 
 .. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=adapt-background=ccc-retain=99.jpg
      :align: center
