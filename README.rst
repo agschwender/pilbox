@@ -3,15 +3,23 @@ Pilbox
 
 .. image:: https://pypip.in/v/pilbox/badge.png
     :target: https://pypi.python.org/pypi/pilbox
+    :alt: PyPI Version
 
 .. image:: https://travis-ci.org/agschwender/pilbox.png
     :target: https://travis-ci.org/agschwender/pilbox
+    :alt: Build Status
 
 .. image:: https://coveralls.io/repos/agschwender/pilbox/badge.png
     :target: https://coveralls.io/r/agschwender/pilbox
+    :alt: Test Coverage
+
+.. image:: https://landscape.io/github/agschwender/pilbox/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/agschwender/pilbox/master
+    :alt: Code Health
 
 .. image:: https://pypip.in/d/pilbox/badge.png
     :target: https://pypi.python.org/pypi/pilbox
+    :alt: PyPI Downloads
 
 
 Pilbox is an image processing application server built on Python's
@@ -197,13 +205,6 @@ Resize Parameters
    -  *bicubic*: Fast, can produce acceptable results
    -  *antialias*: Slower, produces the best results
 
--  *fmt*: The output format to save as, defaults to the source format
-
-   -  *gif*: Save as GIF
-   -  *jpeg*: Save as JPEG
-   -  *png*: Save as PNG
-   -  *webp*: Save as WebP
-
 -  *pos*: The crop position
 
    -  *top-left*: Crop from the top left
@@ -222,14 +223,6 @@ Resize Parameters
 -  *retain*: The minimum percentage (1-99) of the original image that
    must still be visible in the resized image in order to use crop mode
 
--  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
--  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality, (1-99) or keep, used to save the image, only relevant
-   to JPEGs
-
-Region Parameters
------------------
-
 -  *fmt*: The output format to save as, defaults to the source format
 
    -  *gif*: Save as GIF
@@ -241,8 +234,23 @@ Region Parameters
 -  *prog*: Enable progressive output, only relevant to JPEGs
 -  *q*: The quality, (1-99) or keep, used to save the image, only relevant
    to JPEGs
+
+Region Parameters
+-----------------
+
 -  *rect*: The region as x,y,w,h; x,y: top-left position, w,h:
    width/height of region
+-  *fmt*: The output format to save as, defaults to the source format
+
+   -  *gif*: Save as GIF
+   -  *jpeg*: Save as JPEG
+   -  *png*: Save as PNG
+   -  *webp*: Save as WebP
+
+-  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
+-  *prog*: Enable progressive output, only relevant to JPEGs
+-  *q*: The quality, (1-99) or keep, used to save the image, only relevant
+   to JPEGs
 
 Rotate Parameters
 -----------------
@@ -276,12 +284,13 @@ will be manipulated. ``op`` is optional and defaults to ``resize``. It
 also supports a comma separated list of operations, where each operation
 is applied in the order that it appears in the list. Depending on the
 operation, additional parameters are required. All image manipulation
-requests accept ``fmt``, ``opt`` and ``q``. ``fmt`` is optional and defaults to
-the source image format. ``opt`` is optional and defaults to ``0``. ``q`` is
-optional and defaults to ``90``. To ensure security, all requests also support,
-``client`` and ``sig``. ``client`` is required only if the ``client_name`` is
-defined within the configuration file. Likewise, ``sig`` is required only if
-the ``client_key`` is defined within the configuration file. See the
+requests accept ``fmt``, ``opt``, ``prog`` and ``q``. ``fmt`` is
+optional and defaults to the source image format. ``opt`` is optional
+and defaults to ``0``. ``q`` is optional and defaults to ``90``. To
+ensure security, all requests also support, ``client`` and ``sig``.
+``client`` is required only if the ``client_name`` is defined within the
+configuration file. Likewise, ``sig`` is required only if the
+``client_key`` is defined within the configuration file. See the
 `Signing`_ section for details on how to generate the signature.
 
 For resizing, either the ``w`` or ``h`` parameter is required. If only
