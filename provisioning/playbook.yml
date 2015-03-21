@@ -54,8 +54,8 @@
         - { name: 'Pillow', version: '2.6.1' }
         - { name: 'tornado', version: '4.0.2' }
         - { name: 'coverage', version: '3.6' }
-        - { name: 'pep8', version: '1.4.6' }
-        - { name: 'pyflakes', version: '0.7.3' }
+        - { name: 'pep8', version: '1.6.2' }
+        - { name: 'pyflakes', version: '0.8.1' }
         - { name: 'pyandoc', version: '0.0.1' }
         - { name: 'sphinx-me', version: '0.2.1' }
 

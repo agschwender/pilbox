@@ -146,18 +146,18 @@ class Image(object):
         elif opts["optimize"] and not Image._isint(opts["optimize"]):
             raise errors.OptimizeError(
                 "Invalid optimize: %s", str(opts["optimize"]))
-        elif opts["quality"] != "keep" \
-                and (not Image._isint(opts["quality"])
-                     or int(opts["quality"]) > 100
-                     or int(opts["quality"]) < 0):
+        elif opts["quality"] != "keep" and \
+            (not Image._isint(opts["quality"]) or
+             int(opts["quality"]) > 100 or
+             int(opts["quality"]) < 0):
             raise errors.QualityError(
                 "Invalid quality: %s", str(opts["quality"]))
         elif opts["progressive"] and not Image._isint(opts["progressive"]):
             raise errors.ProgressiveError(
                 "Invalid progressive: %s", str(opts["progressive"]))
-        elif (not Image._isint(opts["retain"])
-              or int(opts["retain"]) > 100
-              or int(opts["retain"]) < 0):
+        elif (not Image._isint(opts["retain"]) or
+              int(opts["retain"]) > 100 or
+              int(opts["retain"]) < 0):
             raise errors.RetainError(
                 "Invalid retain: %s" % str(opts["retain"]))
 
@@ -211,7 +211,7 @@ class Image(object):
                 try:
                     exif = self.img._getexif() or dict()
                     deg = _orientation_to_rotation.get(exif.get(274, 0), 0)
-                except:
+                except Exception:
                     logger.warn('unable to parse exif')
                     deg = 0
             else:
