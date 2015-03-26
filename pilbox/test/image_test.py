@@ -111,6 +111,21 @@ def get_image_chained_cases():
     return list(filter(bool, cases))
 
 
+def get_image_exif_cases():
+    """Returns a list of test cases of the form:
+    [dict(source_path, expected_path, preserve_exif, ...), ...]
+    """
+    criteria_combinations = _make_combinations(
+        [dict(values=[[True, False], [300], [300]],
+              fields=["preserve_exif", "width", "height"])])
+
+    cases = []
+    for criteria in criteria_combinations:
+        cases.append(_criteria_to_exif_case("test-orientation.jpg", criteria))
+
+    return list(filter(bool, cases))
+
+
 class ImageTest(unittest.TestCase):
 
     def test_resize(self):
@@ -130,6 +145,10 @@ class ImageTest(unittest.TestCase):
     def test_chained(self):
         for case in get_image_chained_cases():
             self._assert_expected_chained(case)
+
+    def test_exif(self):
+        for case in get_image_exif_cases():
+            self._assert_expected_exif(case)
 
     @unittest.skipIf(cv is None, "OpenCV is not installed")
     def test_face_crop_resize(self):
@@ -323,7 +342,6 @@ class ImageTest(unittest.TestCase):
                     % (case["source_path"], case["expected_path"])
                 self.assertEqual(rv.read(), expected.read(), msg)
 
-
     def _assert_expected_region(self, case):
         with open(case["source_path"], "rb") as f:
             img = Image(f).region(case["rect"].split(","))
@@ -338,7 +356,6 @@ class ImageTest(unittest.TestCase):
                     % (case["source_path"], case["expected_path"])
                 self.assertEqual(rv.read(), expected.read(), msg)
 
-
     def _assert_expected_chained(self, case):
         with open(case["source_path"], "rb") as f:
 
@@ -352,6 +369,16 @@ class ImageTest(unittest.TestCase):
                     img.region(case["rect"].split(","))
 
             rv = img.save()
+
+            with open(case["expected_path"], "rb") as expected:
+                msg = "%s does not match %s" \
+                    % (case["source_path"], case["expected_path"])
+                self.assertEqual(rv.read(), expected.read(), msg)
+
+    def _assert_expected_exif(self, case):
+        with open(case["source_path"], "rb") as f:
+            img = Image(f).resize(case["width"], case["height"])
+            rv = img.save(preserve_exif=case['preserve_exif'])
 
             with open(case["expected_path"], "rb") as expected:
                 msg = "%s does not match %s" \
@@ -489,6 +516,23 @@ def _criteria_to_chained_case(filename, criteria):
            criteria.get("width") or "",
            criteria.get("height") or "",
            ("-%s" % opts_desc) if opts_desc else "",
+           m.group(2))
+    case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
+    return case
+
+
+def _criteria_to_exif_case(filename, criteria):
+    m = re.match(r"^([^\.]+)\.([^\.]+)$", filename)
+    if not m:
+        return None
+    case = dict(source_path=os.path.join(DATADIR, filename))
+    case.update(criteria)
+    fields = ["preserve_exif"]
+    opts_desc = "-".join(["%s=%s" % (x, str(criteria.get(x)))
+                          for x in fields if criteria.get(x) is not None])
+    expected = "%s-exif-%s.%s" \
+        % (m.group(1),
+           opts_desc or "",
            m.group(2))
     case["expected_path"] = os.path.join(EXPECTED_DATADIR, expected)
     return case

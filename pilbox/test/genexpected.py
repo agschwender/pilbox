@@ -105,6 +105,17 @@ def main():
             with open(case["expected_path"], "wb") as expected:
                 expected.write(rv.read())
 
+    cases = image_test.get_image_exif_cases()
+    for case in cases:
+        with open(case["source_path"], "rb") as f:
+
+            print "Generating %s" % case["expected_path"]
+            img = Image(f).resize(case["width"], case["height"])
+            rv = img.save(preserve_exif=case['preserve_exif'])
+
+            with open(case["expected_path"], "wb") as expected:
+                expected.write(rv.read())
+
 
 if __name__ == "__main__":
     main()
