@@ -135,6 +135,7 @@ To see a list of all available options, run
       --port                     run on the given port (default 8888)
       --position                 default cropping position
       --progressive              default to progressive when saving
+      --preserve_exif            default behavior for Exif information
       --proxy_host               proxy hostname
       --proxy_port               proxy port
       --quality                  default jpeg quality, 1-99 or keep
@@ -174,6 +175,9 @@ General Parameters
    -  *region*: Select a sub-region from the image
    -  *resize*: Resize the image
    -  *rotate*: Rotate the image
+
+- *preserve_exif*: Keep original `Exif <http://en.wikipedia.org/wiki/Exchangeable_image_file_format>`_
+  data in the processed image (only relevant for JPEG)
 
 Resize Parameters
 -----------------

@@ -76,7 +76,7 @@ class Image(object):
     _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
                      format=None, mode="crop", optimize=False,
                      position="center", quality=90, progressive=False,
-                     retain=75)
+                     retain=75, preserve_exif=False)
     _CLASSIFIER_PATH = os.path.join(
         os.path.dirname(__file__), "frontalface.xml")
 
@@ -87,6 +87,9 @@ class Image(object):
             self.img = PIL.Image.open(self.stream)
         except IOError:
             raise errors.ImageFormatError("File is not an image")
+
+        # Cache original Exif data, since it can be erased by some operations
+        self._exif = self.img.info.get('exif', b'')
 
         if self.img.format.lower() not in self.FORMATS:
             raise errors.ImageFormatError(
@@ -246,6 +249,9 @@ class Image(object):
 
         if int(opts["progressive"]):
             save_kwargs["progressive"] = True
+
+        if opts["preserve_exif"]:
+            save_kwargs["exif"] = self._exif
 
         if self._orig_format == "JPEG":
             self.img.format = self._orig_format
@@ -427,6 +433,7 @@ def main():
     define("progressive", help="default to progressive when saving", type=int)
     define("quality", help="default jpeg quality, 1-99 or keep")
     define("retain", help="default adaptive retain percent, 1-99", type=int)
+    define("preserve_exif", help="default behavior for Exif data", type=bool)
 
     args = parse_command_line()
     if not args:
@@ -467,7 +474,8 @@ def main():
     stream = image.save(format=options.format,
                         optimize=options.optimize,
                         quality=options.quality,
-                        progressive=options.progressive)
+                        progressive=options.progressive,
+                        preserve_exif=options.preserve_exif)
     sys.stdout.write(stream.read())
     stream.close()
 

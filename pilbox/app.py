@@ -80,6 +80,7 @@ define("position", help="default cropping position")
 define("progressive", help="default to progressive when saving", type=int)
 define("quality", help="default jpeg quality, 1-99 or keep")
 define("retain", help="default adaptive retain percent, 1-99", type=int)
+define("preserve_exif", help="default behavior for Exif data", type=bool)
 
 logger = logging.getLogger("tornado.application")
 
@@ -110,7 +111,8 @@ class PilboxApplication(tornado.web.Application):
             validate_cert=options.validate_cert,
             content_type_from_image=options.content_type_from_image,
             proxy_host=options.proxy_host,
-            proxy_port=options.proxy_port)
+            proxy_port=options.proxy_port,
+            preserve_exif=options.preserve_exif)
 
         settings.update(kwargs)
 
@@ -274,7 +276,8 @@ class ImageHandler(tornado.web.RequestHandler):
             dict(format=self.get_argument("fmt"),
                  optimize=self.get_argument("opt"),
                  quality=self.get_argument("q"),
-                 progressive=self.get_argument("prog")))
+                 progressive=self.get_argument("prog"),
+                 preserve_exif=self.get_argument("preserve_exif")))
 
     def _get_options(self, opts):
         for k, v in opts.items():
