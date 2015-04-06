@@ -254,7 +254,7 @@ class Image(object):
         if int(opts["progressive"]):
             save_kwargs["progressive"] = True
 
-        if opts["preserve_exif"]:
+        if int(opts["preserve_exif"]):
             save_kwargs["exif"] = self._exif
 
         if self._orig_format == "JPEG":

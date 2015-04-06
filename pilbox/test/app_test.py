@@ -117,6 +117,23 @@ class _AppAsyncMixin(object):
 
         return cases
 
+    def get_image_exif_cases(self):
+        cases = image_test.get_image_exif_cases()
+        m = dict(preserve_exif="exif")
+        for i, case in enumerate(cases):
+            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            cases[i]["source_query_params"] = dict(
+                url=self.get_url(path),
+                w=case["width"] or "",
+                h=case["height"] or "")
+            for k in m.keys():
+                if k in case:
+                    cases[i]["source_query_params"][m.get(k)] = case[k]
+            cases[i]["content_type"] = self._format_to_content_type(
+                case.get("format"))
+
+        return cases
+
     def _format_to_content_type(self, fmt):
         if fmt in ["jpeg", "jpg"]:
             return "image/jpeg"
@@ -317,6 +334,11 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
 
     def test_valid_chained(self):
         cases = self.get_image_chained_cases()
+        for case in cases:
+            self._assert_expected_case(case)
+
+    def test_valid_exif(self):
+        cases = self.get_image_exif_cases()
         for case in cases:
             self._assert_expected_case(case)
 

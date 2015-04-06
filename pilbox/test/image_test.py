@@ -116,7 +116,7 @@ def get_image_exif_cases():
     [dict(source_path, expected_path, preserve_exif, ...), ...]
     """
     criteria_combinations = _make_combinations(
-        [dict(values=[[True, False], [300], [300]],
+        [dict(values=[[1, 0], [300], [300]],
               fields=["preserve_exif", "width", "height"])])
 
     cases = []
