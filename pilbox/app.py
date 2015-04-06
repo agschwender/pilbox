@@ -80,7 +80,7 @@ define("position", help="default cropping position")
 define("progressive", help="default to progressive when saving", type=int)
 define("quality", help="default jpeg quality, 1-99 or keep")
 define("retain", help="default adaptive retain percent, 1-99", type=int)
-define("preserve_exif", help="default behavior for Exif data", type=bool)
+define("preserve_exif", help="default behavior for exif data", type=int)
 
 logger = logging.getLogger("tornado.application")
 
@@ -277,7 +277,7 @@ class ImageHandler(tornado.web.RequestHandler):
                  optimize=self.get_argument("opt"),
                  quality=self.get_argument("q"),
                  progressive=self.get_argument("prog"),
-                 preserve_exif=self.get_argument("preserve_exif")))
+                 preserve_exif=self.get_argument("exif")))
 
     def _get_options(self, opts):
         for k, v in opts.items():

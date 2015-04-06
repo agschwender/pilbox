@@ -102,6 +102,12 @@ class OptimizeError(BadRequestError):
         return 12
 
 
+class PreserveExifError(BadRequestError):
+    @staticmethod
+    def get_code():
+        return 15
+
+
 class ProgressiveError(BadRequestError):
     @staticmethod
     def get_code():

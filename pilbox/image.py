@@ -155,6 +155,9 @@ class Image(object):
              int(opts["quality"]) < 0):
             raise errors.QualityError(
                 "Invalid quality: %s", str(opts["quality"]))
+        elif opts["preserve_exif"] and not Image._isint(opts["preserve_exif"]):
+            raise errors.PreserveExifError(
+                "Invalid preserve_exif: %s" % str(opts["preserve_exif"]))
         elif opts["progressive"] and not Image._isint(opts["progressive"]):
             raise errors.ProgressiveError(
                 "Invalid progressive: %s", str(opts["progressive"]))
@@ -230,6 +233,7 @@ class Image(object):
 
         format - The format to save as: see Image.FORMATS
         optimize - The image file size should be optimized
+        preserve_exif - Preserve the Exif information in JPEGs
         progressive - The output should be progressive JPEG
         quality - The quality used to save JPEGs: integer from 1 - 100
         """
@@ -433,7 +437,7 @@ def main():
     define("progressive", help="default to progressive when saving", type=int)
     define("quality", help="default jpeg quality, 1-99 or keep")
     define("retain", help="default adaptive retain percent, 1-99", type=int)
-    define("preserve_exif", help="default behavior for Exif data", type=bool)
+    define("preserve_exif", help="default behavior for Exif data", type=int)
 
     args = parse_command_line()
     if not args:

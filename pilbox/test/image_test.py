@@ -205,7 +205,8 @@ class ImageTest(unittest.TestCase):
 
     def test_valid_default_options_with_empty_values(self):
         opts = dict(mode=None, filter=None, background=None, optimize=None,
-                    position=None, quality=None, progressive=None)
+                    position=None, quality=None, progressive=None,
+                    preserve_exif=None)
         Image.validate_options(opts)
 
     def test_nonimage_file(self):
@@ -271,6 +272,11 @@ class ImageTest(unittest.TestCase):
     def test_bad_optimize_invalid_bool(self):
         self.assertRaises(
             errors.OptimizeError, Image.validate_options, dict(optimize="b"))
+
+    def test_bad_preserve_exif_invalid_bool(self):
+        self.assertRaises(errors.PreserveExifError,
+                          Image.validate_options,
+                          dict(preserve_exif="b"))
 
     def test_bad_progressive_invalid_bool(self):
         self.assertRaises(errors.ProgressiveError,
