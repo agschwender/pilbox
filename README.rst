@@ -134,8 +134,8 @@ To see a list of all available options, run
       --optimize                 default to optimize when saving
       --port                     run on the given port (default 8888)
       --position                 default cropping position
-      --progressive              default to progressive when saving
       --preserve_exif            default behavior for Exif information
+      --progressive              default to progressive when saving
       --proxy_host               proxy hostname
       --proxy_port               proxy port
       --quality                  default jpeg quality, 1-99 or keep
@@ -176,8 +176,19 @@ General Parameters
    -  *resize*: Resize the image
    -  *rotate*: Rotate the image
 
-- *preserve_exif*: Keep original `Exif <http://en.wikipedia.org/wiki/Exchangeable_image_file_format>`_
-  data in the processed image (only relevant for JPEG)
+-  *fmt*: The output format to save as, defaults to the source format
+
+   -  *gif*: Save as GIF
+   -  *jpeg*: Save as JPEG
+   -  *png*: Save as PNG
+   -  *webp*: Save as WebP
+
+-  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
+-  *exif*: Keep original `Exif <http://en.wikipedia.org/wiki/Exchangeable_image_file_format>`_
+   data in the processed image, only relevant for JPEG
+-  *prog*: Enable progressive output, only relevant to JPEGs
+-  *q*: The quality, (1-99) or keep, used to save the image, only relevant
+   to JPEGs
 
 Resize Parameters
 -----------------
@@ -227,34 +238,12 @@ Resize Parameters
 -  *retain*: The minimum percentage (1-99) of the original image that
    must still be visible in the resized image in order to use crop mode
 
--  *fmt*: The output format to save as, defaults to the source format
-
-   -  *gif*: Save as GIF
-   -  *jpeg*: Save as JPEG
-   -  *png*: Save as PNG
-   -  *webp*: Save as WebP
-
--  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
--  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality, (1-99) or keep, used to save the image, only relevant
-   to JPEGs
 
 Region Parameters
 -----------------
 
 -  *rect*: The region as x,y,w,h; x,y: top-left position, w,h:
    width/height of region
--  *fmt*: The output format to save as, defaults to the source format
-
-   -  *gif*: Save as GIF
-   -  *jpeg*: Save as JPEG
-   -  *png*: Save as PNG
-   -  *webp*: Save as WebP
-
--  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
--  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality, (1-99) or keep, used to save the image, only relevant
-   to JPEGs
 
 Rotate Parameters
 -----------------
@@ -262,20 +251,9 @@ Rotate Parameters
 -  *deg*: The desired rotation angle degrees
 
    - *0-359*: The number of degrees to rotate (clockwise)
-   - *auto*: Auto rotation based on EXIF orientation, only relevant to JPEGs
+   - *auto*: Auto rotation based on Exif orientation, only relevant to JPEGs
 
 -  *expand*: Expand the size to include the full rotated image
--  *fmt*: The output format to save as, defaults to the source format
-
-   -  *gif*: Save as GIF
-   -  *jpeg*: Save as JPEG
-   -  *png*: Save as PNG
-   -  *webp*: Save as WebP
-
--  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
--  *prog*: Enable progressive output, only relevant to JPEGs
--  *q*: The quality, (1-99) or keep, used to save the image, only relevant
-   to JPEGs
 
 Security-related Parameters
 ---------------------------
@@ -288,11 +266,13 @@ will be manipulated. ``op`` is optional and defaults to ``resize``. It
 also supports a comma separated list of operations, where each operation
 is applied in the order that it appears in the list. Depending on the
 operation, additional parameters are required. All image manipulation
-requests accept ``fmt``, ``opt``, ``prog`` and ``q``. ``fmt`` is
-optional and defaults to the source image format. ``opt`` is optional
-and defaults to ``0``. ``q`` is optional and defaults to ``90``. To
-ensure security, all requests also support, ``client`` and ``sig``.
-``client`` is required only if the ``client_name`` is defined within the
+requests accept ``exif``, ``fmt``, ``opt``, ``prog`` and ``q``. ``exif``
+is optional and default to ``0`` (not preserved). ``fmt`` is optional
+and defaults to the source image format. ``opt`` is optional and
+defaults to ``0`` (disabled). ``prog`` is optional and default to ``0``
+(disabled). ``q`` is optional and defaults to ``90``. To ensure
+security, all requests also support, ``client`` and ``sig``. ``client``
+is required only if the ``client_name`` is defined within the
 configuration file. Likewise, ``sig`` is required only if the
 ``client_key`` is defined within the configuration file. See the
 `Signing`_ section for details on how to generate the signature.
@@ -611,13 +591,14 @@ Changelog
 -  1.0.3: Safely catch image save errors
 -  1.0.4: Added progressive option
 -  1.1.0: Proxy server support
--  1.1.1: Added JPEG auto rotation based on EXIF orientation
+-  1.1.1: Added JPEG auto rotation based on Exif orientation
 -  1.1.2: Added keep JPEG quality option and set JPEG subsampling to keep
--  1.1.3: Fix auto rotation on JPEG with missing EXIF data
--  1.1.4: Exception handling around invalid EXIF data
+-  1.1.3: Fix auto rotation on JPEG with missing Exif data
+-  1.1.4: Exception handling around invalid Exif data
 -  1.1.5: Fix image requests without content types
 -  1.1.6: Support custom applications that need command line arguments
 -  1.1.7: Support adapt resize mode
+-  1.1.8: Add preserve Exif flag
 
 TODO
 ====
