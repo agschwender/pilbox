@@ -402,6 +402,18 @@ class ImageTest(unittest.TestCase):
                     % (case["source_path"], case["expected_path"])
                 self.assertEqual(rv.read(), expected.read(), msg)
 
+    def test_clip_larger_images(self):
+        path = os.path.join(DATADIR, "test_clip_enlarging.jpg")
+        with open(path, "rb") as f:
+            img = Image(f).resize(500, 500, mode='clip')
+            assert img.img.size == (500, 430)
+
+    def test_clip_smaller_images(self):
+        path = os.path.join(DATADIR, "test_clip_enlarging.jpg")
+        with open(path, "rb") as f:
+            img = Image(f).resize(200, 200, mode='clip')
+            assert img.img.size == (200, 172)
+
 
 def _get_simple_criteria_combinations():
     return _make_combinations(
