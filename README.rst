@@ -36,7 +36,7 @@ Dependencies
 ------------
 
 -  >= `Python 2.7 <http://www.python.org/download/>`_
--  `Pillow 2.6.1 <https://pypi.python.org/pypi/Pillow/2.6.1>`_
+-  `Pillow 2.8.1 <https://pypi.python.org/pypi/Pillow/2.8.1>`_
 -  `Tornado 4.0.2 <https://pypi.python.org/pypi/tornado/4.0.2>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
 -  `PycURL 7.x <http://pycurl.sourceforge.net/>`_ (optional; required for proxy requests)
@@ -599,6 +599,7 @@ Changelog
 -  1.1.6: Support custom applications that need command line arguments
 -  1.1.7: Support adapt resize mode
 -  1.1.8: Add preserve Exif flag
+-  1.1.9: Increase Pillow version to 2.8.1
 
 TODO
 ====

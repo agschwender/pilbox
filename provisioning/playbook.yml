@@ -51,7 +51,7 @@
         version={{ item.version }}
         use_mirrors=yes
       with_items:
-        - { name: 'Pillow', version: '2.6.1' }
+        - { name: 'Pillow', version: '2.8.1' }
         - { name: 'tornado', version: '4.0.2' }
         - { name: 'coverage', version: '3.6' }
         - { name: 'pep8', version: '1.6.2' }

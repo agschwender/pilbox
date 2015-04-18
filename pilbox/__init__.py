@@ -67,13 +67,14 @@ Versions:
   * 1.1.6: Support custom applications that need command line arguments
   * 1.1.7: Support adapt resize mode
   * 1.1.8: Add preserve Exif flag
+  * 1.1.9: Increase Pillow version to 2.8.1
 """
 
 # human-readable version number
-version = "1.1.8"
+version = "1.1.9"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 1, 8, 0)
+version_info = (1, 1, 9, 0)
