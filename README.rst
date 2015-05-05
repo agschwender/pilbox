@@ -91,6 +91,8 @@ port 8888 on 192.168.100.100, i.e.
 
     http://192.168.100.100:8888/
 
+Another alternative is to deploy pilbox to hosted services like Heroku. With the included Procfile you can just follow Heroku's `Python documentation <https://devcenter.heroku.com/articles/getting-started-with-python>`_ and get a working Pilbox server. Add any startup options to the command in the Procfile.
+
 
 Running
 =======
