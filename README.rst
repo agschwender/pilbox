@@ -44,12 +44,15 @@ Dependencies
 -  Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev,
    zlib1g-dev, liblcms2-dev
 
-Tornado (and Pilbox) highly recommends running with ``libcurl`` and
-``pycurl``. Furthermore, it is recommended that the ``libcurl`` installation
-be built with asynchronous DNS resolver (threaded or c-ares), otherwise
-it may encounter various problems with request timeouts (for more
-information, see
-`http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS <http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS>`_)
+Pilbox highly recommends installing ``libcurl`` and ``pycurl`` in order
+to get better HTTP request performance as well as additional features
+such as proxy requests and requests over TLS. Installed versions of
+``libcurl`` should be a minimum of ``7.21.1`` and ``pycurl`` should be a
+minimum of ``7.18.2``. Furthermore, it is recommended that the
+``libcurl`` installation be built with asynchronous DNS resolver
+(threaded or c-ares), otherwise it may encounter various problems with
+request timeouts (for more information, see
+`http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS <http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS>`_ and comments in `curl_httpclient.py <https://github.com/tornadoweb/tornado/blob/master/tornado/curl_httpclient.py>`_)
 
 Install
 -------
