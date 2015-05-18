@@ -39,9 +39,17 @@ Dependencies
 -  `Pillow 2.8.1 <https://pypi.python.org/pypi/Pillow/2.8.1>`_
 -  `Tornado 4.0.2 <https://pypi.python.org/pypi/tornado/4.0.2>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
--  `PycURL 7.x <http://pycurl.sourceforge.net/>`_ (optional; required for proxy requests)
+-  `PycURL 7.x <http://pycurl.sourceforge.net/>`_ (optional, but
+   recommended; required for proxy requests and requests over TLS)
 -  Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev,
    zlib1g-dev, liblcms2-dev
+
+Tornado (and Pilbox) highly recommends running with `libcurl` and
+`pycurl`. Furthermore, it is recommended that the `libcurl` installation
+be built with asynchronous DNS resolver (threaded or c-ares), otherwise
+it may encounter various problems with request timeouts (for more
+information, see
+`http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS <http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS>`_)
 
 Install
 -------
