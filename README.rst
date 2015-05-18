@@ -51,8 +51,8 @@ such as proxy requests and requests over TLS. Installed versions of
 minimum of ``7.18.2``. Furthermore, it is recommended that the
 ``libcurl`` installation be built with asynchronous DNS resolver
 (threaded or c-ares), otherwise it may encounter various problems with
-request timeouts (for more information, see
-`http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS <http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS>`_ and comments in `curl_httpclient.py <https://github.com/tornadoweb/tornado/blob/master/tornado/curl_httpclient.py>`_)
+request timeouts (for more information, see `CURLOPT_CONNECTTIMEOUT_MS <http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS>`_
+and comments in `curl_httpclient.py <https://github.com/tornadoweb/tornado/blob/master/tornado/curl_httpclient.py>`_)
 
 Install
 -------
