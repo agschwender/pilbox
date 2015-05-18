@@ -44,8 +44,8 @@ Dependencies
 -  Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev,
    zlib1g-dev, liblcms2-dev
 
-Tornado (and Pilbox) highly recommends running with `libcurl` and
-`pycurl`. Furthermore, it is recommended that the `libcurl` installation
+Tornado (and Pilbox) highly recommends running with ``libcurl`` and
+``pycurl``. Furthermore, it is recommended that the ``libcurl`` installation
 be built with asynchronous DNS resolver (threaded or c-ares), otherwise
 it may encounter various problems with request timeouts (for more
 information, see
