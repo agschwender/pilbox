@@ -17,9 +17,9 @@ from pilbox.signature import sign
 from pilbox.test import image_test
 
 try:
-    from urllib import urlencode
+    from urllib import urlencode, quote
 except ImportError:
-    from urllib.parse import urlencode
+    from urllib.parse import urlencode, quote
 
 try:
     import cv
@@ -54,7 +54,7 @@ class _AppAsyncMixin(object):
                  optimize="opt", position="pos", progressive="prog",
                  quality="q", retain="retain")
         for i, case in enumerate(cases):
-            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            path = "/test/data/%s" % quote(os.path.basename(case["source_path"]))
             cases[i]["source_query_params"] = dict(
                 url=self.get_url(path),
                 w=case["width"] or "",
@@ -71,7 +71,7 @@ class _AppAsyncMixin(object):
         cases = image_test.get_image_rotate_cases()
         m = dict(expand="expand", format="fmt", optimize="opt", quality="q")
         for i, case in enumerate(cases):
-            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            path = "/test/data/%s" % quote(os.path.basename(case["source_path"]))
             cases[i]["source_query_params"] = dict(
                 op="rotate",
                 url=self.get_url(path),
@@ -88,7 +88,7 @@ class _AppAsyncMixin(object):
         cases = image_test.get_image_region_cases()
         m = dict(expand="expand", format="fmt", optimize="opt", quality="q")
         for i, case in enumerate(cases):
-            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            path = "/test/data/%s" % quote(os.path.basename(case["source_path"]))
             cases[i]["source_query_params"] = dict(
                 op="region",
                 url=self.get_url(path),
@@ -104,7 +104,7 @@ class _AppAsyncMixin(object):
     def get_image_chained_cases(self):
         cases = image_test.get_image_chained_cases()
         for i, case in enumerate(cases):
-            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            path = "/test/data/%s" % quote(os.path.basename(case["source_path"]))
             cases[i]["source_query_params"] = dict(
                 op=",".join(case["operation"]),
                 url=self.get_url(path),
@@ -121,7 +121,7 @@ class _AppAsyncMixin(object):
         cases = image_test.get_image_exif_cases()
         m = dict(preserve_exif="exif")
         for i, case in enumerate(cases):
-            path = "/test/data/%s" % os.path.basename(case["source_path"])
+            path = "/test/data/%s" % quote(os.path.basename(case["source_path"]))
             cases[i]["source_query_params"] = dict(
                 url=self.get_url(path),
                 w=case["width"] or "",

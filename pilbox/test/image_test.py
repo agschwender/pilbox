@@ -32,6 +32,9 @@ def get_image_resize_cases():
         for criteria in _get_simple_criteria_combinations():
             cases.append(_criteria_to_resize_case(filename, criteria))
 
+    cases.append(_criteria_to_resize_case(
+        "test space.jpg", _get_simple_criteria_combinations()[0]))
+
     for criteria in _get_advanced_criteria_combinations():
         cases.append(_criteria_to_resize_case("test-advanced.jpg", criteria))
 
