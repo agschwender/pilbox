@@ -48,7 +48,7 @@ setup(name='pilbox',
         'sphinx-me==0.2.1',
         ],
       dependency_links=[
-        'git+https://github.com/python-pillow/Pillow.git@e9a359ced2da677b14b38c7322f5da0bab089d48#egg=Pillow-2.9.0.dev0',
+        'git+https://github.com/python-pillow/Pillow.git@42d1aabcc4848320d532512df6fabfc607aeb02d#egg=Pillow-2.9.0.dev0',
       ],
       extras_require = {
           'Proxy': ['pycurl'],
