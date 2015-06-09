@@ -36,7 +36,7 @@ def write_gif(fp, sequence):
             else:
                 pass
         previous = im.copy()
-    fp.write(";")
+    fp.write(";".encode('utf-8'))
 
 
 def resize(im, width=200, height=100):
