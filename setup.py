@@ -44,9 +44,12 @@ setup(name='pilbox',
         },
       install_requires=[
         'tornado==4.0.2',
-        'Pillow==2.8.1',
+        'Pillow==2.9.0.dev0',
         'sphinx-me==0.2.1',
         ],
+      dependency_links=[
+        'git+https://github.com/python-pillow/Pillow.git@e9a359ced2da677b14b38c7322f5da0bab089d48#egg=Pillow-2.9.0.dev0',
+      ],
       extras_require = {
           'Proxy': ['pycurl'],
           'Facial Recognition': ['cv']

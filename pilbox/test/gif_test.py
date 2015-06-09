@@ -23,7 +23,7 @@ def write_gif(fp, sequence):
     previous = None
     for im in sequence:
         if not previous:
-            for s in getheader(im)[0] + getdata(im):
+            for s in getheader(im)[0] + getdata(im, duration=60, loop=0):
                 fp.write(s)
         else:
             delta = ImageChops.subtract_modulo(im, previous)
@@ -44,11 +44,13 @@ class GifTest(unittest.TestCase):
         # collect and resize all the frames of a gif
         frames = []
         for im in ImageSequence.Iterator(Image.open(ANIMATED_GIF)):
-            outfile = BytesIO()
-            im.save(outfile, 'gif')
-            i = pilbox.image.Image(outfile)
-            i.resize(100, 75)
-            frames.append(i.img.copy())
+            print im.info
+            frames.append(im.copy())
+            # outfile = BytesIO()
+            # im.save(outfile, 'gif')
+            # i = pilbox.image.Image(outfile)
+            # i.resize(100, 75)
+            # frames.append(i.img.copy())
 
         # write the result
         with open(EXPECTED_GIF, "wb") as fp:
