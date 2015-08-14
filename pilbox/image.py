@@ -97,7 +97,7 @@ class Image(object):
         self._orig_format = self.img.format
 
     @staticmethod
-    def validate_dimensions(width, height, is_region):
+    def validate_dimensions(width, height, is_region=False):
         if not width and not height and not is_region:
             raise errors.DimensionsError("Missing dimensions")
         elif width and not str(width).isdigit():
