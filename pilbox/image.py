@@ -167,7 +167,7 @@ class Image(object):
             raise errors.RetainError(
                 "Invalid retain: %s" % str(opts["retain"]))
 
-    def region(self, rect, width, height, **kwargs):
+    def region(self, rect, width=False, height=False, **kwargs):
         """ Selects a sub-region of the image using the supplied rectangle,
             x, y, width, height.
         """
@@ -479,7 +479,7 @@ def main():
     elif options.operation == "rotate":
         image.rotate(options.degree, expand=options.expand)
     elif options.operation == "region":
-        image.region(options.rect.split(","))
+        image.region(options.rect.split(","), options.width, options.height)
 
     stream = image.save(format=options.format,
                         optimize=options.optimize,
