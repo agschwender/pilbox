@@ -97,8 +97,8 @@ class Image(object):
         self._orig_format = self.img.format
 
     @staticmethod
-    def validate_dimensions(width, height):
-        if not width and not height:
+    def validate_dimensions(width, height, is_region):
+        if not width and not height and not is_region:
             raise errors.DimensionsError("Missing dimensions")
         elif width and not str(width).isdigit():
             raise errors.DimensionsError("Invalid width: %s" % width)
@@ -167,7 +167,7 @@ class Image(object):
             raise errors.RetainError(
                 "Invalid retain: %s" % str(opts["retain"]))
 
-    def region(self, rect):
+    def region(self, rect, width, height, **kwargs):
         """ Selects a sub-region of the image using the supplied rectangle,
             x, y, width, height.
         """
@@ -176,6 +176,12 @@ class Image(object):
         if box[2] > self.img.size[0] or box[3] > self.img.size[1]:
             raise errors.RectangleError("Region out-of-bounds")
         self.img = self.img.crop(box)
+
+        if width or height:
+            opts = Image._normalize_options(kwargs)
+            size = self._get_size(width, height)
+            self._scale(size, opts)
+
         return self
 
     def resize(self, width, height, **kwargs):
