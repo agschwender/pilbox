@@ -60,8 +60,8 @@ define("max_requests", help="max concurrent requests", type=int, default=40)
 define("timeout", help="request timeout in seconds", type=float, default=10)
 define("implicit_base_url", help="prepend protocol/host to url paths")
 define("ca_certs",
-        help="override filename of CA certificates in PEM format",
-        default=None)
+       help="override filename of CA certificates in PEM format",
+       default=None)
 define("validate_cert", help="validate certificates", type=bool, default=True)
 define("proxy_host", help="proxy hostname")
 define("proxy_port", help="proxy port", type=int)
