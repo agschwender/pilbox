@@ -127,6 +127,8 @@ To see a list of all available options, run
       --allowed_hosts            list of allowed hosts (default [])
       --allowed_operations       list of allowed operations (default [])
       --background               default hexadecimal bg color (RGB or ARGB)
+      --ca_certs                 filename of CA certificates in PEM format,
+                                 or None to use defaults
       --client_key               client key
       --client_name              client name
       --config                   path to configuration file
