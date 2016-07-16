@@ -1,25 +1,21 @@
 Pilbox
 ======
 
-.. image:: https://pypip.in/v/pilbox/badge.png
+.. image:: https://badge.fury.io/py/pilbox.svg
     :target: https://pypi.python.org/pypi/pilbox
     :alt: PyPI Version
 
-.. image:: https://travis-ci.org/agschwender/pilbox.png
+.. image:: https://travis-ci.org/agschwender/pilbox.svg?branch=master
     :target: https://travis-ci.org/agschwender/pilbox
     :alt: Build Status
 
-.. image:: https://coveralls.io/repos/agschwender/pilbox/badge.png
+.. image:: https://coveralls.io/repos/agschwender/pilbox/badge.svg
     :target: https://coveralls.io/r/agschwender/pilbox
     :alt: Test Coverage
 
 .. image:: https://landscape.io/github/agschwender/pilbox/master/landscape.svg?style=flat
     :target: https://landscape.io/github/agschwender/pilbox/master
     :alt: Code Health
-
-.. image:: https://pypip.in/d/pilbox/badge.png
-    :target: https://pypi.python.org/pypi/pilbox
-    :alt: PyPI Downloads
 
 
 Pilbox is an image processing application server built on Python's
