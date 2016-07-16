@@ -127,8 +127,7 @@ To see a list of all available options, run
       --allowed_hosts            list of allowed hosts (default [])
       --allowed_operations       list of allowed operations (default [])
       --background               default hexadecimal bg color (RGB or ARGB)
-      --ca_certs                 filename of CA certificates in PEM format,
-                                 or None to use defaults
+      --ca_certs                 filename of CA certificates in PEM format
       --client_key               client key
       --client_name              client name
       --config                   path to configuration file
@@ -609,6 +608,7 @@ Changelog
 -  1.1.7: Support adapt resize mode
 -  1.1.8: Add preserve Exif flag
 -  1.1.9: Increase Pillow version to 2.8.1
+-  1.1.10: Add ca_certs option
 
 TODO
 ====

@@ -68,6 +68,7 @@ Versions:
   * 1.1.7: Support adapt resize mode
   * 1.1.8: Add preserve Exif flag
   * 1.1.9: Increase Pillow version to 2.8.1
+  * 1.1.10: Add ca_certs option
 """
 
 # human-readable version number

@@ -21,7 +21,7 @@ class PilboxTest(Command):
 
 
 setup(name='pilbox',
-      version='1.1.9',
+      version='1.1.10',
       description='Pilbox is an image processing application server built on the Tornado web framework using the Pillow Imaging Library',
       long_description=readme,
       classifiers=[
