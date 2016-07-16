@@ -142,7 +142,9 @@ class ImageHandler(tornado.web.RequestHandler):
         "jpeg": "image/jpeg",
         "jpg": "image/jpeg",
         "png": "image/png",
-        "webp": "image/webp"}
+        "webp": "image/webp",
+        "tiff": "image/tiff",
+    }
 
     @tornado.gen.coroutine
     def get(self):
