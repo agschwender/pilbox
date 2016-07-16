@@ -69,6 +69,7 @@ Versions:
   * 1.1.8: Add preserve Exif flag
   * 1.1.9: Increase Pillow version to 2.8.1
   * 1.1.10: Add ca_certs option
+  * 1.1.11: Added support for TIFF
 """
 
 # human-readable version number

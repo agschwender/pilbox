@@ -190,6 +190,7 @@ General Parameters
    -  *jpeg*: Save as JPEG
    -  *png*: Save as PNG
    -  *webp*: Save as WebP
+   -  *tiff*: Save as TIFF
 
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *exif*: Keep original `Exif <http://en.wikipedia.org/wiki/Exchangeable_image_file_format>`_
@@ -609,6 +610,7 @@ Changelog
 -  1.1.8: Add preserve Exif flag
 -  1.1.9: Increase Pillow version to 2.8.1
 -  1.1.10: Add ca_certs option
+-  1.1.11: Added support for TIFF
 
 TODO
 ====
