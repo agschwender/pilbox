@@ -43,20 +43,20 @@ _positions_to_ratios = {
     "left": (0.0, 0.5), "center": (0.5, 0.5), "right": (1.0, 0.5),
     "bottom-left": (0.0, 1.0), "bottom": (0.5, 1.0),
     "bottom-right": (1.0, 1.0), "face": None
-    }
+}
 
 _orientation_to_rotation = {
     3: 180,
     6: 90,
     8: 270
-    }
+}
 
 _filters_to_pil = {
     "antialias": PIL.Image.ANTIALIAS,
     "bicubic": PIL.Image.BICUBIC,
     "bilinear": PIL.Image.BILINEAR,
     "nearest": PIL.Image.NEAREST
-    }
+}
 
 _formats_to_pil = {
     "gif": "GIF",
@@ -74,7 +74,7 @@ class Image(object):
     MODES = ["adapt", "clip", "crop", "fill", "scale"]
     POSITIONS = _positions_to_ratios.keys()
 
-    _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
+    _DEFAULTS = dict(background="0fff", expand=False, filter="antialias",
                      format=None, mode="crop", optimize=False,
                      position="center", quality=90, progressive=False,
                      retain=75, preserve_exif=False)
@@ -83,7 +83,7 @@ class Image(object):
 
     def __init__(self, stream):
         self.stream = stream
-
+        self._skip_background = False
         try:
             self.img = PIL.Image.open(self.stream)
         except IOError:
@@ -258,6 +258,10 @@ class Image(object):
         if int(opts["preserve_exif"]):
             save_kwargs["exif"] = self._exif
 
+        color = color_hex_to_dec_tuple(opts["background"])
+        if self.img.mode == "RGBA":
+            self._background(fmt, color)
+
         if self._orig_format == "JPEG":
             self.img.format = self._orig_format
             save_kwargs["subsampling"] = "keep"
@@ -289,6 +293,18 @@ class Image(object):
     def _clip(self, size, opts):
         self.img.thumbnail(size, opts["pil"]["filter"])
 
+    def _background(self, fmt, color):
+        if self._skip_background:
+            return
+        img = PIL.Image.new(mode="RGBA", size=self.img.size, color=color)
+        if self.img.mode == "RGBA" and Image._supports_alpha(fmt):
+            self.img = PIL.Image.alpha_composite(img, self.img)
+        else:
+            bands = self.img.split()
+            mask = bands[3] if len(bands) == 4 else None
+            img.paste(self.img, mask=mask)
+            self.img = img
+
     def _crop(self, size, opts):
         if opts["position"] == "face":
             if cv is None:
@@ -309,7 +325,12 @@ class Image(object):
         color = color_hex_to_dec_tuple(opts["background"])
         mode = "RGBA" if len(color) == 4 else "RGB"
         img = PIL.Image.new(mode=mode, size=size, color=color)
-        img.paste(self.img, (x, y))
+        # If the image has an alpha channel, use it as a mask when
+        # pasting onto the background.
+        channels = self.img.split()
+        mask = channels[3] if len(channels) == 4 else None
+        img.paste(self.img, (x, y), mask=mask)
+        self._skip_background = True
         self.img = img
 
     def _scale(self, size, opts):
@@ -395,6 +416,12 @@ class Image(object):
             return False
         return True
 
+    @staticmethod
+    def _supports_alpha(format):
+        # GIF intentionally omitted as it only supports transparency,
+        # not an alpha channel.
+        return format in ["PNG", "WEBP"]
+
 
 def color_hex_to_dec_tuple(color):
     """Converts a color from hexadecimal to decimal tuple, color can be in
@@ -423,7 +450,7 @@ def main():
     define("height", help="the desired image height", type=int)
     define("mode", help="the resizing mode",
            metavar="|".join(Image.MODES), type=str)
-    define("background", help="the hexidecimal fill background color",
+    define("background", help="the hexadecimal fill background color",
            type=str)
     define("position", help="the crop position",
            metavar="|".join(Image.POSITIONS), type=str)
@@ -478,6 +505,7 @@ def main():
 
     stream = image.save(format=options.format,
                         optimize=options.optimize,
+                        background=options.background,
                         quality=options.quality,
                         progressive=options.progressive,
                         preserve_exif=options.preserve_exif)

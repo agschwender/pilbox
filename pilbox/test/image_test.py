@@ -44,6 +44,10 @@ def get_image_resize_cases():
     for criteria in _get_transparent_criteria_combinations():
         cases.append(_criteria_to_resize_case("test2.png", criteria))
 
+    for criteria in _get_background_criteria_combinations():
+        cases.append(_criteria_to_resize_case("test-alpha1.png", criteria))
+        cases.append(_criteria_to_resize_case("test-alpha2.webp", criteria))
+
     return list(filter(bool, cases))
 
 
@@ -326,6 +330,7 @@ class ImageTest(unittest.TestCase):
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
+                background=case.get("background"),
                 progressive=case.get("progressive"),
                 quality=case.get("quality"))
 
@@ -442,6 +447,10 @@ def _get_transparent_criteria_combinations():
         [dict(values=[["fill"], [(75, 125)], ["1ccc", "a0cccccc"]],
               fields=["mode", "size", "background"])])
 
+def _get_background_criteria_combinations():
+    return _make_combinations(
+        [dict(values=[["resize"], [(125, 125)], ["0fff", "000", "fff", "a0cccccc"], ["jpg", "png", "gif", "webp"]],
+              fields=["mode", "size", "background", "format"])])
 
 def _make_combinations(choices):
     combos = []

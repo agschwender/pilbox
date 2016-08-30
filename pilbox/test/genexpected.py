@@ -49,6 +49,7 @@ def main():
             rv = img.save(
                 format=case.get("format"),
                 optimize=case.get("optimize"),
+                background=case.get("background"),
                 progressive=case.get("progressive"),
                 quality=case.get("quality"))
 

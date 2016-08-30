@@ -284,6 +284,7 @@ class ImageHandler(tornado.web.RequestHandler):
                  optimize=self.get_argument("opt"),
                  quality=self.get_argument("q"),
                  progressive=self.get_argument("prog"),
+                 background=self.get_argument("bg"),
                  preserve_exif=self.get_argument("exif")))
 
     def _get_options(self, opts):
