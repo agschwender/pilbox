@@ -340,7 +340,7 @@ when no portion of the image can be lost and it is acceptable that the
 image not be exactly the supplied dimensions, but merely fit within the
 dimensions.
 
-.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-clip.jpg
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=clip.jpg
      :align: center
      :alt: Clipped image
 
@@ -352,7 +352,7 @@ box. It is then centered and the excess is cut from the image. Cropping
 is useful when the position of the subject is known and the image must
 be exactly the supplied size.
 
-.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-crop.jpg
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=crop.jpg
      :align: center
      :alt: Cropped image
 
@@ -366,7 +366,7 @@ space is filled with the supplied background color. Filling is useful
 when no portion of the image can be lost and it must be exactly the
 supplied size.
 
-.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-fill-ccc.jpg
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=fill-background=ccc.jpg
     :align: center
     :alt: Filled image
 
@@ -379,7 +379,7 @@ stretched to fill the excess space. Scaling is often not useful in
 production environments as it generally produces poor quality images.
 This mode is largely included for completeness.
 
-.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-scale.jpg
+.. figure:: https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=scale.jpg
     :align: center
     :alt: Scale image
 
