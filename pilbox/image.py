@@ -417,10 +417,10 @@ class Image(object):
         return True
 
     @staticmethod
-    def _supports_alpha(format):
+    def _supports_alpha(fmt):
         # GIF intentionally omitted as it only supports transparency,
         # not an alpha channel.
-        return format in ["PNG", "WEBP"]
+        return fmt in ["PNG", "WEBP"]
 
 
 def color_hex_to_dec_tuple(color):
