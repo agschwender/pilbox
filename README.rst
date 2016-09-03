@@ -192,6 +192,13 @@ General Parameters
    -  *webp*: Save as WebP
    -  *tiff*: Save as TIFF
 
+- *bg*: Background color used with images that have transparency;
+  useful when saving to a format that does not support transparency
+
+   -  *RGB*: 3- or 6-digit hexadecimal number
+   -  *ARGB*: 4- or 8-digit hexadecimal number, only relevant for PNG
+      images
+
 -  *opt*: The output should be optimized, only relevant to JPEGs and PNGs
 -  *exif*: Keep original `Exif <http://en.wikipedia.org/wiki/Exchangeable_image_file_format>`_
    data in the processed image, only relevant for JPEG
@@ -290,8 +297,8 @@ For resizing, either the ``w`` or ``h`` parameter is required. If only
 one dimension is specified, the application will determine the other
 dimension using the aspect ratio. ``mode`` is optional and defaults to
 ``crop``. ``filter`` is optional and defaults to ``antialias``. ``bg``
-is optional and defaults to ``fff``. ``pos`` is optional and defaults to
-``center``. ``retain`` is optional and defaults to ``75``.
+is optional and defaults to ``0fff``. ``pos`` is optional and defaults
+to ``center``. ``retain`` is optional and defaults to ``75``.
 
 For region sub-selection, ``rect`` is required. For rotating, ``deg`` is
 required. ``expand`` is optional and defaults to ``0`` (disabled). It is
@@ -611,6 +618,11 @@ Changelog
 -  1.1.9: Increase Pillow version to 2.8.1
 -  1.1.10: Add ca_certs option
 -  1.1.11: Added support for TIFF
+-  1.2.0: Support setting background when saving a transparent image
+
+   - *Backwards incompatible*: default background property changed to
+     ``0fff``. To restore previous behavior, set background in config
+     to ``ffff``.
 
 TODO
 ====

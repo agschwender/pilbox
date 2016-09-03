@@ -49,3 +49,5 @@
   * 1.1.9: Increase Pillow version to 2.8.1
   * 1.1.10: Add ca_certs option
   * 1.1.11: Added support for TIFF
+  * 1.2.0: Support setting background when saving a transparent image
+    - *Backwards incompatible*: default background property changed to `0fff`. To restore previous behavior, set background in config to `ffff`.

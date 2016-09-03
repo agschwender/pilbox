@@ -70,13 +70,17 @@ Versions:
   * 1.1.9: Increase Pillow version to 2.8.1
   * 1.1.10: Add ca_certs option
   * 1.1.11: Added support for TIFF
+  * 1.2.0: Support setting background when saving a transparent image
+    * *Backwards incompatible*: default background property changed to
+      `0fff`. To restore previous behavior, set background in config
+       to `ffff`.
 """
 
 # human-readable version number
-version = "1.1.9"
+version = "1.2.0"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 1, 9, 0)
+version_info = (1, 2, 0, 0)
