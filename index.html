@@ -187,6 +187,16 @@ Options:
 </ul>
 </li>
 <li>
+<em>bg</em>: Background color used with images that have transparency; useful when saving to a format that does not support transparency
+
+<ul>
+<li>
+<em>RGB</em>: 3- or 6-digit hexadecimal number</li>
+<li>
+<em>ARGB</em>: 4- or 8-digit hexadecimal number, only relevant for PNG images</li>
+</ul>
+</li>
+<li>
 <em>opt</em>: The output should be optimized, only relevant to JPEGs and PNGs</li>
 <li>
 <em>exif</em>: Keep original <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format">Exif</a> data in the processed image, only relevant for JPEG</li>
@@ -328,28 +338,28 @@ Options:
 
 <p>The image is resized to fit within a <code>500x400</code> box, maintaining aspect ratio and producing an image that is <code>500x334</code>. Clipping is useful when no portion of the image can be lost and it is acceptable that the image not be exactly the supplied dimensions, but merely fit within the dimensions.</p>
 
-<p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-clip.jpg" alt="Clipped image"></p>
+<p><img src="https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=clip.jpg" alt="Clipped image"></p>
 
 <h2>
 <a id="crop" class="anchor" href="#crop" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Crop</h2>
 
 <p>The image is resized so that one dimension fits within the <code>500x400</code> box. It is then centered and the excess is cut from the image. Cropping is useful when the position of the subject is known and the image must be exactly the supplied size.</p>
 
-<p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-crop.jpg" alt="Cropped image"></p>
+<p><img src="https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=crop.jpg" alt="Cropped image"></p>
 
 <h2>
 <a id="fill" class="anchor" href="#fill" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fill</h2>
 
 <p>Similar to clip, fill resizes the image to fit within a <code>500x400</code> box. Once clipped, the image is centered within the box and all left over space is filled with the supplied background color. Filling is useful when no portion of the image can be lost and it must be exactly the supplied size.</p>
 
-<p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-fill-ccc.jpg" alt="Filled image"></p>
+<p><img src="https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=fill-background=ccc.jpg" alt="Filled image"></p>
 
 <h2>
 <a id="scale" class="anchor" href="#scale" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scale</h2>
 
 <p>The image is clipped to fit within the <code>500x400</code> box and then stretched to fill the excess space. Scaling is often not useful in production environments as it generally produces poor quality images. This mode is largely included for completeness.</p>
 
-<p><img src="https://raw.github.com/agschwender/pilbox/master/pilbox/test/data/expected/example-500x400-scale.jpg" alt="Scale image"></p>
+<p><img src="https://github.com/agschwender/pilbox/raw/master/pilbox/test/data/expected/example-500x400-mode=scale.jpg" alt="Scale image"></p>
 
 <h1>
 <a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h1>
@@ -541,6 +551,13 @@ if __name__ == "__main__":
 <li>1.1.9: Increase Pillow version to 2.8.1</li>
 <li>1.1.10: Add ca_certs option</li>
 <li>1.1.11: Added support for TIFF</li>
+<li>1.2.0: Support setting background when saving a transparent image
+
+<ul>
+<li>
+<em>Backwards incompatible</em>: default background property changed to <code>0fff</code>. To restore previous behavior, set background in config to <code>ffff</code>.</li>
+</ul>
+</li>
 </ul>
 
 <h1>
