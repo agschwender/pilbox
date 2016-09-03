@@ -192,8 +192,8 @@ General Parameters
    -  *webp*: Save as WebP
    -  *tiff*: Save as TIFF
 
-- *bg*: Background color used with images that have transparency;
-  useful when saving to a format that does not support transparency
+-  *bg*: Background color used with images that have transparency;
+   useful when saving to a format that does not support transparency
 
    -  *RGB*: 3- or 6-digit hexadecimal number
    -  *ARGB*: 4- or 8-digit hexadecimal number, only relevant for PNG
