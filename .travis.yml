@@ -20,6 +20,6 @@ before_script:
   - pep8 --exclude=test pilbox
   - pyflakes pilbox/*.py
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then coverage run -m pilbox.test.runtests; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2' ]]; then coverage run -m pilbox.test.runtests; fi
 after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2' ]]; then coveralls; fi
