@@ -52,3 +52,4 @@
   * 1.2.0: Support setting background when saving a transparent image
     - *Backwards incompatible*: default background property changed to `0fff`. To restore previous behavior, set background in config to `ffff`.
   * 1.2.1: Added max operations config property
+  * 1.2.2: Added max resize width and height config properties

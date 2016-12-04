@@ -139,6 +139,8 @@ To see a list of all available options, run
       --implicit_base_url        prepend protocol/host to url paths
       --max_operations           maximum operations to perform (default 10)
       --max_requests             max concurrent requests (default 40)
+      --max_resize_height        maximum resize height (default 15000)
+      --max_resize_width         maximum resize width (default 15000)
       --operation                default operation to perform
       --optimize                 default to optimize when saving
       --port                     run on the given port (default 8888)
@@ -626,9 +628,4 @@ Changelog
      to ``ffff``.
 
 -   1.2.1: Added max operations config property
-
-TODO
-====
-
--  How to reconcile unavailable color profiles?
--  Add backends (S3, file system, etc...) if necessary
+-   1.2.2: Added max resize width and height config properties

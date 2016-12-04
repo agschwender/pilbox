@@ -196,8 +196,18 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
         self.assertEqual(resp.get("error_code"),
                          errors.DimensionsError.get_code())
 
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=15001, h=1))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"),
+                         errors.DimensionsError.get_code())
+
     def test_invalid_height(self):
         qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h="a"))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"),
+                         errors.DimensionsError.get_code())
+
+        qs = urlencode(dict(url="http://foo.co/x.jpg", w=1, h=15001))
         resp = self.fetch_error(400, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"),
                          errors.DimensionsError.get_code())

@@ -55,6 +55,8 @@ define("client_key", help="client key")
 define("allowed_hosts", help="valid hosts", default=[], multiple=True)
 define("allowed_operations", help="valid ops", default=[], multiple=True)
 define("max_operations", help="maximum operations to perform", default=10)
+define("max_resize_height", help="maximum resize height", default=15000)
+define("max_resize_width", help="maximum resize width", default=15000)
 
 # request related settings
 define("max_requests", help="max concurrent requests", type=int, default=40)
@@ -100,6 +102,8 @@ class PilboxApplication(tornado.web.Application):
             allowed_operations=set(
                 options.allowed_operations or ImageHandler.OPERATIONS),
             max_operations=options.max_operations,
+            max_resize_height=options.max_resize_height,
+            max_resize_width=options.max_resize_width,
             background=options.background,
             expand=options.expand,
             filter=options.filter,
@@ -167,8 +171,12 @@ class ImageHandler(tornado.web.RequestHandler):
         opts = self._get_save_options()
         ops = self._get_operations()
         if "resize" in ops:
-            Image.validate_dimensions(
-                self.get_argument("w"), self.get_argument("h"))
+            w, h = self.get_argument("w"), self.get_argument("h")
+            Image.validate_dimensions(w, h)
+            if w and int(w) > self.settings.get("max_resize_width"):
+                raise errors.DimensionsError("Exceeds maximum allowed width")
+            elif h and int(h) > self.settings.get("max_resize_height"):
+                raise errors.DimensionsError("Exceeds maximum allowed height")
             opts.update(self._get_resize_options())
         if "rotate" in ops:
             Image.validate_degree(self.get_argument("deg"))

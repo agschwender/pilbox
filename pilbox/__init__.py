@@ -75,13 +75,14 @@ Versions:
       `0fff`. To restore previous behavior, set background in config
        to `ffff`.
   * 1.2.1: Added max operations config property
+  * 1.2.2: Added max resize width and height config properties
 """
 
 # human-readable version number
-version = "1.2.1"
+version = "1.2.2"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 2, 1, 0)
+version_info = (1, 2, 2, 0)
