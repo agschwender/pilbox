@@ -45,7 +45,9 @@ class _AppAsyncMixin(object):
 
     def fetch_success(self, *args, **kwargs):
         response = self.fetch(*args, **kwargs)
-        self.assertEqual(response.code, 200)
+        msg = "failed to fetch %s, received %d with %s" \
+              % (args[0], response.code, response.body)
+        self.assertEqual(response.code, 200, msg)
         return response
 
     def get_image_resize_cases(self):
@@ -352,11 +354,11 @@ class AppTest(AsyncHTTPTestCase, _AppAsyncMixin):
     def _assert_expected_case(self, case):
         qs = urlencode(case["source_query_params"])
         resp = self.fetch_success("/?%s" % qs)
-        msg = "/?%s does not match %s" \
-            % (qs, case["expected_path"])
         if case["content_type"]:
             self.assertEqual(resp.headers.get("Content-Type", None),
                              case["content_type"])
+        msg = "/?%s does not match %s" \
+            % (qs, case["expected_path"])
         with open(case["expected_path"], "rb") as expected:
             self.assertEqual(resp.buffer.read(), expected.read(), msg)
 
