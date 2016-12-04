@@ -449,7 +449,7 @@ def _get_transparent_criteria_combinations():
 
 def _get_background_criteria_combinations():
     return _make_combinations(
-        [dict(values=[["resize"], [(125, 125)], ["0fff", "000", "fff", "a0cccccc"], ["jpg", "png", "gif", "webp"]],
+        [dict(values=[["crop"], [(125, 125)], ["0fff", "000", "fff", "a0cccccc"], ["jpg", "png", "gif", "webp"]],
               fields=["mode", "size", "background", "format"])])
 
 def _make_combinations(choices):
