@@ -61,26 +61,27 @@ Versions:
   * 1.1.0: Proxy server support
   * 1.1.1: Added JPEG auto rotation based on Exif orientation
   * 1.1.2: Added keep JPEG quality option and set JPEG subsampling to keep
-  * 1.1.3: Fix auto rotation on JPEG with missing Exif data
+  * 1.1.3: Fixed auto rotation on JPEG with missing Exif data
   * 1.1.4: Exception handling around invalid Exif data
-  * 1.1.5: Fix for images requests without content types
+  * 1.1.5: Fixed image requests without content types
   * 1.1.6: Support custom applications that need command line arguments
   * 1.1.7: Support adapt resize mode
-  * 1.1.8: Add preserve Exif flag
-  * 1.1.9: Increase Pillow version to 2.8.1
-  * 1.1.10: Add ca_certs option
+  * 1.1.8: Added preserve Exif flag
+  * 1.1.9: Increased Pillow version to 2.8.1
+  * 1.1.10: Added ca_certs option
   * 1.1.11: Added support for TIFF
   * 1.2.0: Support setting background when saving a transparent image
     * *Backwards incompatible*: default background property changed to
       `0fff`. To restore previous behavior, set background in config
        to `ffff`.
+  * 1.2.1: Added max operations config property
 """
 
 # human-readable version number
-version = "1.2.0"
+version = "1.2.1"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 2, 0, 0)
+version_info = (1, 2, 1, 0)

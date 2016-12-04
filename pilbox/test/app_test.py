@@ -436,6 +436,33 @@ class AppDefaultOperationTest(AsyncHTTPTestCase, _AppAsyncMixin):
             self.assertEqual(resp.buffer.read(), expected.read(), msg)
 
 
+class AppMaxOperationsTest(AsyncHTTPTestCase, _AppAsyncMixin):
+    def get_app(self):
+        return _PilboxTestApplication(max_operations=1)
+
+    def test_invalid_max_operations(self):
+        qs = urlencode(dict(
+            url=self.get_url("/test/data/test1.jpg"),
+            op="resize,rotate",
+            deg=180,
+            w=100,
+            h=100
+        ))
+        resp = self.fetch_error(400, "/?%s" % qs)
+        self.assertEqual(resp.get("error_code"),
+                         errors.OperationError.get_code())
+
+    def test_valid_max_operations(self):
+        url = self.get_url("/test/data/test1.jpg")
+        qs = urlencode(dict(url=url, op="noop"))
+        resp = self.fetch_success("/?%s" % qs)
+        expected_path = os.path.join(
+            os.path.dirname(__file__), "data", "test1.jpg")
+        msg = "/?%s does not match %s" % (qs, expected_path)
+        with open(expected_path, "rb") as expected:
+            self.assertEqual(resp.buffer.read(), expected.read(), msg)
+
+
 class AppOverrideContentTypeTest(AsyncHTTPTestCase, _AppAsyncMixin):
     def get_app(self):
         return _PilboxTestApplication(content_type_from_image=True)

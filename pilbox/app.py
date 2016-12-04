@@ -54,6 +54,7 @@ define("client_name", help="client name")
 define("client_key", help="client key")
 define("allowed_hosts", help="valid hosts", default=[], multiple=True)
 define("allowed_operations", help="valid ops", default=[], multiple=True)
+define("max_operations", help="maximum operations to perform", default=10)
 
 # request related settings
 define("max_requests", help="max concurrent requests", type=int, default=40)
@@ -98,6 +99,7 @@ class PilboxApplication(tornado.web.Application):
             allowed_hosts=options.allowed_hosts,
             allowed_operations=set(
                 options.allowed_operations or ImageHandler.OPERATIONS),
+            max_operations=options.max_operations,
             background=options.background,
             expand=options.expand,
             filter=options.filter,
@@ -297,6 +299,8 @@ class ImageHandler(tornado.web.RequestHandler):
         operations = set(self._get_operations())
         if not operations.issubset(self.settings.get("allowed_operations")):
             raise errors.OperationError("Unsupported operation")
+        elif len(operations) > self.settings.get("max_operations"):
+            raise errors.OperationError("Too many operations")
 
     def _validate_url(self):
         url = self.get_argument("url")
