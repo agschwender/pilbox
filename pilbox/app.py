@@ -68,6 +68,7 @@ define("ca_certs",
 define("validate_cert", help="validate certificates", type=bool, default=True)
 define("proxy_host", help="proxy hostname")
 define("proxy_port", help="proxy port", type=int)
+define("user_agent", help="user agent", type=str)
 
 # header related settings
 define("content_type_from_image",
@@ -118,6 +119,7 @@ class PilboxApplication(tornado.web.Application):
             timeout=options.timeout,
             implicit_base_url=options.implicit_base_url,
             ca_certs=options.ca_certs,
+            user_agent=options.user_agent,
             validate_cert=options.validate_cert,
             content_type_from_image=options.content_type_from_image,
             proxy_host=options.proxy_host,
@@ -201,6 +203,7 @@ class ImageHandler(tornado.web.RequestHandler):
                 request_timeout=self.settings.get("timeout"),
                 ca_certs=self.settings.get("ca_certs"),
                 validate_cert=self.settings.get("validate_cert"),
+                user_agent=self.settings.get("user_agent"),
                 proxy_host=self.settings.get("proxy_host"),
                 proxy_port=self.settings.get("proxy_port"))
             raise tornado.gen.Return(resp)

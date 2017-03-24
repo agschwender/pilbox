@@ -153,6 +153,7 @@ To see a list of all available options, run
       --retain                   default adaptive retain percent, 1-99
       --timeout                  timeout of requests in seconds (default 10)
       --validate_cert            validate certificates (default True)
+      --user_agent               user agent
 
 
 Calling
