@@ -4,6 +4,7 @@ import logging
 import os.path
 import time
 
+import PIL.Image
 import tornado.escape
 import tornado.gen
 import tornado.ioloop
@@ -15,6 +16,11 @@ from pilbox import errors
 from pilbox.app import PilboxApplication
 from pilbox.signature import sign
 from pilbox.test import image_test
+
+try:
+    from io import BytesIO
+except ImportError:
+    from cStringIO import StringIO as BytesIO
 
 try:
     from urllib import urlencode, quote
@@ -152,6 +158,7 @@ class _PilboxTestApplication(PilboxApplication):
     def get_handlers(self):
         path = os.path.join(os.path.dirname(__file__), "data")
         handlers = [(r"/test/data/test-delayed.jpg", _DelayedHandler),
+                    (r"/test/data/test-user-agent.jpg", _UserAgentHandler),
                     (r"/test/data/(.*)",
                      tornado.web.StaticFileHandler,
                      {"path": path})]
@@ -166,6 +173,29 @@ class _DelayedHandler(tornado.web.RequestHandler):
         delay = time.time() + float(self.get_argument("delay", 0.0))
         yield tornado.gen.Task(
             tornado.ioloop.IOLoop.instance().add_timeout, delay)
+        self.finish()
+
+
+class _UserAgentHandler(tornado.web.RequestHandler):
+
+    @tornado.web.asynchronous
+    def get(self):
+        ua = self.request.headers.get("User-Agent", "")
+        expected_ua = self.get_argument("ua", "")
+        if ua != expected_ua:
+            self.set_status(400)
+            self.finish("")
+            return
+
+        self.set_status(200)
+        self.set_header("Content-Type", "image/jpeg")
+        img = PIL.Image.new('RGBA', (1, 1))
+        outfile = BytesIO()
+        img.save(outfile, "JPEG")
+        outfile.seek(0)
+        for block in iter(lambda: outfile.read(65536), b""):
+            self.write(block)
+        outfile.close()
         self.finish()
 
 
@@ -558,3 +588,20 @@ class AppSlowTest(AsyncHTTPTestCase, _AppAsyncMixin):
         qs = urlencode(dict(url=url, w=1, h=1))
         resp = self.fetch_error(404, "/?%s" % qs)
         self.assertEqual(resp.get("error_code"), errors.FetchError.get_code())
+
+
+class AppUserAgentTest(AsyncHTTPTestCase, _AppAsyncMixin):
+    ua = "foo"
+
+    def get_app(self):
+        return _PilboxTestApplication(user_agent=AppUserAgentTest.ua)
+
+    def test_incorrect_user_agent(self):
+        url = self.get_url("/test/data/test-user-agent.jpg?ua=bar")
+        qs = urlencode(dict(url=url, w=1, h=1))
+        resp = self.fetch_error(404, "/?%s" % qs)
+
+    def test_correct_user_agent(self):
+        url = self.get_url("/test/data/test-user-agent.jpg?ua=%s" % AppUserAgentTest.ua)
+        qs = urlencode(dict(url=url, w=1, h=1))
+        resp = self.fetch_success("/?%s" % qs)
