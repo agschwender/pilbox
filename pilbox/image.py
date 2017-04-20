@@ -224,8 +224,17 @@ class Image(object):
             else:
                 deg = 0
 
-        expand = False if int(deg) % 90 == 0 else bool(int(opts["expand"]))
-        self.img = self.img.rotate(360 - int(deg), expand=expand)
+        deg = 360 - (int(deg) % 360)
+        if deg % 90 == 0:
+            if deg == 90:
+                self.img = self.img.transpose(PIL.Image.ROTATE_90)
+            elif deg == 180:
+                self.img = self.img.transpose(PIL.Image.ROTATE_180)
+            elif deg == 270:
+                self.img = self.img.transpose(PIL.Image.ROTATE_270)
+        else:
+            self.img = self.img.rotate(deg, expand=bool(int(opts["expand"])))
+
         return self
 
     def save(self, **kwargs):
@@ -376,7 +385,7 @@ class Image(object):
     def _pil_to_opencv(self):
         mono = self.img.convert("L")
         cvim = cv.CreateImageHeader(mono.size, cv.IPL_DEPTH_8U, 1)
-        cv.SetData(cvim, mono.tostring(), mono.size[0])
+        cv.SetData(cvim, mono.tobytes(), mono.size[0])
         cv.EqualizeHist(cvim, cvim)
         return cvim
 

@@ -21,7 +21,7 @@ class PilboxTest(Command):
 
 
 setup(name='pilbox',
-      version='1.2.3',
+      version='1.3.0',
       description='Pilbox is an image processing application server built on the Tornado web framework using the Pillow Imaging Library',
       long_description=readme,
       classifiers=[
@@ -43,8 +43,8 @@ setup(name='pilbox',
         'pilbox': ['frontalface.xml'],
         },
       install_requires=[
-        'tornado==4.0.2',
-        'Pillow==2.8.1',
+        'tornado==4.5.1',
+        'Pillow==2.9.0',
         'sphinx-me==0.2.1',
         ],
       extras_require = {

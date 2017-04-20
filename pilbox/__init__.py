@@ -77,13 +77,14 @@ Versions:
   * 1.2.1: Added max operations config property
   * 1.2.2: Added max resize width and height config properties
   * 1.2.3: Added user_agent option
+  * 1.3.0: Increased Pillow to 2.9.0 and Tornado to 4.5.1
 """
 
 # human-readable version number
-version = "1.2.3"
+version = "1.3.0"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 2, 3, 0)
+version_info = (1, 3, 0, 0)

@@ -31,9 +31,9 @@ Setup
 Dependencies
 ------------
 
--  >= `Python 2.7 <http://www.python.org/download/>`_
--  `Pillow 2.8.1 <https://pypi.python.org/pypi/Pillow/2.8.1>`_
--  `Tornado 4.0.2 <https://pypi.python.org/pypi/tornado/4.0.2>`_
+-  `Python >= 2.7 <http://www.python.org/download/>`_
+-  `Pillow 4.1.0 <https://pypi.python.org/pypi/Pillow/4.1.0>`_
+-  `Tornado 2.9.0 <https://pypi.python.org/pypi/tornado/2.9.0>`_
 -  `OpenCV 2.x <http://opencv.org/>`_ (optional)
 -  `PycURL 7.x <http://pycurl.sourceforge.net/>`_ (optional, but
    recommended; required for proxy requests and requests over TLS)
@@ -631,3 +631,4 @@ Changelog
 -  1.2.1: Added max operations config property
 -  1.2.2: Added max resize width and height config properties
 -  1.2.3: Added user_agent option
+-  1.3.0: Increased Pillow to 2.9.0 and Tornado to 4.5.1
