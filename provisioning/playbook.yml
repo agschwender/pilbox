@@ -4,7 +4,7 @@
 #    ansible-playbook -i <inventory> playbook.yml
 #
 # VERSION 0.1
-# ANSIBLE-VERSION 1.2.2
+# ANSIBLE-VERSION 2.3.0
 
 - hosts: vagrant
   user: vagrant
@@ -74,7 +74,7 @@
       command: update-rc.d pilbox defaults
 
     - name: running pilbox check
-      service: name=pilbox state=running enabled=yes
+      service: name=pilbox state=started enabled=yes
 
   handlers:
     - name: restart pilbox
