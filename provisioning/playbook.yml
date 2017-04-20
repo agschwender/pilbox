@@ -8,7 +8,7 @@
 
 - hosts: vagrant
   user: vagrant
-  sudo: True
+  become: True
 
   tasks:
     - user: name=ansible groups=admin shell=/bin/bash password=ansible state=present
@@ -17,12 +17,12 @@
     - command: cat /home/vagrant/.ssh/authorized_keys
       register: authorized_keys
     - authorized_key: user=ansible key="{{ item }}"
-      with_items: authorized_keys.stdout_lines
+      with_items: "{{ authorized_keys.stdout_lines }}"
 
 
 - hosts: app
   user: ansible
-  sudo: True
+  become: True
 
   tasks:
     - name: update apt
@@ -62,7 +62,7 @@
 
 - hosts: app
   user: ansible
-  sudo: True
+  become: True
 
   tasks:
     - name: copy pilbox init script
