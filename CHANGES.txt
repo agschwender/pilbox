@@ -53,3 +53,4 @@
     - *Backwards incompatible*: default background property changed to `0fff`. To restore previous behavior, set background in config to `ffff`.
   * 1.2.1: Added max operations config property
   * 1.2.2: Added max resize width and height config properties
+  * 1.2.3: Added user_agent option

@@ -152,8 +152,8 @@ To see a list of all available options, run
       --quality                  default jpeg quality, 1-99 or keep
       --retain                   default adaptive retain percent, 1-99
       --timeout                  timeout of requests in seconds (default 10)
-      --validate_cert            validate certificates (default True)
       --user_agent               user agent
+      --validate_cert            validate certificates (default True)
 
 
 Calling
@@ -628,5 +628,6 @@ Changelog
      ``0fff``. To restore previous behavior, set background in config
      to ``ffff``.
 
--   1.2.1: Added max operations config property
--   1.2.2: Added max resize width and height config properties
+-  1.2.1: Added max operations config property
+-  1.2.2: Added max resize width and height config properties
+-  1.2.3: Added user_agent option
