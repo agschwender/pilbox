@@ -1,0 +1,8 @@
+title: Pilbox
+description: An image resizing application server
+google_analytics: UA-8326371-5
+show_downloads: true
+theme: jekyll-theme-minimal
+
+gems:
+  - jekyll-mentions
