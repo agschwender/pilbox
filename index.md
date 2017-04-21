@@ -11,9 +11,9 @@ Setup
 Dependencies
 ------------
 
-  * >= [Python 2.7](http://www.python.org/download/)
-  * [Pillow 2.2.1](https://pypi.python.org/pypi/Pillow/2.2.1)
-  * [Tornado 3.1.1](https://pypi.python.org/pypi/tornado/3.1.1)
+  * [Python >= 2.7](http://www.python.org/download/)
+  * [Pillow 2.9.0](https://pypi.python.org/pypi/Pillow/2.9.0)
+  * [Tornado 4.5.1](https://pypi.python.org/pypi/tornado/4.5.1)
   * [OpenCV 2.x](http://opencv.org/) (optional)
   * [PycURL 7.x](http://pycurl.sourceforge.net/) (optional, but recommended; required for proxy requests and requests over TLS)
   * Image Libraries: libjpeg-dev, libfreetype6-dev, libwebp-dev, zlib1g-dev, liblcms2-dev
@@ -91,6 +91,7 @@ To see a list of all available options, run
       --proxy_port               proxy port
       --quality                  default jpeg quality, 0-100 or keep
       --timeout                  timeout of requests in seconds (default 10)
+      --user_agent               user agent
       --validate_cert            validate certificates (default True)
 
 Calling
@@ -321,6 +322,8 @@ Defaults for the application have been optimized for quality rather than perform
     filter = "bicubic"
     quality = 75
 
+If you wish to improve performance further and are using an x86 platform, you may want to consider using [Pillow-SIMD]( https://github.com/uploadcare/pillow-simd/). Follow the steps in [Installation](https://github.com/uploadcare/pillow-simd#installation) and it should function as a drop-in replacement for `Pillow`. To avoid any incompatibility issues, use the same version of `Pillow-SIMD` as is being used for `Pillow`.
+
 Extension
 =========
 
@@ -415,3 +418,5 @@ Changelog
     * _Backwards incompatible_: default background property changed to `0fff`. To restore previous behavior, set background in config to `ffff`.
   * 1.2.1: Added max operations config property
   * 1.2.2: Added max resize width and height config properties
+  * 1.2.3: Added user_agent option
+  * 1.3.0: Increased Pillow to 2.9.0 and Tornado to 4.5.1
