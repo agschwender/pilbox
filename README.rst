@@ -526,6 +526,8 @@ following to the configuration.
     filter = "bicubic"
     quality = 75
 
+If you wish to improve performance further and are using an x86 platform, you may want to consider using `Pillow-SIMD <https://github.com/uploadcare/pillow-simd/>`_. Follow the steps in `Installation <https://github.com/uploadcare/pillow-simd#installation>`_ and it should function as a drop-in replacement for ``Pillow``. To avoid any incompatibility issues, use the same version of ``Pillow-SIMD`` as is being used for ``Pillow``.
+
 Extension
 =========
 
