@@ -565,6 +565,7 @@ port 8888 on 192.168.100.100, i.e.
 To run pilbox manually, execute the following.
 
 ::
+
     $ sudo /etc/init.d/pilbox stop
     $ python -m pilbox.app
 
