@@ -466,6 +466,11 @@ test command to regenerate the expected output for the test cases.
 Deploying
 =========
 
+It is strongly encouraged that pilbox not be directly accessible to
+the internet. Instead, it should only be accessible via a web server,
+e.g. NGINX or Apache, or some other application that is designed to
+handle direct traffic from the internet.
+
 The application itself does not include any caching. It is recommended
 that the application run behind a CDN for larger applications or behind
 varnish for smaller ones.
