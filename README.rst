@@ -71,34 +71,6 @@ Or from source
 
     $ git clone https://github.com/agschwender/pilbox.git
 
-Packaged with Pilbox is a `Vagrant <http://www.vagrantup.com/>`_
-configuration file which installs all necessary dependencies on a
-virtual box using `Ansible <http://www.ansibleworks.com/>`_. See the
-`Vagrant documentation <http://docs.vagrantup.com/v2/installation/>`_
-and the `Ansible
-documentation <http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible>`_
-for installation instructions. Once installed, the following will start
-and provision a virtual machine.
-
-::
-
-    $ vagrant up
-    $ vagrant provision
-
-To access the virtual machine itself, simply...
-
-::
-
-    $ vagrant ssh
-
-When running via Vagrant, the application is automatically started on
-port 8888 on 192.168.100.100, i.e.
-
-::
-
-    http://192.168.100.100:8888/
-
-
 Running
 =======
 
@@ -394,22 +366,6 @@ This mode is largely included for completeness.
     :align: center
     :alt: Scale image
 
-
-Testing
-=======
-
-To run all tests, issue the following command
-
-::
-
-    $ python -m pilbox.test.runtests
-
-To run individual tests, simply indicate the test to be run, e.g.
-
-::
-
-    $ python -m pilbox.test.runtests pilbox.test.signature_test
-
 Signing
 =======
 
@@ -568,6 +524,62 @@ While it is generally recommended to use Pilbox as a standalone server, it can a
         parse_command_line()
         start_server(CustomApplication())
 
+Contribution
+============
+
+To contribute to the project or to make and test your own changes,
+fork and then clone the project.
+
+::
+
+    $ git clone https://github.com/YOUR-USERNAME/pilbox.git
+
+Packaged with Pilbox is a `Vagrant <http://www.vagrantup.com/>`_
+configuration file which installs all necessary dependencies on a
+virtual box using `Ansible <http://www.ansibleworks.com/>`_. See the
+`Vagrant documentation <http://docs.vagrantup.com/v2/installation/>`_
+and the `Ansible
+documentation <http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible>`_
+for installation instructions. Once installed, the following will start
+and provision a virtual machine.
+
+::
+
+    $ vagrant up
+    $ vagrant provision
+
+This will have installed pilbox in ``/var/www/pilbox`` on the virtual
+machine. To access the virtual machine itself, simply...
+
+::
+
+    $ vagrant ssh
+
+When running via Vagrant, the application is automatically started on
+port 8888 on 192.168.100.100, i.e.
+
+::
+
+    http://192.168.100.100:8888/
+
+To run pilbox manually, execute the following.
+
+::
+    $ sudo /etc/init.d/pilbox stop
+    $ python -m pilbox.app
+
+To run all tests, issue the following command from the installed
+pilbox directory.
+
+::
+
+    $ python -m pilbox.test.runtests
+
+To run individual tests, simply indicate the test to be run, e.g.
+
+::
+
+    $ python -m pilbox.test.runtests pilbox.test.signature_test
 
 Changelog
 =========
