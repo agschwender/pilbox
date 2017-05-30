@@ -465,7 +465,7 @@ def main():
            metavar="|".join(Image.POSITIONS), type=str)
     define("filter", help="default filter to use when resizing",
            metavar="|".join(Image.FILTERS), type=str)
-    define("degree", help="the desired rotation degree", type=int)
+    define("degree", help="the desired rotation degree", type=str)
     define("expand", help="expand image size to accomodate rotation", type=int)
     define("rect", help="rectangle: x,y,w,h", type=str)
     define("format", help="default format to use when saving",
