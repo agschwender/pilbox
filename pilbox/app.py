@@ -184,6 +184,8 @@ class ImageHandler(tornado.web.RequestHandler):
             Image.validate_degree(self.get_argument("deg"))
             opts.update(self._get_rotate_options())
         if "region" in ops:
+            Image.validate_dimensions(
+                self.get_argument("w"), self.get_argument("h"), True)
             Image.validate_rectangle(self.get_argument("rect"))
 
         Image.validate_options(opts)
@@ -248,7 +250,8 @@ class ImageHandler(tornado.web.RequestHandler):
         return (self._image_save(image), image.img.format)
 
     def _image_region(self, image):
-        image.region(self.get_argument("rect").split(","))
+        opts = self._get_resize_options()
+        image.region(self.get_argument("rect").split(","), self.get_argument("w"), self.get_argument("h"), **opts)
 
     def _image_resize(self, image):
         opts = self._get_resize_options()

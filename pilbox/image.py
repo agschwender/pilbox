@@ -98,8 +98,8 @@ class Image(object):
         self._orig_format = self.img.format
 
     @staticmethod
-    def validate_dimensions(width, height):
-        if not width and not height:
+    def validate_dimensions(width, height, is_region=False):
+        if not width and not height and not is_region:
             raise errors.DimensionsError("Missing dimensions")
         elif width and not str(width).isdigit():
             raise errors.DimensionsError("Invalid width: %s" % width)
@@ -168,7 +168,7 @@ class Image(object):
             raise errors.RetainError(
                 "Invalid retain: %s" % str(opts["retain"]))
 
-    def region(self, rect):
+    def region(self, rect, width=False, height=False, **kwargs):
         """ Selects a sub-region of the image using the supplied rectangle,
             x, y, width, height.
         """
@@ -177,6 +177,12 @@ class Image(object):
         if box[2] > self.img.size[0] or box[3] > self.img.size[1]:
             raise errors.RectangleError("Region out-of-bounds")
         self.img = self.img.crop(box)
+
+        if width or height:
+            opts = Image._normalize_options(kwargs)
+            size = self._get_size(width, height)
+            self._scale(size, opts)
+
         return self
 
     def resize(self, width, height, **kwargs):
@@ -510,7 +516,7 @@ def main():
     elif options.operation == "rotate":
         image.rotate(options.degree, expand=options.expand)
     elif options.operation == "region":
-        image.region(options.rect.split(","))
+        image.region(options.rect.split(","), options.width, options.height)
 
     stream = image.save(format=options.format,
                         optimize=options.optimize,
