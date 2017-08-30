@@ -62,6 +62,10 @@ define("max_resize_width", help="maximum resize width", default=15000)
 define("max_requests", help="max concurrent requests", type=int, default=40)
 define("timeout", help="request timeout in seconds", type=float, default=10)
 define("implicit_base_url", help="prepend protocol/host to url paths")
+define("read_url_from_path",
+       help="Accept url from the path instead of a query string.",
+       type=bool,
+       default=False)
 define("ca_certs",
        help="override filename of CA certificates in PEM format",
        default=None)
@@ -118,6 +122,7 @@ class PilboxApplication(tornado.web.Application):
             max_requests=options.max_requests,
             timeout=options.timeout,
             implicit_base_url=options.implicit_base_url,
+            read_url_from_path=options.read_url_from_path,
             ca_certs=options.ca_certs,
             user_agent=options.user_agent,
             validate_cert=options.validate_cert,
@@ -135,10 +140,13 @@ class PilboxApplication(tornado.web.Application):
             tornado.httpclient.AsyncHTTPClient.configure(
                 "tornado.curl_httpclient.CurlAsyncHTTPClient")
 
-        tornado.web.Application.__init__(self, self.get_handlers(), **settings)
+        tornado.web.Application.__init__(self,
+                                         self.get_handlers(settings),
+                                         **settings)
 
-    def get_handlers(self):
-        return [(r"/", ImageHandler)]
+    def get_handlers(self, settings={}):
+        return [(r"/.*" if settings.get("read_url_from_path") else r"/",
+                 ImageHandler)]
 
 
 class ImageHandler(tornado.web.RequestHandler):
@@ -190,7 +198,7 @@ class ImageHandler(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def fetch_image(self):
-        url = self.get_argument("url")
+        url = self._get_url()
         if self.settings.get("implicit_base_url") \
                 and urlparse(url).hostname is None:
             url = urljoin(self.settings.get("implicit_base_url"), url)
@@ -209,7 +217,7 @@ class ImageHandler(tornado.web.RequestHandler):
             raise tornado.gen.Return(resp)
         except (socket.gaierror, tornado.httpclient.HTTPError) as e:
             logger.warn("Fetch error for %s: %s",
-                        self.get_argument("url"),
+                        self._get_url(),
                         str(e))
             raise errors.FetchError()
 
@@ -275,6 +283,12 @@ class ImageHandler(tornado.web.RequestHandler):
             if k in headers and headers[k]:
                 self.set_header(k, headers[k])
 
+    def _get_url(self):
+        if self.settings.get("read_url_from_path"):
+            return self.request.path
+        else:
+            return self.get_argument("url")
+
     def _get_operations(self):
         return self.get_argument(
             "op", self.settings.get("operation") or "resize").split(",")
@@ -314,7 +328,7 @@ class ImageHandler(tornado.web.RequestHandler):
             raise errors.OperationError("Too many operations")
 
     def _validate_url(self):
-        url = self.get_argument("url")
+        url = self._get_url()
         if not url:
             raise errors.UrlError("Missing url")
         elif url.startswith("http://") or url.startswith("https://"):
@@ -335,7 +349,7 @@ class ImageHandler(tornado.web.RequestHandler):
 
     def _validate_host(self):
         hosts = self.settings.get("allowed_hosts", [])
-        if hosts and urlparse(self.get_argument("url")).hostname not in hosts:
+        if hosts and urlparse(self._get_url()).hostname not in hosts:
             raise errors.HostError("Invalid host")
 
 
