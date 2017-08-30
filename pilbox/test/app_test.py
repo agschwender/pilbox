@@ -155,14 +155,14 @@ class _AppAsyncMixin(object):
 
 
 class _PilboxTestApplication(PilboxApplication):
-    def get_handlers(self):
+    def get_handlers(self, settings={}):
         path = os.path.join(os.path.dirname(__file__), "data")
         handlers = [(r"/test/data/test-delayed.jpg", _DelayedHandler),
                     (r"/test/data/test-user-agent.jpg", _UserAgentHandler),
                     (r"/test/data/(.*)",
                      tornado.web.StaticFileHandler,
                      {"path": path})]
-        handlers.extend(super(_PilboxTestApplication, self).get_handlers())
+        handlers.extend(super(_PilboxTestApplication, self).get_handlers(settings))
         return handlers
 
 
