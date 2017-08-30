@@ -77,6 +77,8 @@ define("content_type_from_image",
 
 # default image option settings
 define("background", help="default hexadecimal bg color (RGB or ARGB)")
+define("default_width", help="default width if none is specified", type=int)
+define("default_height", help="default height if none is specified", type=int)
 define("expand", help="default to expand when rotating", type=int)
 define("filter", help="default filter to use when resizing")
 define("format", help="default format to use when outputting")
@@ -106,6 +108,8 @@ class PilboxApplication(tornado.web.Application):
             max_resize_height=options.max_resize_height,
             max_resize_width=options.max_resize_width,
             background=options.background,
+            default_width=options.default_width,
+            default_height=options.default_height,
             expand=options.expand,
             filter=options.filter,
             format=options.format,
@@ -173,7 +177,7 @@ class ImageHandler(tornado.web.RequestHandler):
         opts = self._get_save_options()
         ops = self._get_operations()
         if "resize" in ops:
-            w, h = self.get_argument("w"), self.get_argument("h")
+            w, h = self._get_width(), self._get_height()
             Image.validate_dimensions(w, h)
             if w and int(w) > self.settings.get("max_resize_width"):
                 raise errors.DimensionsError("Exceeds maximum allowed width")
@@ -252,7 +256,7 @@ class ImageHandler(tornado.web.RequestHandler):
 
     def _image_resize(self, image):
         opts = self._get_resize_options()
-        image.resize(self.get_argument("w"), self.get_argument("h"), **opts)
+        image.resize(self._get_width(), self._get_height(), **opts)
 
     def _image_rotate(self, image):
         opts = self._get_rotate_options()
@@ -278,6 +282,14 @@ class ImageHandler(tornado.web.RequestHandler):
     def _get_operations(self):
         return self.get_argument(
             "op", self.settings.get("operation") or "resize").split(",")
+
+    def _get_width(self):
+        return self.get_argument("w",
+                                 default=self.settings.get("default_width"))
+
+    def _get_height(self):
+        return self.get_argument("h",
+                                 default=self.settings.get("default_height"))
 
     def _get_resize_options(self):
         return self._get_options(
