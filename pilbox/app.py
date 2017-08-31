@@ -69,6 +69,10 @@ define("validate_cert", help="validate certificates", type=bool, default=True)
 define("proxy_host", help="proxy hostname")
 define("proxy_port", help="proxy port", type=int)
 define("user_agent", help="user agent", type=str)
+define("infer_operations",
+       help="operations will be selected based on other query params",
+       type=bool,
+       default=False)
 
 # header related settings
 define("content_type_from_image",
@@ -120,6 +124,7 @@ class PilboxApplication(tornado.web.Application):
             implicit_base_url=options.implicit_base_url,
             ca_certs=options.ca_certs,
             user_agent=options.user_agent,
+            infer_operations=options.infer_operations,
             validate_cert=options.validate_cert,
             content_type_from_image=options.content_type_from_image,
             proxy_host=options.proxy_host,
@@ -276,8 +281,17 @@ class ImageHandler(tornado.web.RequestHandler):
                 self.set_header(k, headers[k])
 
     def _get_operations(self):
-        return self.get_argument(
-            "op", self.settings.get("operation") or "resize").split(",")
+        if self.settings.get("infer_operations"):
+            operations = []
+            if self.get_argument("rect"):
+                operations.append("region")
+            operations.append("resize")
+            if self.get_argument("deg"):
+                operations.append("rotate")
+            return operations
+        else:
+            return self.get_argument(
+                "op", self.settings.get("operation") or "resize").split(",")
 
     def _get_resize_options(self):
         return self._get_options(
