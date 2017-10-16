@@ -518,7 +518,10 @@ def main():
                         quality=options.quality,
                         progressive=options.progressive,
                         preserve_exif=options.preserve_exif)
-    sys.stdout.write(stream.read())
+    try:
+        sys.stdout.buffer.write(stream.read())
+    except AttributeError:
+        sys.stdout.write(stream.read())
     stream.close()
 
 
