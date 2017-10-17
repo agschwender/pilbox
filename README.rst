@@ -541,10 +541,10 @@ fork and then clone the project.
 
 Packaged with Pilbox is a `Vagrant <http://www.vagrantup.com/>`_
 configuration file which installs all necessary dependencies on a
-virtual box using `Ansible <http://www.ansibleworks.com/>`_. See the
+virtual box using `Ansible <https://www.ansible.com/>`_. See the
 `Vagrant documentation <http://docs.vagrantup.com/v2/installation/>`_
 and the `Ansible
-documentation <http://www.ansibleworks.com/docs/gettingstarted.html#getting-ansible>`_
+documentation <http://docs.ansible.com/ansible/latest/intro_installation.html>`_
 for installation instructions. Once installed, the following will start
 and provision a virtual machine.
 

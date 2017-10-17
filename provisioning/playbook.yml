@@ -11,6 +11,7 @@
   become: True
 
   tasks:
+    - group: name=admin state=present
     - user: name=ansible groups=admin shell=/bin/bash password=ansible state=present
     - file: path=/etc/sudoers.d mode=0770 owner=root group=root state=directory
     - copy: src=files/etc/sudoers dest=/etc/sudoers mode=0440 owner=root group=root
