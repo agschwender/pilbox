@@ -35,6 +35,9 @@ def get_image_resize_cases():
     cases.append(_criteria_to_resize_case(
         "test space.jpg", _get_simple_criteria_combinations()[0]))
 
+    cases.append(_criteria_to_resize_case(
+        "test-p-mode.gif", dict(width=100, height=100, format='jpeg', mode='crop')))
+
     for criteria in _get_advanced_criteria_combinations():
         cases.append(_criteria_to_resize_case("test-advanced.jpg", criteria))
 
