@@ -78,13 +78,15 @@ Versions:
   * 1.2.2: Added max resize width and height config properties
   * 1.2.3: Added user_agent option
   * 1.3.0: Increased Pillow to 2.9.0 and Tornado to 4.5.1
+  * 1.3.1: Fix pilbox.image CLI for python 3.0
+  * 1.3.2: Fix GIF P-mode to JPEG conversion
 """
 
 # human-readable version number
-version = "1.3.0"
+version = "1.3.2"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 3, 0, 0)
+version_info = (1, 3, 2, 0)

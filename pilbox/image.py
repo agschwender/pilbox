@@ -277,6 +277,12 @@ class Image(object):
             if opts["quality"] == "keep":
                 save_kwargs["quality"] = "keep"
 
+        if fmt == "JPEG" and self.img.mode == 'P':
+            # Converting old GIF and PNG files to JPEG can raise
+            # IOError: cannot write mode P as JPEG
+            # https://mail.python.org/pipermail/python-list/2000-May/036017.html
+            self.img = self.img.convert("RGB")
+
         try:
             self.img.save(outfile, fmt, **save_kwargs)
         except IOError as e:
