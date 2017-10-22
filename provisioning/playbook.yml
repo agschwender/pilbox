@@ -59,6 +59,7 @@
         - { name: 'pyflakes', version: '0.8.1' }
         - { name: 'pyandoc', version: '0.0.1' }
         - { name: 'sphinx-me', version: '0.2.1' }
+        - { name: 'twine', version: '1.9.1' }
 
 
 - hosts: app
