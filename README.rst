@@ -654,3 +654,9 @@ Changelog
 -  1.3.0: Increased Pillow to 2.9.0 and Tornado to 4.5.1
 -  1.3.1: Fix pilbox.image CLI for python 3.0
 -  1.3.2: Fix GIF P-mode to JPEG conversion
+
+
+Test
+=========
+
+Testing ...
