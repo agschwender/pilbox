@@ -306,6 +306,9 @@ class Image(object):
             self._fill(size, opts)
 
     def _clip(self, size, opts):
+        if self.img.size < size:
+            size = self._get_size_for_clip_resize(size)
+            self._crop(size, opts)
         self.img.thumbnail(size, opts["pil"]["filter"])
 
     def _background(self, fmt, color):
@@ -319,6 +322,15 @@ class Image(object):
             mask = bands[3] if len(bands) == 4 else None
             img.paste(self.img, mask=mask)
             self.img = img
+
+    def _get_size_for_clip_resize(self, size):
+        current_width, current_height = self.img.size[0], self.img.size[1]
+        expected_width, expected_height = size[0], size[1]
+        if current_width > current_height:
+            size = (expected_width, None)
+        else:
+            size = (None, expected_height)
+        return self._get_size(*size)
 
     def _crop(self, size, opts):
         if opts["position"] == "face":

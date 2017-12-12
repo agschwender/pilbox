@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import, division, with_statement
 
+import json
 import logging
 import socket
 
@@ -138,10 +139,88 @@ class PilboxApplication(tornado.web.Application):
         tornado.web.Application.__init__(self, self.get_handlers(), **settings)
 
     def get_handlers(self):
-        return [(r"/", ImageHandler)]
+        return [
+            (r"/", ImageHandler),
+            (r"/info", ImageInfoHandler),
+            (r"/ping", AlertHandler),
+        ]
 
 
-class ImageHandler(tornado.web.RequestHandler):
+class AlertHandler(tornado.web.RequestHandler):
+
+    def get(self):
+        self.write("pong")
+
+
+class BaseImageHandler(tornado.web.RequestHandler):
+
+    @tornado.gen.coroutine
+    def fetch_image(self):
+        url = self.get_argument("url")
+        if self.settings.get("implicit_base_url") \
+                and urlparse(url).hostname is None:
+            url = urljoin(self.settings.get("implicit_base_url"), url)
+
+        client = tornado.httpclient.AsyncHTTPClient(
+            max_clients=self.settings.get("max_requests"))
+        try:
+            resp = yield client.fetch(
+                url,
+                request_timeout=self.settings.get("timeout"),
+                validate_cert=self.settings.get("validate_cert"),
+                proxy_host=self.settings.get("proxy_host"),
+                proxy_port=self.settings.get("proxy_port"))
+            raise tornado.gen.Return(resp)
+        except (socket.gaierror, tornado.httpclient.HTTPError) as e:
+            logger.warn("Fetch error for %s: %s",
+                        self.get_argument("url"),
+                        str(e))
+            raise errors.FetchError()
+
+    def get_argument(self, name, default=None, strip=True):
+        return super(BaseImageHandler, self).get_argument(name, default, strip)
+
+    def _validate_signature(self):
+        key = self.settings.get("client_key")
+        if key and not verify_signature(key, urlparse(self.request.uri).query):
+            raise errors.SignatureError("Invalid signature")
+
+    def write_error(self, status_code, **kwargs):
+        err = kwargs["exc_info"][1] if "exc_info" in kwargs else None
+        if isinstance(err, errors.PilboxError):
+            self.set_header("Content-Type", "application/json")
+            resp = dict(status_code=status_code,
+                        error_code=err.get_code(),
+                        error=err.log_message)
+            self.finish(tornado.escape.json_encode(resp))
+        else:
+            super(ImageHandler, self).write_error(status_code, **kwargs)
+
+
+class ImageInfoHandler(BaseImageHandler):
+
+    @tornado.gen.coroutine
+    def get(self):
+        self._validate_signature()
+        resp = yield self.fetch_image()
+        image = Image(resp.buffer)
+        self.render_info(image)
+
+    def render_info(self, image):
+        info = {
+            'width': image.img.size[0],
+            'height': image.img.size[1],
+        }
+        info = json.dumps(info)
+        self._set_headers()
+        self.write(info)
+
+    def _set_headers(self):
+        self.set_header("Content-Type", "application/json")
+        self.set_header("charset", "utf-8")
+
+
+class ImageHandler(BaseImageHandler):
     FORWARD_HEADERS = ["Cache-Control", "Expires", "Last-Modified"]
     OPERATIONS = ["region", "resize", "rotate", "noop"]
 
@@ -159,9 +238,6 @@ class ImageHandler(tornado.web.RequestHandler):
         self.validate_request()
         resp = yield self.fetch_image()
         self.render_image(resp)
-
-    def get_argument(self, name, default=None, strip=True):
-        return super(ImageHandler, self).get_argument(name, default, strip)
 
     def validate_request(self):
         self._validate_operation()
@@ -219,17 +295,6 @@ class ImageHandler(tornado.web.RequestHandler):
         for block in iter(lambda: outfile.read(65536), b""):
             self.write(block)
         outfile.close()
-
-    def write_error(self, status_code, **kwargs):
-        err = kwargs["exc_info"][1] if "exc_info" in kwargs else None
-        if isinstance(err, errors.PilboxError):
-            self.set_header("Content-Type", "application/json")
-            resp = dict(status_code=status_code,
-                        error_code=err.get_code(),
-                        error=err.log_message)
-            self.finish(tornado.escape.json_encode(resp))
-        else:
-            super(ImageHandler, self).write_error(status_code, **kwargs)
 
     def _process_response(self, resp):
         ops = self._get_operations()
@@ -327,11 +392,6 @@ class ImageHandler(tornado.web.RequestHandler):
         client = self.settings.get("client_name")
         if client and self.get_argument("client") != client:
             raise errors.ClientError("Invalid client")
-
-    def _validate_signature(self):
-        key = self.settings.get("client_key")
-        if key and not verify_signature(key, urlparse(self.request.uri).query):
-            raise errors.SignatureError("Invalid signature")
 
     def _validate_host(self):
         hosts = self.settings.get("allowed_hosts", [])
