@@ -1,5 +1,5 @@
 # http://travis-ci.org/#!/agschwender/pilbox
-dist: trusty
+dist: xenial
 sudo: required
 language: python
 python:
