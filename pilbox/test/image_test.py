@@ -11,6 +11,7 @@ from tornado.test.util import unittest
 from pilbox import errors
 from pilbox.image import color_hex_to_dec_tuple, Image
 
+
 try:
     import cv
 except ImportError:
@@ -321,6 +322,9 @@ class ImageTest(unittest.TestCase):
 
     def test_save_failure(self):
         img = Image(os.path.join(DATADIR, 'test5.gif'))
+        def _mock_save(*args, **kwargs):
+            raise IOError('foo')
+        img.img.save = _mock_save
         self.assertRaises(errors.ImageSaveError,
                           lambda: img.save(format="webp"))
 
