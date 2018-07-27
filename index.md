@@ -16,8 +16,8 @@ Dependencies
 ------------
 
 -   [Python &gt;= 2.7](http://www.python.org/download/)
--   [Pillow 2.9.0](https://pypi.python.org/pypi/Pillow/2.9.0)
--   [Tornado 4.5.1](https://pypi.python.org/pypi/tornado/4.5.1)
+-   [Pillow 5.2.0](https://pypi.python.org/pypi/Pillow/5.2.0)
+-   [Tornado 5.1.0](https://pypi.python.org/pypi/tornado/5.1.0)
 -   [OpenCV 2.x](http://opencv.org/) (optional)
 -   [PycURL 7.x](http://pycurl.sourceforge.net/) (optional, but
     recommended; required for proxy requests and requests over TLS)
