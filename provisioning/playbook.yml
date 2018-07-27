@@ -53,7 +53,7 @@
         use_mirrors=yes
       with_items:
         - { name: 'Pillow', version: '2.9.0' }
-        - { name: 'tornado', version: '4.5.1' }
+        - { name: 'tornado', version: '5.1.0' }
         - { name: 'coverage', version: '3.6' }
         - { name: 'pep8', version: '1.6.2' }
         - { name: 'pyflakes', version: '0.8.1' }
