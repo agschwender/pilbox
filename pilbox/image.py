@@ -268,20 +268,26 @@ class Image(object):
             save_kwargs["exif"] = self._exif
 
         color = color_hex_to_dec_tuple(opts["background"])
+
         if self.img.mode == "RGBA":
             self._background(fmt, color)
+
+        if fmt == "JPEG":
+            if self.img.mode == "P":
+                # Converting old GIF and PNG files to JPEG can raise
+                # IOError: cannot write mode P as JPEG
+                # https://mail.python.org/pipermail/python-list/2000-May/036017.html
+                self.img = self.img.convert("RGB")
+            elif self.img.mode == "RGBA":
+                # JPEG does not have an alpha channel so cannot be
+                # saved as RGBA. It must be converted to RGB.
+                self.img = self.img.convert("RGB")
 
         if self._orig_format == "JPEG":
             self.img.format = self._orig_format
             save_kwargs["subsampling"] = "keep"
             if opts["quality"] == "keep":
                 save_kwargs["quality"] = "keep"
-
-        if fmt == "JPEG" and self.img.mode == 'P':
-            # Converting old GIF and PNG files to JPEG can raise
-            # IOError: cannot write mode P as JPEG
-            # https://mail.python.org/pipermail/python-list/2000-May/036017.html
-            self.img = self.img.convert("RGB")
 
         try:
             self.img.save(outfile, fmt, **save_kwargs)
