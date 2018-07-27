@@ -80,13 +80,14 @@ Versions:
   * 1.3.0: Increased Pillow to 2.9.0 and Tornado to 4.5.1
   * 1.3.1: Fix pilbox.image CLI for python 3.0
   * 1.3.2: Fix GIF P-mode to JPEG conversion
+  * 1.3.3: Increase Pillow version to 5.2.0 and Tornado version to 5.1.0
 """
 
 # human-readable version number
-version = "1.3.2"
+version = "1.3.3"
 
 # The first three numbers are the components of the version number.
 # The fourth is zero for an official release, positive for a development
 # branch, or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version_info = (1, 3, 2, 0)
+version_info = (1, 3, 3, 0)
