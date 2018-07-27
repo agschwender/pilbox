@@ -168,17 +168,14 @@ class _PilboxTestApplication(PilboxApplication):
 
 class _DelayedHandler(tornado.web.RequestHandler):
 
-    @tornado.web.asynchronous
+    @tornado.gen.coroutine
     def get(self):
-        delay = time.time() + float(self.get_argument("delay", 0.0))
-        yield tornado.gen.Task(
-            tornado.ioloop.IOLoop.instance().add_timeout, delay)
+        yield tornado.gen.sleep(float(self.get_argument("delay", 0.0)))
         self.finish()
 
 
 class _UserAgentHandler(tornado.web.RequestHandler):
 
-    @tornado.web.asynchronous
     def get(self):
         ua = self.request.headers.get("User-Agent", "")
         expected_ua = self.get_argument("ua", "")
@@ -189,7 +186,7 @@ class _UserAgentHandler(tornado.web.RequestHandler):
 
         self.set_status(200)
         self.set_header("Content-Type", "image/jpeg")
-        img = PIL.Image.new('RGBA', (1, 1))
+        img = PIL.Image.new('RGB', (1, 1))
         outfile = BytesIO()
         img.save(outfile, "JPEG")
         outfile.seek(0)
@@ -528,7 +525,7 @@ class AppRestrictedTest(AsyncHTTPTestCase, _AppAsyncMixin):
         return _PilboxTestApplication(
             client_name=self.NAME,
             client_key=self.KEY,
-            allowed_hosts=["foo.co", "bar.io", "localhost"],
+            allowed_hosts=["foo.co", "bar.io", "localhost", "127.0.0.1"],
             timeout=10.0)
 
     def test_missing_client_name(self):
