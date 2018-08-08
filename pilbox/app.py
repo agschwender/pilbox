@@ -48,6 +48,8 @@ define("config", help="path to configuration file",
        callback=lambda path: parse_config_file(path, final=False))
 define("debug", help="run in debug mode", type=bool, default=False)
 define("port", help="run on the given port", type=int, default=8888)
+define("workers", help="number of worker processes (0 = auto)",
+       type=int, default=0)
 
 # security related settings
 define("client_name", help="client name")
@@ -351,7 +353,7 @@ def start_server(app=None):  # pragma: no cover
     logger.info("Starting server...")
     try:
         server.bind(options.port)
-        server.start(1 if options.debug else 0)
+        server.start(1 if options.debug else options.workers)
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
         tornado.ioloop.IOLoop.instance().stop()

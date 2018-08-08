@@ -126,6 +126,7 @@ To see a list of all available options, run
       --timeout                  timeout of requests in seconds (default 10)
       --user_agent               user agent
       --validate_cert            validate certificates (default True)
+      --workers                  number of worker processes (0 = auto) (default 0)
 
 
 Calling
@@ -407,6 +408,9 @@ below is an example configuration.
     # General settings
     port = 8888
 
+    # One worker process per CPU core
+    workers = 0
+
     # Set client name and key if the application requires signed requests. The
     # client must sign the request using the client_key, see README for
     # instructions.
@@ -488,6 +492,14 @@ following to the configuration.
     quality = 75
 
 If you wish to improve performance further and are using an x86 platform, you may want to consider using `Pillow-SIMD <https://github.com/uploadcare/pillow-simd/>`_. Follow the steps in `Installation <https://github.com/uploadcare/pillow-simd#installation>`_ and it should function as a drop-in replacement for ``Pillow``. To avoid any incompatibility issues, use the same version of ``Pillow-SIMD`` as is being used for ``Pillow``.
+
+Another setting that's helpful for fine-tuning performance and memory
+usage is the ``workers`` setting to set the number of Tornado worker
+processes. The default setting of ``0`` spawns one worker process per
+CPU core which can lead to high memory usage and reduced performance
+due to swapping on low-memory configurations. For Heroku deployments
+limiting the number of worker processes to 2-3 for the lower-end dynos
+helped smooth out application response time.
 
 Extension
 =========
