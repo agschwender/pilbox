@@ -156,6 +156,8 @@ class ImageHandler(tornado.web.RequestHandler):
         "tiff": "image/tiff",
     }
 
+    transformation = {}
+
     @tornado.gen.coroutine
     def get(self):
         self.validate_request()
@@ -163,9 +165,16 @@ class ImageHandler(tornado.web.RequestHandler):
         self.render_image(resp)
 
     def get_argument(self, name, default=None, strip=True):
+        if self.transformation and name in self.transformation:
+            return self.transformation[name]
         return super(ImageHandler, self).get_argument(name, default, strip)
 
     def validate_request(self):
+        transform_str = self.get_argument('transformation')
+        if transform_str:
+            for string in transform_str.split(','):
+                key, val = string.split('_')
+                self.transformation[key] = val
         self._validate_operation()
         self._validate_url()
         self._validate_signature()
